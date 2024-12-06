@@ -17,7 +17,6 @@
         <activity
             android:name=".ui.HomeActivity"
             android:exported="true"
-            android:label="@string/title_activity_home"
             android:theme="@style/Theme.Intercambios.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

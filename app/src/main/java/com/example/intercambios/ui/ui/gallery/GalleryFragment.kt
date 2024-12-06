@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.intercambios.databinding.FragmentGalleryBinding
+import com.example.intercambios.ui.perfil.PerfilViewModel
 
 class GalleryFragment : Fragment() {
 
@@ -22,14 +23,14 @@ class GalleryFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val galleryViewModel =
-            ViewModelProvider(this).get(GalleryViewModel::class.java)
+        val perfilViewModel =
+            ViewModelProvider(this).get(PerfilViewModel::class.java)
 
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textGallery
-        galleryViewModel.text.observe(viewLifecycleOwner) {
+        perfilViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
         return root

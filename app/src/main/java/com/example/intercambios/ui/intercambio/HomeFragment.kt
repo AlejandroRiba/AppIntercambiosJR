@@ -1,4 +1,4 @@
-package com.example.intercambios.ui.ui.home
+package com.example.intercambios.ui.intercambio
 
 import android.os.Bundle
 import android.view.LayoutInflater
