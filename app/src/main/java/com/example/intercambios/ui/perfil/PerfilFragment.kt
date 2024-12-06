@@ -23,15 +23,11 @@ class PerfilFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val perfilViewModel =
-            ViewModelProvider(this).get(PerfilViewModel::class.java)
+            ViewModelProvider(this)[PerfilViewModel::class.java]
 
         _binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textGallery
-        perfilViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
         return root
     }
 

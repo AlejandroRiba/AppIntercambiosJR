@@ -3,28 +3,28 @@ package com.example.intercambios.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.WindowManager
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.ui.NavigationUI
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.utils.NetworkUtils
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseUser
 
 enum class ProviderType{
     BASIC,
@@ -43,6 +43,13 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (session().isEmpty()){
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            finish()//finaliza la actividad
+            startActivity(loginIntent)//regresa a la pantalla principal
+        }
+
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -59,11 +66,27 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_home)
+
+        val headerView: View = navView.getHeaderView(0)
+
+        val currentUser = firebaseHelper.getCurrentUser()
+
+        val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
+        val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
+        if (currentUser != null) {
+            correovisible.text = currentUser.email.toString()
+        }
+        if (currentUser != null) {
+            nombrevisible.text = currentUser.displayName.toString()
+        }
+
+
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_home, R.id.nav_gallery
+                R.id.nav_home, R.id.nav_profile
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -87,12 +110,6 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
             }
-        }
-
-        if (session().isEmpty()){
-            val loginIntent = Intent(this, LoginActivity::class.java)
-            finish()//finaliza la actividad
-            startActivity(loginIntent)//regresa a la pantalla principal
         }
 
     }

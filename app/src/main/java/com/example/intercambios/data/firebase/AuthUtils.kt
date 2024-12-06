@@ -2,20 +2,24 @@ package com.example.intercambios.data.firebase
 
 import android.content.Context
 import android.util.Log
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.auth
-import kotlinx.coroutines.tasks.await
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import com.example.intercambios.R
+import com.google.android.gms.tasks.Task
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential.Companion.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+
 
 class AuthUtils(private val context: Context){
 
@@ -27,10 +31,34 @@ class AuthUtils(private val context: Context){
     suspend fun loginWithEmail(email: String, password: String): Boolean {
         return try {
             auth.signInWithEmailAndPassword(email, password).await()
+            val user = auth.currentUser
+            if (user != null) {
+                // Verificar si el displayName es nulo o vacío
+                if (user.displayName.isNullOrEmpty()) {
+                    // Si displayName es nulo, obtener el nombre desde Firestore
+                    val userName = getUserNameFromFirestore(user.uid)
+
+                    // Si se obtiene el nombre desde Firestore, actualizar el displayName
+                    if (userName != null) {
+                        updateDisplayName(user, userName)
+                    }
+                }
+            }
             true
         } catch (e: Exception) {
             Log.e("FirebaseHelper", "Error al iniciar sesión con email: ${e.message}")
             false
+        }
+    }
+
+     suspend fun getUserNameFromFirestore(userId: String): String? {
+        return try {
+            // Obtener el nombre del usuario desde Firestore
+            val userDocument = FirebaseFirestore.getInstance().collection("users").document(userId).get().await()
+            userDocument.getString("name")
+        } catch (e: Exception) {
+            Log.e("FirebaseHelper", "Error al obtener el nombre de Firestore: ${e.message}")
+            null
         }
     }
 
@@ -48,6 +76,10 @@ class AuthUtils(private val context: Context){
                 "verified" to false
             )
             firestore.collection("users").document(userId).set(userData).await()
+            val user = auth.currentUser
+            if (user != null) {
+                updateDisplayName(user, name)
+            }
             // Enviar correo de verificación
             val emailSent = sendEmailVerification()
             if (emailSent) {
@@ -135,6 +167,22 @@ class AuthUtils(private val context: Context){
             request = request, context = context
         )
     }
+
+    private fun updateDisplayName(user: FirebaseUser, displayName: String) {
+        val profileUpdates = UserProfileChangeRequest.Builder()
+            .setDisplayName(displayName)
+            .build()
+
+        user.updateProfile(profileUpdates)
+            .addOnCompleteListener { task: Task<Void?> ->
+                if (task.isSuccessful) {
+                    Log.d("Auth", "El displayName se actualizó correctamente.")
+                } else {
+                    Log.e("Auth", "Error al actualizar el displayName.")
+                }
+            }
+    }
+
 
     // Cerrar sesión
     fun logout() {

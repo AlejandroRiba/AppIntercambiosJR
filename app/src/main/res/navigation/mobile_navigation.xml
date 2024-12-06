@@ -12,9 +12,9 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.intercambios.ui.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:id="@+id/nav_profile"
+        android:name="com.example.intercambios.ui.perfil.PerfilFragment"
+        android:label="@string/pefil"
         tools:layout="@layout/fragment_perfil" />
 
 </navigation>

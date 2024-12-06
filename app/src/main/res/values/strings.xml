@@ -15,4 +15,7 @@
         <string name="menu_home">Inicio</string>
     <string name="menu_gallery">Intercambios</string>
     <string name="menu_logout">Cerrar sesión</string>
+    <string name="pefil">Pefil</string>
+    <string name="ajustes">Ajustes</string>
+    <string name="foto_avatar_de_perfil">Foto/Avatar de perfil</string>
 </resources>

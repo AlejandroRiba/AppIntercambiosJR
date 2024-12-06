@@ -64,7 +64,10 @@ class LoginActivity : BaseActivity() {
                     loadingDialog.dismiss()
                     aplicarWindowInsets()
                     if (success) {
-                        genUtils.showHome(ProviderType.BASIC)
+                        val user = firebaseHelper.getCurrentUser()
+                        if (user != null) {
+                            genUtils.showHome(ProviderType.BASIC, user.email.toString())
+                        }
                     } else {
                         genUtils.showAlert("Error al iniciar sesión")
                     }
@@ -81,7 +84,10 @@ class LoginActivity : BaseActivity() {
                     loadingDialog.dismiss()
                     aplicarWindowInsets()
                     if(success){
-                        genUtils.showHome(ProviderType.GOOGLE)
+                        val user = firebaseHelper.getCurrentUser()
+                        if (user != null) {
+                            genUtils.showHome(ProviderType.BASIC, user.email.toString())
+                        }
                     }
                 } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
                     Log.e("LoginActivity", "Inicio de sesión cancelado por el usuario.")

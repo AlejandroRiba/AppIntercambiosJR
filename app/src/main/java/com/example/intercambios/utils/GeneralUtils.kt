@@ -21,10 +21,10 @@ class GeneralUtils(private val context: Context){
         dialog.show()
     }
 
-     fun showHome(provider: ProviderType) {
+     fun showHome(provider: ProviderType, email: String) {
         val homeIntent = Intent(context, HomeActivity::class.java)
          val prefs: SharedPreferences = context.getSharedPreferences(context.getString(R.string.prefs_file), Context.MODE_PRIVATE)
-         prefs.edit().putString("provider", provider.toString()).apply()
+         prefs.edit().putString("provider", provider.toString()).putString("email", email).apply()
          // Si el contexto es una actividad, finalizarla
          if (context is Activity) {
              context.finish() // Finaliza la actividad actual
