@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".ui.intercambio.CrearIntercambioFragment">
 
     <!-- Título del formulario -->
     <TextView
@@ -20,11 +21,24 @@
 
     <!-- Nombre del intercambio -->
     <EditText
-        android:id="@+id/exchangeNameEditText"
+        android:id="@+id/edTextNombre"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Nombre del intercambio"
         app:layout_constraintTop_toBottomOf="@id/formTitleTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:padding="12dp"/>
+
+    <!-- Numero de personas del intercambio -->
+    <EditText
+        android:id="@+id/edTextNumPersonas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Participantes del intecambio"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/edTextNombre"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="24dp"
@@ -36,7 +50,89 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="Descripción"
-        app:layout_constraintTop_toBottomOf="@id/exchangeNameEditText"
+        app:layout_constraintTop_toBottomOf="@id/edTextNumPersonas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <!-- Seleccion del temas para el intercambio -->
+    <EditText
+        android:id="@+id/edTextTemas"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Temas de intercambio"
+        app:layout_constraintTop_toBottomOf="@id/exchangeDescriptionEditText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <!-- Monto maximo del intercambio -->
+    <EditText
+        android:id="@+id/edTextMontoMax"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Monto máximo $"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/edTextTemas"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <!-- Fecha limite de registro -->
+    <EditText
+        android:id="@+id/edTextFechaRegistro"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Fecha límite para registro: "
+        app:layout_constraintTop_toBottomOf="@id/edTextMontoMax"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:clickable="false"
+        android:focusable="false"/>
+
+    <!-- Fecha del intecambio del intercambio -->
+    <EditText
+        android:id="@+id/edTextFechaIntercambio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Fecha del intercambio: "
+        app:layout_constraintTop_toBottomOf="@id/edTextFechaRegistro"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"
+        android:clickable="false"
+        android:focusable="false"/>
+
+    <!-- Hora del intercambio -->
+    <EditText
+        android:id="@+id/edTextHora"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Hora del intercambio"
+        app:layout_constraintTop_toBottomOf="@id/edTextFechaIntercambio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:padding="12dp"/>
+
+    <!-- Lugar del intercambio -->
+    <EditText
+        android:id="@+id/edTextLugar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:hint="Lugar del intercambio"
+        app:layout_constraintTop_toBottomOf="@id/edTextHora"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
@@ -48,8 +144,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crear Intercambio"
-        app:layout_constraintTop_toBottomOf="@id/exchangeDescriptionEditText"
+        app:layout_constraintTop_toBottomOf="@id/edTextLugar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

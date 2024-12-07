@@ -11,20 +11,18 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
+import com.example.intercambios.data.models.Users
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
+import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
+import com.example.intercambios.ui.intercambio.HomeFragment
+import com.example.intercambios.ui.perfil.PerfilFragment
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseUser
 
 enum class ProviderType{
     BASIC,
@@ -33,9 +31,10 @@ enum class ProviderType{
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityHomeBinding
     private val firebaseHelper = AuthUtils(this)
+
+    private val usersUtil =  Users()
 
     // Flag para asegurar que binding esté inicializado
     private var isBindingInitialized = false
@@ -48,70 +47,128 @@ class HomeActivity : AppCompatActivity() {
             val loginIntent = Intent(this, LoginActivity::class.java)
             finish()//finaliza la actividad
             startActivity(loginIntent)//regresa a la pantalla principal
+            return
         }
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializamos el flag después de la creación del binding
-        isBindingInitialized = true
 
+        // Inicializamos el binding y configuramos la barra de herramientas
+        isBindingInitialized = true
         setSupportActionBar(binding.appBarHome.toolbar)
 
-        binding.appBarHome.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Aqui podemos agregar nuevo intercambio", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+        if (savedInstanceState == null) {
+            replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
         }
+
+        // Registrar callbacks de ciclo de vida de fragmentos
+        supportFragmentManager.registerFragmentLifecycleCallbacks(object :
+            FragmentManager.FragmentLifecycleCallbacks() {
+            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                super.onFragmentResumed(fm, f)
+                // Mostrar u ocultar el botón flotante según el fragmento actual
+                if (f is HomeFragment) {
+                    binding.appBarHome.fab.show()
+                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
+                } else {
+                    binding.appBarHome.fab.hide()
+                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                }
+            }
+        }, true)
+
+        // Configuración del menú lateral
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_home)
+
 
         val headerView: View = navView.getHeaderView(0)
 
-        val currentUser = firebaseHelper.getCurrentUser()
-
-        val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
-        val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
-        if (currentUser != null) {
-            correovisible.text = currentUser.email.toString()
-        }
-        if (currentUser != null) {
-            nombrevisible.text = currentUser.displayName.toString()
-        }
-
-
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.nav_profile
-            ), drawerLayout
-        )
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-        // Configuración del listener para interceptar clics en el menú
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.logOut -> {
-                    firebaseHelper.logout()
-                    val intent = Intent(this, HomeActivity::class.java) //reinicio de la actividad
-                    finish()
-                    startActivity(intent)
-                    true // Indicar que el clic fue manejado
-                }
-
-                else -> {
-                    // Dejar que las demás opciones naveguen automáticamente
-                    NavigationUI.onNavDestinationSelected(menuItem, navController)
-                    drawerLayout.closeDrawer(GravityCompat.START) // Cerrar el menú lateral
-                    true
-                }
+        usersUtil.obtenerUsuario{ usuario ->
+            val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
+            val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
+            if (usuario != null) {
+                correovisible.text = usuario.email
+                nombrevisible.text = usuario.nombre
             }
         }
 
+
+
+        // Configuración del listener para manejar clics manualmente
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> {
+                    // Reemplazar con el fragmento "Home"
+                    replaceFragment(HomeFragment(), true)
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    // Reemplazar con el fragmento "Profile"¿
+                    replaceFragment(PerfilFragment(), true)
+                    true
+                }
+
+                R.id.nav_settings -> {
+                    // Reemplazar con el fragmento "Settings"
+                    replaceFragment(PerfilFragment(), true)
+                    true
+                }
+
+                R.id.logOut -> {
+                    // Cerrar sesión y redirigir al Login
+                    firebaseHelper.logout()
+                    val intent = Intent(this, LoginActivity::class.java)
+                    finish()
+                    startActivity(intent)
+                    true
+                }
+
+                else -> {
+                    false // Indicar que no se manejó el clic
+                }
+            }.also {
+                // Cerrar el menú lateral después de manejar el clic
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+        }
+
+        binding.appBarHome.fab.setOnClickListener {
+            // Reemplazar con el fragmento de creación de intercambio
+            binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
+            replaceFragment(CrearIntercambioFragment(), true)
+        }
+
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressedDispatcher.onBackPressed()
+        return true
+    }
+
+    //Método para ocultar el botón de regreso
+    fun configureBackButton(showBackButton: Boolean) {
+        supportActionBar?.setDisplayHomeAsUpEnabled(showBackButton) // Muestra/oculta la flecha de regreso
+        supportActionBar?.setHomeButtonEnabled(showBackButton) // Activa/desactiva el comportamiento del botón
+    }
+
+
+    //Método para obtener el fragmento actual
+    fun getCurrentFragment(): Fragment? {
+        return supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+    }
+
+
+    // Método para manejar reemplazos de fragmentos
+    private fun replaceFragment(fragment: Fragment, regreso: Boolean) {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.nav_host_fragment_content_home, fragment)
+        if(regreso)
+            fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.commit()
     }
 
     override fun onStart() {
@@ -144,15 +201,13 @@ class HomeActivity : AppCompatActivity() {
     }
 
 
-     private fun showNoConnectionScreen() {
+    private fun showNoConnectionScreen() {
          if (cargaDialog == null) { // Solo mostrar el diálogo si no existe uno
              cargaDialog = mostrarCarga()
          }
          binding.appBarHome.fab.visibility = View.GONE
          // Deshabilitar la barra lateral (DrawerLayout)
          binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-         // Deshabilitar el botón de ajustes
-         supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     private fun hideNoConnectionScreen() {
@@ -160,15 +215,8 @@ class HomeActivity : AppCompatActivity() {
         binding.appBarHome.fab.visibility = View.VISIBLE
         // Habilitar la barra lateral (DrawerLayout)
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-        // Habilitar el botón de ajustes
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_home)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
 
     private fun mostrarCarga() : AlertDialog {
         // Inflar el layout personalizado con Lottie y el texto

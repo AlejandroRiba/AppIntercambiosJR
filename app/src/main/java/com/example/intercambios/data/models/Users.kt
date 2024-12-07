@@ -35,5 +35,25 @@ class Users {
         }
     }
 
+    //Obtener usuario
+    fun obtenerUsuario(callback: (Usuario?) -> Unit) {
+        // Obtén el documento de la colección
+        db.collection("users").document(userId!!).get()
+            .addOnSuccessListener { document ->
+                // Si el documento existe, lo convertimos en un objeto Usuario
+                if (document != null && document.exists()) {
+                    val usuario = document.toObject(Usuario::class.java)
+                    callback(usuario)  // Llamamos al callback con el objeto Usuario
+                } else {
+                    callback(null)  // Si el documento no existe, pasamos null
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Si hay un error al obtener el documento, lo manejamos aquí
+                callback(null)
+                exception.printStackTrace()
+            }
+    }
+
 
 }

@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.databinding.FragmentPerfilBinding
+import kotlinx.coroutines.launch
 
 class PerfilFragment : Fragment() {
 
@@ -22,11 +24,12 @@ class PerfilFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val perfilViewModel =
-            ViewModelProvider(this)[PerfilViewModel::class.java]
-
         _binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+        lifecycleScope.launch{
+
+        }
 
         return root
     }

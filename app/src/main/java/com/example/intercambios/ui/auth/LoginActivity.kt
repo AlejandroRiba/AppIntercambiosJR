@@ -86,7 +86,7 @@ class LoginActivity : BaseActivity() {
                     if(success){
                         val user = firebaseHelper.getCurrentUser()
                         if (user != null) {
-                            genUtils.showHome(ProviderType.BASIC, user.email.toString())
+                            genUtils.showHome(ProviderType.GOOGLE, user.email.toString())
                         }
                     }
                 } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
