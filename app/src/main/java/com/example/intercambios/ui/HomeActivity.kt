@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -21,6 +25,8 @@ import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
 import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
+import com.example.intercambios.ui.perfil.SettingFragment
+import com.example.intercambios.utils.AvatarResources
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
 
@@ -58,8 +64,13 @@ class HomeActivity : AppCompatActivity() {
         isBindingInitialized = true
         setSupportActionBar(binding.appBarHome.toolbar)
 
+        // Configuración del menú lateral
+        val drawerLayout: DrawerLayout = binding.drawerLayout
+        val navView: NavigationView = binding.navView
+
         if (savedInstanceState == null) {
             replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
+            navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Profile"
         }
 
         // Registrar callbacks de ciclo de vida de fragmentos
@@ -78,19 +89,19 @@ class HomeActivity : AppCompatActivity() {
             }
         }, true)
 
-        // Configuración del menú lateral
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-
-
         val headerView: View = navView.getHeaderView(0)
 
         usersUtil.obtenerUsuario{ usuario ->
             val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
             val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
+            val avatar = headerView.findViewById<ImageView>(R.id.imageView)
             if (usuario != null) {
+                val avatarName = usuario.avatar
+                // Obtener el identificador del recurso a partir del nombre
+                val resId = AvatarResources.getResourceByName(avatarName)
                 correovisible.text = usuario.email
                 nombrevisible.text = usuario.nombre
+                avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
             }
         }
 
@@ -102,18 +113,21 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_home -> {
                     // Reemplazar con el fragmento "Home"
                     replaceFragment(HomeFragment(), true)
+                    navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Home"
                     true
                 }
 
                 R.id.nav_profile -> {
                     // Reemplazar con el fragmento "Profile"¿
                     replaceFragment(PerfilFragment(), true)
+                    navView.setCheckedItem(R.id.nav_profile) // Marcar el item de "Profile"
                     true
                 }
 
                 R.id.nav_settings -> {
                     // Reemplazar con el fragmento "Settings"
-                    replaceFragment(PerfilFragment(), true)
+                    replaceFragment(SettingFragment(), true)
+                    navView.setCheckedItem(R.id.nav_settings) // Marcar el item de "Profile"
                     true
                 }
 
@@ -146,8 +160,24 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressedDispatcher.onBackPressed()
+        // Comprobar si el fragmento actual es el HomeFragment y actualizar el ítem seleccionado
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+        when (currentFragment) {
+            is HomeFragment -> {
+                binding.navView.setCheckedItem(R.id.nav_home)
+            }
+
+            is PerfilFragment -> {
+                binding.navView.setCheckedItem(R.id.nav_profile)
+            }
+
+            is SettingFragment -> {
+                binding.navView.setCheckedItem(R.id.nav_settings)
+            }
+        }
         return true
     }
+
 
     //Método para ocultar el botón de regreso
     fun configureBackButton(showBackButton: Boolean) {

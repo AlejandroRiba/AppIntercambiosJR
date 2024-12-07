@@ -3,7 +3,6 @@ package com.example.intercambios.utils
 import android.app.Activity
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
-import com.example.intercambios.MainActivity
 import com.example.intercambios.R
 import android.content.Intent
 import android.content.SharedPreferences

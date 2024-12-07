@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+import com.example.intercambios.data.models.Users
 import com.example.intercambios.databinding.FragmentPerfilBinding
-import kotlinx.coroutines.launch
+import com.example.intercambios.utils.AvatarResources
 
 class PerfilFragment : Fragment() {
 
@@ -18,6 +16,7 @@ class PerfilFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+    private val usersUtil =  Users()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,8 +26,20 @@ class PerfilFragment : Fragment() {
         _binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        lifecycleScope.launch{
-
+        usersUtil.obtenerUsuario{ usuario ->
+            val correovisible = binding.emailTextView
+            val nombrevisible = binding.nameTextView
+            val aliasvisible = binding.aliasTextView
+            val avatar = binding.avatarImageView
+            if (usuario != null) {
+                val avatarName = usuario.avatar
+                // Obtener el identificador del recurso a partir del nombre
+                val resId = AvatarResources.getResourceByName(avatarName)
+                correovisible.text = usuario.email
+                nombrevisible.text = usuario.nombre
+                aliasvisible.text = usuario.alias
+                avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
+            }
         }
 
         return root
