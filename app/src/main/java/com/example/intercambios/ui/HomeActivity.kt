@@ -3,11 +3,15 @@ package com.example.intercambios.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.addCallback
@@ -27,6 +31,7 @@ import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
 import com.example.intercambios.ui.perfil.SettingFragment
 import com.example.intercambios.utils.AvatarResources
+import com.example.intercambios.utils.LoadingFragment
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
 
@@ -45,6 +50,7 @@ class HomeActivity : AppCompatActivity() {
     // Flag para asegurar que binding esté inicializado
     private var isBindingInitialized = false
     private var cargaDialog: AlertDialog? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,10 +74,11 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
 
-        if (savedInstanceState == null) {
+        /*if (savedInstanceState == null) {
             replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
             navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Profile"
-        }
+            supportActionBar?.title = getString(R.string.menu_home)
+        }*/
 
         // Registrar callbacks de ciclo de vida de fragmentos
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
@@ -106,29 +113,48 @@ class HomeActivity : AppCompatActivity() {
         }
 
 
-
         // Configuración del listener para manejar clics manualmente
         navView.setNavigationItemSelectedListener { menuItem ->
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
             when (menuItem.itemId) {
                 R.id.nav_home -> {
                     // Reemplazar con el fragmento "Home"
-                    replaceFragment(HomeFragment(), true)
-                    navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Home"
-                    true
+                    if (currentFragment !is HomeFragment){
+                        clearBackStack()
+                        replaceFragment(HomeFragment(), false)
+                        navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Home"
+                        supportActionBar?.title = getString(R.string.menu_home)
+                        true
+                    }else{
+                        false
+                    }
                 }
 
                 R.id.nav_profile -> {
                     // Reemplazar con el fragmento "Profile"¿
-                    replaceFragment(PerfilFragment(), true)
-                    navView.setCheckedItem(R.id.nav_profile) // Marcar el item de "Profile"
-                    true
+                    if(currentFragment !is PerfilFragment && currentFragment !is CrearIntercambioFragment){
+                        clearBackStack()
+                        replaceFragment(PerfilFragment(), true)
+                        navView.setCheckedItem(R.id.nav_profile) // Marcar el item de "Profile"
+                        supportActionBar?.title = getString(R.string.perfil)
+                        true
+                    }else{
+                        false
+                    }
                 }
 
                 R.id.nav_settings -> {
                     // Reemplazar con el fragmento "Settings"
-                    replaceFragment(SettingFragment(), true)
-                    navView.setCheckedItem(R.id.nav_settings) // Marcar el item de "Profile"
-                    true
+                    if(currentFragment !is SettingFragment && currentFragment !is CrearIntercambioFragment){
+                        clearBackStack()
+                        replaceFragment(SettingFragment(), true)
+                        navView.setCheckedItem(R.id.nav_settings) // Marcar el item de "Profile"
+                        supportActionBar?.title = getString(R.string.ajustes)
+                        true
+                    }else{
+                        false
+                    }
+
                 }
 
                 R.id.logOut -> {
@@ -151,78 +177,127 @@ class HomeActivity : AppCompatActivity() {
 
         binding.appBarHome.fab.setOnClickListener {
             // Reemplazar con el fragmento de creación de intercambio
-            binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
-            replaceFragment(CrearIntercambioFragment(), true)
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+            if(currentFragment is HomeFragment){
+                binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
+                supportActionBar?.title = getString(R.string.nuevo_intercambio)
+                replaceFragment(CrearIntercambioFragment(), true)
+            }
         }
 
 
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        // Comprobar si el fragmento actual es el HomeFragment y actualizar el ítem seleccionado
-        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
-        when (currentFragment) {
-            is HomeFragment -> {
-                binding.navView.setCheckedItem(R.id.nav_home)
-            }
+        var currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+        if(currentFragment is HomeFragment || currentFragment is LoadingFragment){
+            showExitConfirmationDialog()
+            return false
+        }else{
+            onBackPressedDispatcher.onBackPressed()
+            Log.i("BACKBUTTON", "buttonpressedNAV")
+            // Comprobar si el fragmento actual es el HomeFragment y actualizar el ítem seleccionado
+            currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+            when (currentFragment) {
+                is HomeFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_home)
+                    supportActionBar?.title = getString(R.string.menu_home)
+                }
 
-            is PerfilFragment -> {
-                binding.navView.setCheckedItem(R.id.nav_profile)
-            }
+                is PerfilFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_profile)
+                    supportActionBar?.title = getString(R.string.perfil)
+                }
 
-            is SettingFragment -> {
-                binding.navView.setCheckedItem(R.id.nav_settings)
+                is SettingFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_settings)
+                    supportActionBar?.title = getString(R.string.ajustes)
+                }
+            }
+            return true
+        }
+    }
+
+
+    //Metodo despreciado para Android 13+, para inferiores es necesario
+    override fun onBackPressed() {
+        var currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+        if(currentFragment is HomeFragment || currentFragment is LoadingFragment){
+            showExitConfirmationDialog()
+        }else{
+            super.onBackPressed() //SI la actual no es home, entonces hace el back
+            Log.i("BACKBUTTON", "buttonpressed")
+            currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+            when (currentFragment) {
+                is HomeFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_home)
+                    supportActionBar?.title = getString(R.string.menu_home)
+                }
+
+                is PerfilFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_profile)
+                    supportActionBar?.title = getString(R.string.perfil)
+                }
+
+                is SettingFragment -> {
+                    binding.navView.setCheckedItem(R.id.nav_settings)
+                    supportActionBar?.title = getString(R.string.ajustes)
+                }
             }
         }
-        return true
     }
 
 
-    //Método para ocultar el botón de regreso
-    fun configureBackButton(showBackButton: Boolean) {
-        supportActionBar?.setDisplayHomeAsUpEnabled(showBackButton) // Muestra/oculta la flecha de regreso
-        supportActionBar?.setHomeButtonEnabled(showBackButton) // Activa/desactiva el comportamiento del botón
+    private fun clearBackStack() {
+        // Eliminar todos los fragmentos del back stack
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
-
-
-    //Método para obtener el fragmento actual
-    fun getCurrentFragment(): Fragment? {
-        return supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
-    }
-
 
     // Método para manejar reemplazos de fragmentos
     private fun replaceFragment(fragment: Fragment, regreso: Boolean) {
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.nav_host_fragment_content_home, fragment)
-        if(regreso)
-            fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+        try {
+            val fragmentTransaction = supportFragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.nav_host_fragment_content_home, fragment)
+            if (regreso) {
+                fragmentTransaction.addToBackStack(null)
+            }
+            fragmentTransaction.commitAllowingStateLoss()
+        } catch (e: Exception) {
+            e.printStackTrace()  // Para depurar y encontrar el error
+        }
     }
+
+
 
     override fun onStart() {
         super.onStart()
-        if(isBindingInitialized){
-            checkNetworkStatus()
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (isBindingInitialized) {
+                checkNetworkStatus()
+            }
+        }, 200)
     }
 
     override fun onRestart() {
         super.onRestart()
-        if(isBindingInitialized){
-            checkNetworkStatus()
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (isBindingInitialized) {
+                checkNetworkStatus()
+            }
+        }, 200)
     }
 
     override fun onResume() {
         super.onResume()
-        if(isBindingInitialized){
-            checkNetworkStatus()
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (isBindingInitialized) {
+                checkNetworkStatus()
+            }
+        }, 200)
     }
 
     private fun checkNetworkStatus() {
+        Log.d("FragmentTransaction", "Revisando estado de red.")
         if (!NetworkUtils.isConnected(this)) {
             showNoConnectionScreen()
         } else {
@@ -232,41 +307,39 @@ class HomeActivity : AppCompatActivity() {
 
 
     private fun showNoConnectionScreen() {
-         if (cargaDialog == null) { // Solo mostrar el diálogo si no existe uno
-             cargaDialog = mostrarCarga()
-         }
+         clearBackStack()
+         replaceFragment(LoadingFragment(), false)
+         supportActionBar?.title = getString(R.string.espera_seg)
          binding.appBarHome.fab.visibility = View.GONE
          // Deshabilitar la barra lateral (DrawerLayout)
          binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
     }
 
     private fun hideNoConnectionScreen() {
-        cargaDialog?.dismiss()
-        binding.appBarHome.fab.visibility = View.VISIBLE
+        clearBackStack()
+        replaceFragment(HomeFragment(), false)
+        binding.navView.setCheckedItem(R.id.nav_home)
+        supportActionBar?.title = getString(R.string.menu_home)
         // Habilitar la barra lateral (DrawerLayout)
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
 
-    private fun mostrarCarga() : AlertDialog {
-        // Inflar el layout personalizado con Lottie y el texto
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.loading_layout, null)
-
-        // Crear el diálogo con el layout inflado
-        val builder = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false) // No permitirá cerrar tocando fuera del diálogo
+    private fun showExitConfirmationDialog() {
+        // Crear un AlertDialog con opciones de confirmación
+        AlertDialog.Builder(this)
+            .setMessage("¿Estás seguro de que quieres salir de la aplicación?")
+            .setCancelable(false) // Impide que el usuario cierre el diálogo tocando fuera de él
+            .setPositiveButton("Sí") { _, _ ->
+                // Si el usuario confirma, salir de la aplicación
+                finish() // Cierra la actividad, lo que cerrará la aplicación
+            }
+            .setNegativeButton("No") { dialog, _ ->
+                // Si el usuario cancela, simplemente cerrar el diálogo
+                dialog.dismiss()
+            }
             .create()
-
-        // Mostrar el diálogo
-        builder.show()
-
-        // Garantizar que se muestre sobre los fragmentos actuales
-        val dialogWindow = builder.window
-        dialogWindow?.setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL)
-        dialogWindow?.setFlags(WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH, WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
-
-        return builder
+            .show()
     }
 
     private fun session(): String {

@@ -12,9 +12,24 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
-        <string name="menu_home">Inicio</string>
+    <string name="menu_home">Inicio</string>
     <string name="menu_logout">Cerrar sesión</string>
-    <string name="pefil">Pefil</string>
+    <string name="perfil">Perfil</string>
     <string name="ajustes">Ajustes</string>
+    <string name="nuevo_intercambio">Nuevo intercambio</string>
     <string name="foto_avatar_de_perfil">Foto/Avatar de perfil</string>
+
+    <!-- Colores para la tarjeta de intercambio -->
+    <string-array name="color_items">
+        <item>#FF4858</item> <!-- La primer opción es el default -->
+        <item>#1B7F79</item>
+        <item>#00CCC0</item>
+        <item>#72F2EB</item>
+        <item>#747F7F</item>
+        <item>#1AED3D</item>
+        <item>#F5D182</item>
+        <item>#EF49FF</item>
+    </string-array>
+
+
 </resources>

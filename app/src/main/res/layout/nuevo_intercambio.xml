@@ -123,7 +123,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:clickable="false"
+        android:focusable="false"/>
 
     <!-- Lugar del intercambio -->
     <EditText
@@ -138,13 +140,22 @@
         android:layout_marginTop="16dp"
         android:padding="12dp"/>
 
+    <Spinner
+        android:id="@+id/color_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/edTextLugar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
     <!-- Botón para crear el intercambio -->
     <Button
         android:id="@+id/createExchangeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crear Intercambio"
-        app:layout_constraintTop_toBottomOf="@id/edTextLugar"
+        app:layout_constraintTop_toBottomOf="@id/color_spinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp" />
