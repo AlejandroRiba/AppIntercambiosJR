@@ -6,50 +6,118 @@
     android:layout_height="match_parent"
     tools:context=".ui.perfil.PerfilFragment">
 
-    <!-- Avatar -->
-    <ImageView
-        android:id="@+id/avatarImageView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:contentDescription="@string/foto_avatar_de_perfil"
-        android:layout_marginTop="32dp"
+    <!-- Contenedor para Avatar e ícono de edición -->
+    <FrameLayout
+        android:id="@+id/contenedoravatar"
+        android:layout_width="130dp"
+        android:layout_height="130dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="32dp">
 
-    <!-- Nombre -->
-    <TextView
-        android:id="@+id/nameTextView"
-        android:layout_width="wrap_content"
+        <!-- Avatar -->
+        <ImageView
+            android:id="@+id/avatarImageView"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:contentDescription="@string/foto_avatar_de_perfil"
+            android:elevation="2dp"/>
+
+        <!-- Botón para editar avatar -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editAvatarFab"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="0dp"
+            app:srcCompat="@drawable/ic_edit"
+            app:tint="@null"
+            app:fabCustomSize="40dp"
+            android:padding="0dp"
+            android:contentDescription="Editar avatar"
+            android:backgroundTint="@color/azulPrincipal"
+            android:elevation="0dp"/>
+    </FrameLayout>
+
+    <!-- Contenedor para datos personales e ícono de edición -->
+    <FrameLayout
+        android:id="@+id/contenedorDatosPersonales"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        app:layout_constraintTop_toBottomOf="@+id/avatarImageView"
+        app:layout_constraintTop_toBottomOf="@+id/contenedoravatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
-        android:textStyle="bold"/>
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp">
 
-    <!-- Alias -->
-    <TextView
-        android:id="@+id/aliasTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/nameTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:textColor="@android:color/darker_gray"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="46dp">
 
-    <!-- Correo -->
-    <TextView
-        android:id="@+id/emailTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/aliasTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:textColor="@android:color/darker_gray"/>
+            <!-- Nombre -->
+            <TextView
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="32sp"
+                android:textAlignment="center"
+                android:textStyle="bold"/> <!-- Agregado un label para Nombre -->
+
+            <!-- Alias -->
+            <TextView
+                android:id="@+id/aliasTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textAlignment="center"
+                android:layout_marginTop="16dp"
+                android:textColor="@android:color/darker_gray"/> <!-- Agregado un label para Alias -->
+
+            <!-- Correo -->
+            <TextView
+                android:id="@+id/emailTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textAlignment="center"
+                android:layout_marginTop="16dp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <!-- Descripción -->
+            <TextView
+                android:id="@+id/descriptionContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:textAlignment="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="20dp"
+                android:textColor="@android:color/darker_gray"/>
+
+        </LinearLayout>
+
+        <!-- Botón para editar datos personales -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editDataFab"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="0dp"
+            app:srcCompat="@drawable/ic_editadata"
+            app:tint="@null"
+            app:fabCustomSize="48dp"
+            android:padding="0dp"
+            android:contentDescription="Editar datos"
+            android:backgroundTint="@color/azulPrincipal"
+            android:elevation="0dp"/>
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

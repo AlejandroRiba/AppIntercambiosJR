@@ -40,6 +40,7 @@ class EmailVerification : AppCompatActivity() {
         resendButton = findViewById(R.id.btnResendEmail)
         resendButton.setOnClickListener {
             firebaseHandler.resendVerificationEmail()
+            startResendCountdown()
         }
 
         auth = FirebaseAuth.getInstance()

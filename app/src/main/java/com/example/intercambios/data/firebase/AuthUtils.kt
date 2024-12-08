@@ -73,7 +73,8 @@ class AuthUtils(private val context: Context){
                 "nombre" to name,
                 "alias" to alias,
                 "email" to email,
-                "verified" to false
+                "verified" to false,
+                "avatar" to "avatardef"
             )
             firestore.collection("users").document(userId).set(userData).await()
             val user = auth.currentUser
@@ -139,7 +140,8 @@ class AuthUtils(private val context: Context){
                         "nombre" to data.user?.displayName,
                         "alias" to data.user?.displayName, // Aquí puedes agregar lógica adicional para generar un alias único si es necesario
                         "email" to data.user?.email,
-                        "verified" to true
+                        "verified" to true,
+                        "avatar" to "avatardef"
                     )
                     firestore.collection("users").document(data.user?.uid.toString()).set(userData).await()
                 }

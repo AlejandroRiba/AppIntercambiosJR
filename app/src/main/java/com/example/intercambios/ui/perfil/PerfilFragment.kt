@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.intercambios.data.models.Users
 import com.example.intercambios.databinding.FragmentPerfilBinding
@@ -30,6 +31,7 @@ class PerfilFragment : Fragment() {
             val correovisible = binding.emailTextView
             val nombrevisible = binding.nameTextView
             val aliasvisible = binding.aliasTextView
+            val descripcionvisible = binding.descriptionContent
             val avatar = binding.avatarImageView
             if (usuario != null) {
                 val avatarName = usuario.avatar
@@ -38,11 +40,26 @@ class PerfilFragment : Fragment() {
                 correovisible.text = usuario.email
                 nombrevisible.text = usuario.nombre
                 aliasvisible.text = usuario.alias
+                if(usuario.descripcion.isEmpty()){
+                    descripcionvisible.text = "Sin descripción."
+                }else{
+                    descripcionvisible.text = usuario.descripcion
+                }
                 avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
             }
         }
 
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.editAvatarFab.setOnClickListener{
+            Toast.makeText(requireActivity(), "Editar avatar", Toast.LENGTH_SHORT).show()
+        }
+        binding.editDataFab.setOnClickListener{
+            Toast.makeText(requireActivity(), "Editar datos", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroyView() {
