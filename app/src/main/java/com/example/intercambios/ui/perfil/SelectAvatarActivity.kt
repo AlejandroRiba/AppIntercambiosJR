@@ -17,6 +17,7 @@ import com.example.intercambios.data.models.Users
 import com.example.intercambios.ui.HomeActivity
 import com.example.intercambios.utils.AvatarAdapter
 import com.example.intercambios.utils.GeneralUtils
+import kotlin.properties.Delegates
 
 class SelectAvatarActivity : AppCompatActivity() {
 
@@ -26,6 +27,7 @@ class SelectAvatarActivity : AppCompatActivity() {
     private var selectedAvatar: Int? = null
     private val usersHelper = Users()
     private val genUtils = GeneralUtils(this)
+    private var returnHome by Delegates.notNull<Boolean>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +83,9 @@ class SelectAvatarActivity : AppCompatActivity() {
 
         val avatarAdapter = AvatarAdapter(this, avatarList)
         val avatarSeleccionadoExtra = intent.getStringExtra("avatar") ?: "avatardef"
+        returnHome = intent.getBooleanExtra("backHome", true)
+        if(!returnHome)
+            btnSaltar.text = "Cancelar"
         val index = avatarNames.indexOf(avatarSeleccionadoExtra)
         avatarAdapter.setSelectedPosition(index)
 
@@ -93,7 +98,8 @@ class SelectAvatarActivity : AppCompatActivity() {
             selectedAvatar = avatarAdapter.getSelectedAvatar()
             if (selectedAvatar != null) {
                 val avatarIndex = avatarList.indexOf(selectedAvatar!!)
-                guardarAvatarEnBackend(avatarNames[avatarIndex])
+                usersHelper.updateAvatarImage(avatarNames[avatarIndex])
+                backtoHome()
             } else {
                 Toast.makeText(this, "Por favor, selecciona un avatar", Toast.LENGTH_SHORT).show()
             }
@@ -105,15 +111,15 @@ class SelectAvatarActivity : AppCompatActivity() {
 
     }
 
-    private fun guardarAvatarEnBackend(avatar: String) {
-        // Implementar la lógica de guardar en backend
-        usersHelper.updateAvatarImage(avatar)
-        Toast.makeText(this, "Avatar $avatar guardado", Toast.LENGTH_SHORT).show()
-        backtoHome()
-    }
-
     private fun backtoHome(){
-        val homeIntent = Intent(this, HomeActivity::class.java)
+        var homeIntent: Intent
+        if(returnHome){
+            homeIntent = Intent(this, HomeActivity::class.java)
+        }else{
+            homeIntent = Intent(this, HomeActivity::class.java).apply {
+                putExtra("fragment", "perfil")
+            }
+        }
         finish() //finaliza el seleccionador de avatar
         startActivity(homeIntent)
     }

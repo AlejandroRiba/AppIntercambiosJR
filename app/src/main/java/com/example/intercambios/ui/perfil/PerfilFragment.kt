@@ -1,5 +1,6 @@
 package com.example.intercambios.ui.perfil
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +20,11 @@ class PerfilFragment : Fragment() {
     private val binding get() = _binding!!
     private val usersUtil =  Users()
 
+    private lateinit var correo: String
+    private lateinit var nombre: String
+    private lateinit var descript: String
+    private lateinit var avatarName: String
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -27,6 +33,11 @@ class PerfilFragment : Fragment() {
         _binding = FragmentPerfilBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        correo = ""
+        nombre = ""
+        descript = ""
+        avatarName = ""
+
         usersUtil.obtenerUsuario{ usuario ->
             val correovisible = binding.emailTextView
             val nombrevisible = binding.nameTextView
@@ -34,16 +45,19 @@ class PerfilFragment : Fragment() {
             val descripcionvisible = binding.descriptionContent
             val avatar = binding.avatarImageView
             if (usuario != null) {
-                val avatarName = usuario.avatar
+                correo = usuario.email
+                nombre = usuario.nombre
+                descript = usuario.descripcion
+                avatarName = usuario.avatar
                 // Obtener el identificador del recurso a partir del nombre
                 val resId = AvatarResources.getResourceByName(avatarName)
-                correovisible.text = usuario.email
-                nombrevisible.text = usuario.nombre
+                correovisible.text = correo
+                nombrevisible.text = nombre
                 aliasvisible.text = usuario.alias
-                if(usuario.descripcion.isEmpty()){
+                if(descript.isEmpty()){
                     descripcionvisible.text = "Sin descripción."
                 }else{
-                    descripcionvisible.text = usuario.descripcion
+                    descripcionvisible.text = descript
                 }
                 avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
             }
@@ -55,7 +69,11 @@ class PerfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.editAvatarFab.setOnClickListener{
-            Toast.makeText(requireActivity(), "Editar avatar", Toast.LENGTH_SHORT).show()
+            val avatarIntent = Intent(context, SelectAvatarActivity::class.java).apply {
+                putExtra("avatar", avatarName)
+                putExtra("backHome", false)
+            }
+            startActivity(avatarIntent)
         }
         binding.editDataFab.setOnClickListener{
             Toast.makeText(requireActivity(), "Editar datos", Toast.LENGTH_SHORT).show()

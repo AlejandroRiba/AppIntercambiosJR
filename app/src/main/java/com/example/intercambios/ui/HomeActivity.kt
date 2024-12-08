@@ -51,7 +51,6 @@ class HomeActivity : AppCompatActivity() {
     private var isBindingInitialized = false
     private var cargaDialog: AlertDialog? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -74,11 +73,11 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
 
-        /*if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
             replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
             navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Profile"
             supportActionBar?.title = getString(R.string.menu_home)
-        }*/
+        }
 
         // Registrar callbacks de ciclo de vida de fragmentos
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
@@ -95,22 +94,6 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }, true)
-
-        val headerView: View = navView.getHeaderView(0)
-
-        usersUtil.obtenerUsuario{ usuario ->
-            val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
-            val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
-            val avatar = headerView.findViewById<ImageView>(R.id.imageView)
-            if (usuario != null) {
-                val avatarName = usuario.avatar
-                // Obtener el identificador del recurso a partir del nombre
-                val resId = AvatarResources.getResourceByName(avatarName)
-                correovisible.text = usuario.email
-                nombrevisible.text = usuario.nombre
-                avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
-            }
-        }
 
 
         // Configuración del listener para manejar clics manualmente
@@ -318,12 +301,31 @@ class HomeActivity : AppCompatActivity() {
     private fun hideNoConnectionScreen() {
         clearBackStack()
         replaceFragment(HomeFragment(), false)
-        binding.navView.setCheckedItem(R.id.nav_home)
         supportActionBar?.title = getString(R.string.menu_home)
+        binding.navView.setCheckedItem(R.id.nav_home)
+        actualizarHeaderPerfil()
         // Habilitar la barra lateral (DrawerLayout)
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
     }
 
+    private fun actualizarHeaderPerfil(){
+        val navView: NavigationView = binding.navView
+        val headerView: View = navView.getHeaderView(0)
+
+        usersUtil.obtenerUsuario{ usuario ->
+            val correovisible = headerView.findViewById<TextView>(R.id.emailvisible)
+            val nombrevisible = headerView.findViewById<TextView>(R.id.nombrevisible)
+            val avatar = headerView.findViewById<ImageView>(R.id.imageView)
+            if (usuario != null) {
+                val avatarName = usuario.avatar
+                // Obtener el identificador del recurso a partir del nombre
+                val resId = AvatarResources.getResourceByName(avatarName)
+                correovisible.text = usuario.email
+                nombrevisible.text = usuario.nombre
+                avatar.setImageResource(resId)  // Establecer la imagen en el ImageView
+            }
+        }
+    }
 
     private fun showExitConfirmationDialog() {
         // Crear un AlertDialog con opciones de confirmación
