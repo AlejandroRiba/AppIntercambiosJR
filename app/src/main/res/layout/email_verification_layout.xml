@@ -30,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/titulo"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/gift" />
+        app:lottie_rawRes="@raw/sobre" />
 
     <Button
         android:id="@+id/btnResendEmail"

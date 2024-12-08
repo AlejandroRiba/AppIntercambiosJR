@@ -17,6 +17,7 @@ import com.example.intercambios.BaseActivity
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
 import com.example.intercambios.ui.ProviderType
+import com.example.intercambios.ui.perfil.SelectAvatarActivity
 import com.example.intercambios.utils.GeneralUtils
 import kotlinx.coroutines.launch
 
@@ -83,10 +84,14 @@ class LoginActivity : BaseActivity() {
                     // Cuando la tarea haya terminado, cerrar el diálogo
                     loadingDialog.dismiss()
                     aplicarWindowInsets()
-                    if(success){
+                    if(success.first){
                         val user = firebaseHelper.getCurrentUser()
                         if (user != null) {
-                            genUtils.showHome(ProviderType.GOOGLE, user.email.toString())
+                            if(success.second){
+                                genUtils.showAvatars(ProviderType.GOOGLE, user.email.toString())
+                            }else{
+                                genUtils.showHome(ProviderType.GOOGLE, user.email.toString())
+                            }
                         }
                     }
                 } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {

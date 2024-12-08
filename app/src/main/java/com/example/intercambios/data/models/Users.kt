@@ -35,6 +35,20 @@ class Users {
         }
     }
 
+    //Actualizar el avatar
+    fun updateAvatarImage(avatar: String) {
+        if(userId != null){
+            db.collection("users").document(userId)
+                .update("avatar", avatar) // Actualiza el campo en Firestore
+                .addOnSuccessListener {
+                    Log.d("SelectAvatar", "Campo 'avatar' actualizado en Firestore")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("SelectAvatar", "Error al actualizar 'avatar': ${e.message}")
+                }
+        }
+    }
+
     //Obtener usuario
     fun obtenerUsuario(callback: (Usuario?) -> Unit) {
         // Obtén el documento de la colección

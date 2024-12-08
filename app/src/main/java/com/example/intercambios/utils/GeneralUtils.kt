@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import com.example.intercambios.ui.HomeActivity
 import com.example.intercambios.ui.ProviderType
+import com.example.intercambios.ui.perfil.SelectAvatarActivity
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -36,6 +37,18 @@ class GeneralUtils(private val context: Context){
              context.finish() // Finaliza la actividad actual
          }
         context.startActivity(homeIntent)//regresa a la pantalla principal
+    }
+
+    //Función para primera vez :)
+    fun showAvatars(provider: ProviderType, email: String) {
+        val avatarIntent = Intent(context, SelectAvatarActivity::class.java)
+        val prefs: SharedPreferences = context.getSharedPreferences(context.getString(R.string.prefs_file), Context.MODE_PRIVATE)
+        prefs.edit().putString("provider", provider.toString()).putString("email", email).apply()
+        // Si el contexto es una actividad, finalizarla
+        if (context is Activity) {
+            context.finish() // Finaliza la actividad actual
+        }
+        context.startActivity(avatarIntent)//regresa a la pantalla principal
     }
 
     fun generarCodigoUnicoConHash(): String {

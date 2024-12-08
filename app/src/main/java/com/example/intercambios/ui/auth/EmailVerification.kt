@@ -56,7 +56,7 @@ class EmailVerification : AppCompatActivity() {
                         if (auth.currentUser?.isEmailVerified == true) {
                             Log.d("EmailVerification", "Correo verificado")
                             usersHelper.updateVerifiedStatus() // Actualiza en Firestore
-                            genUtils.showHome(ProviderType.BASIC, auth.currentUser?.email.toString())
+                            genUtils.showAvatars(ProviderType.BASIC, auth.currentUser?.email.toString())
                         } else {
                             Log.d("EmailVerification", "Correo aún no verificado")
                             handler.postDelayed(this, 3000) // Revisa cada 3 segundos

@@ -118,9 +118,10 @@ class AuthUtils(private val context: Context){
 
 
     // Inicio de sesión con Google
-    suspend fun loginWithGoogle(): Boolean {
+    suspend fun loginWithGoogle(): Pair<Boolean, Boolean> {
         return try {
             val result = buildCredentialRequest()
+            var firstTime = false
             val credential = result.credential
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
@@ -133,6 +134,7 @@ class AuthUtils(private val context: Context){
                 val userDoc = firestore.collection("users").document(data.user?.uid.toString()).get().await()
                 if (!userDoc.exists()) {
                     // Si no existe, guardar los datos del perfil en Firestore
+                    firstTime = true
                     val userData = mapOf(
                         "nombre" to data.user?.displayName,
                         "alias" to data.user?.displayName, // Aquí puedes agregar lógica adicional para generar un alias único si es necesario
@@ -141,14 +143,14 @@ class AuthUtils(private val context: Context){
                     )
                     firestore.collection("users").document(data.user?.uid.toString()).set(userData).await()
                 }
-                true
+                Pair(true, firstTime)
             } else {
                 Log.e("LoginActivity", "Credencial no válida recibida.")
-                false
+                Pair(false, false)
             }
         } catch (e: Exception) {
             Log.e("FirebaseHelper", "Error al iniciar sesión con Google: ${e.message}")
-            false
+            Pair(false, false)
         }
     }
 
