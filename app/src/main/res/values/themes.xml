@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Intercambios" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/azulPrincipal</item>
-        <item name="colorSecondary">@color/azulClaro</item>
+        <item name="colorSecondary">@color/dialog</item>
     </style>
 
     <style name="Theme.Intercambios" parent="Base.Theme.Intercambios" />
@@ -18,7 +18,14 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:windowMinWidthMajor">80%</item>
         <item name="android:windowMinWidthMinor">80%</item>
-        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+    
+    <style name="CustomChip" parent="Widget.MaterialComponents.Chip.Entry">
+       <item name="chipStrokeColor">@color/azulPrincipal</item>
+        <item name="chipStrokeWidth">2dp</item>
+        <item name="android:textSize">21sp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="backgroundColor">@color/azulClaro</item>
     </style>
 
     <style name="Theme.Intercambios.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

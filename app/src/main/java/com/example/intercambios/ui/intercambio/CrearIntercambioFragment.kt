@@ -9,25 +9,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.intercambios.R
+import com.example.intercambios.data.models.Intercambio
 import com.example.intercambios.databinding.NuevoIntercambioBinding
 import com.example.intercambios.utils.ColorSpinnerAdapter
 import com.example.intercambios.utils.DatePickerFragment
 import com.example.intercambios.utils.FormularioValidator
 import com.example.intercambios.utils.GeneralUtils
 import com.example.intercambios.utils.TimePickerFragment
-import com.google.firebase.Timestamp
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipDrawable
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import kotlin.properties.Delegates
+
 
 class CrearIntercambioFragment : Fragment() {
     private var _binding: NuevoIntercambioBinding? = null
@@ -59,6 +61,9 @@ class CrearIntercambioFragment : Fragment() {
     private var isFormValid by Delegates.notNull<Boolean>()
 
     private lateinit var genUtils: GeneralUtils
+
+
+    private val selectedThemes = mutableListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -123,17 +128,19 @@ class CrearIntercambioFragment : Fragment() {
             val unicode = genUtils.generarCodigoUnicoConHash()
             if(descripcion.isEmpty())
                 descripcion = getString(R.string.no_descripcion)
-            val newIntercambio = mapOf(
-                "code" to unicode,
-                "nombre" to nombre,
-                "numPersonas" to personas,
-                "descripcion" to descripcion,
-                "fechaMaxRegistro" to fechaRegistro,
-                "fechaIntercambio" to fechaIntercambio,
-                "horaIntercambio" to horaIntercambio,
-                "lugarIntercambio" to lugarIntercambio,
-                "color" to selectedcolor,
-                "personasRegistradas" to "1", //solo se registra la persona que lo crea
+            val newIntercambio = Intercambio(
+                code = unicode,
+                nombre = nombre,
+                numPersonas = personas.toInt(),
+                descripcion = descripcion,
+                fechaMaxRegistro = fechaRegistro,
+                fechaIntercambio = fechaIntercambio,
+                horaIntercambio = horaIntercambio,
+                lugarIntercambio = lugarIntercambio,
+                color = selectedcolor,
+                personasRegistradas = 1, //solo se registra la persona que lo crea
+                participantes = listOf(),
+                temas = selectedThemes
             )
             Log.i("CrearIntercambio", newIntercambio.toString())
         }else{
@@ -404,6 +411,59 @@ class CrearIntercambioFragment : Fragment() {
             }
 
         }
+
+        //Obtener referencia a la lista y campo de "temas"
+        val spinnerThemes: Spinner = binding.spinnerThemes
+        // Cargar temas desde el string-array
+        val themes = resources.getStringArray(R.array.themes_array).toMutableList()
+        val temasAdapter =  ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, themes)
+        temasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerThemes.adapter = temasAdapter
+
+        // Manejar selección de temas
+        spinnerThemes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val theme = parent?.getItemAtPosition(position).toString()
+
+                if (position == 0) {
+                    // Ignorar la opción inicial
+                    return
+                }
+
+                Log.i("CrearIntercambio", "Se selecciono $theme")
+
+                if (selectedThemes.size < 3 && !selectedThemes.contains(theme)) {
+                    selectedThemes.add(theme)
+                    Log.i("CrearIntercambio", selectedThemes.toString())
+                    addChip(theme)
+                } else if (selectedThemes.contains(theme)) {
+                    Toast.makeText(requireActivity(), "El tema ya está seleccionado", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(requireActivity(), "Solo puedes seleccionar hasta 3 temas", Toast.LENGTH_SHORT).show()
+                }
+                spinnerThemes.setSelection(0) //reinicio visual del spinner
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // No se seleccionó nada
+            }
+        }
+
+    }
+
+    private fun addChip(theme: String) {
+        val chip = Chip(requireActivity())
+        chip.text = theme
+        chip.isCloseIconVisible = true
+        val chipDrawable =
+            ChipDrawable.createFromAttributes(requireActivity(), null, 0, R.style.CustomChip)
+        chip.setChipDrawable(chipDrawable)
+        chip.setOnCloseIconClickListener {
+            binding.chipGroupSelected.removeView(chip)
+            selectedThemes.remove(theme)
+            Log.i("CrearIntercambio", selectedThemes.toString())
+        }
+        binding.chipGroupSelected.addView(chip)
     }
 
     override fun onDestroyView() {
@@ -426,12 +486,6 @@ class CrearIntercambioFragment : Fragment() {
     }
 
     private fun onDateSelected(day: Int, month: Int, year: Int, editText: EditText) {
-        // Crear un objeto Calendar para construir el Timestamp
-        val calendar = Calendar.getInstance().apply {
-            set(year, month - 1, day, 0, 0, 0) // Resta 1 al mes porque Calendar.MONTH es cero-indexado
-            set(Calendar.MILLISECOND, 0)
-        }
-
         // Formato de fecha: YYYY-MM-DD
         val formattedDate = getString(R.string.formatted_date, year, month, day)
         editText.setText(formattedDate)

@@ -92,11 +92,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="16dp">
 
-            <EditText
-                android:id="@+id/edTextTemas"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_selected"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"/>
+                android:background="@drawable/chip_background"
+                app:selectionRequired="false"
+                app:singleSelection="false"/>
+
+            <Spinner
+                android:id="@+id/spinner_themes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -234,6 +242,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="32dp" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

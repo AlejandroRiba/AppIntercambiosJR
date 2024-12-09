@@ -32,6 +32,24 @@
         <item>#F5D182</item>
         <item>#EF49FF</item>
     </string-array>
+    <!-- temas para el intercambio  -->
+    <string-array name="themes_array">
+        <item>Selecciona un tema</item>
+        <item>Ropa</item>
+        <item>Libros</item>
+        <item>Tazas</item>
+        <item>Accesorios</item>
+        <item>Deportes</item>
+        <item>Navideño</item>
+        <item>Suéteres</item>
+        <item>Relojes</item>
+        <item>Chocolates</item>
+        <item>Star Wars</item>
+        <item>Harry Potter</item>
+        <item>Marvel</item>
+        <item>Anime</item>
+        <item>Cómputo</item>
+    </string-array>
 
 
 </resources>
