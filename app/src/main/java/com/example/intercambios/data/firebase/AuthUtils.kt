@@ -189,6 +189,20 @@ class AuthUtils(private val context: Context){
             }
     }
 
+    fun sendPasswordResetEmail(email: String, callback: (Boolean) -> Unit) {
+        auth.sendPasswordResetEmail(email)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("AuthUtils", "Correo de recuperación enviado exitosamente.")
+                    callback(true)
+                } else {
+                    Log.e("AuthUtils", "Error al enviar el correo de recuperación: ${task.exception?.message}")
+                    callback(false)
+                }
+            }
+    }
+
+
 
     // Cerrar sesión
     fun logout() {

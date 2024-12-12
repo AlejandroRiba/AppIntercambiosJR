@@ -10,6 +10,8 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import android.app.AlertDialog
+import android.text.InputType
+import android.widget.ImageView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
@@ -55,6 +57,11 @@ class LoginActivity : BaseActivity() {
     private fun setup() {
         val correo = findViewById<EditText>(R.id.etEmail)
         val password = findViewById<EditText>(R.id.etPassword)
+        val animationView = findViewById<com.airbnb.lottie.LottieAnimationView>(R.id.animateSending)
+        val etPassword = findViewById<EditText>(R.id.etPassword)
+
+        var isPasswordVisible = false
+
 
         findViewById<Button>(R.id.btnLogin).setOnClickListener {
             val loadingDialog = mostrarCarga()
@@ -109,6 +116,27 @@ class LoginActivity : BaseActivity() {
                 }
             }
         }
+
+        findViewById<Button>(R.id.btnForgotPassword).setOnClickListener {
+            val email = correo.text.toString()
+            if (email.isNotEmpty()) {
+                // Muestra la animación mientras se envía el correo
+                animationView.visibility = View.VISIBLE
+
+                firebaseHelper.sendPasswordResetEmail(email) { success ->
+                    animationView.visibility = View.GONE // Oculta la animación
+                    if (success) {
+                        genUtils.showAlert("Correo de recuperación enviado. Por favor, revisa tu bandeja de entrada.")
+                    } else {
+                        genUtils.showAlert("No se pudo enviar el correo de recuperación. Verifica la dirección de correo.")
+                    }
+                }
+            } else {
+                genUtils.showAlert("Por favor, ingresa tu correo electrónico.")
+            }
+        }
+
+
     }
 
     private fun mostrarCarga(): AlertDialog{
@@ -136,6 +164,5 @@ class LoginActivity : BaseActivity() {
         }
         mainView.requestApplyInsets()
     }
-
 
 }
