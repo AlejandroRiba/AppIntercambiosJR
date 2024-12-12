@@ -490,6 +490,4 @@ class CrearIntercambioFragment : Fragment() {
         val formattedDate = getString(R.string.formatted_date, year, month, day)
         editText.setText(formattedDate)
     }
-
-
 }
