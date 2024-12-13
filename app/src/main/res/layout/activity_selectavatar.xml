@@ -56,20 +56,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/scrollitems">
 
-        <Button
-            android:id="@+id/btnGuardar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Guardar"
-            android:layout_marginEnd="8dp"/>
 
         <Button
             android:id="@+id/btnSaltar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Saltar"/>
+            android:text="Saltar"
+            android:textColor="@color/white"/>
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Guardar"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/white"/>
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
