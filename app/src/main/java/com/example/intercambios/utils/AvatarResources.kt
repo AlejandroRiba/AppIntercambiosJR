@@ -19,7 +19,8 @@ object AvatarResources {
         "avatar11" to R.drawable.avatar11,
         "avatar12" to R.drawable.avatar12,
         "avatar13" to R.drawable.avatar13,
-        "avatar14" to R.drawable.avatar14
+        "avatar14" to R.drawable.avatar14,
+        "avatar15" to R.drawable.avatar15
     )
 
     // Función para obtener el recurso por nombre

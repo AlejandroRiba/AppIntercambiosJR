@@ -60,7 +60,8 @@ class SelectAvatarActivity : AppCompatActivity() {
             R.drawable.avatar11,
             R.drawable.avatar12,
             R.drawable.avatar13,
-            R.drawable.avatar14
+            R.drawable.avatar14,
+            R.drawable.avatar15
         )
 
         val avatarNames = listOf(
@@ -78,7 +79,8 @@ class SelectAvatarActivity : AppCompatActivity() {
             "avatar11",
             "avatar12",
             "avatar13",
-            "avatar14"
+            "avatar14",
+            "avatar15"
         )
 
         val avatarAdapter = AvatarAdapter(this, avatarList)

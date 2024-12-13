@@ -24,10 +24,10 @@
         android:id="@+id/scrollitems"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:fillViewport="true"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/txttitulo"
+        app:layout_constraintBottom_toTopOf="@id/btnLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -47,14 +47,15 @@
 
     <!-- Botones de acción (fuera del ScrollView) -->
     <LinearLayout
+        android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scrollitems">
+        app:layout_constraintEnd_toEndOf="parent">
 
         <Button
             android:id="@+id/btnGuardar"
