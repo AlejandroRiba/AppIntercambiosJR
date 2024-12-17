@@ -23,18 +23,20 @@
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">
-        <item>#FF4858</item> <!-- La primer opción es el default -->
-        <item>#1B7F79</item>
-        <item>#00CCC0</item>
-        <item>#72F2EB</item>
-        <item>#747F7F</item>
-        <item>#1AED3D</item>
-        <item>#F5D182</item>
-        <item>#EF49FF</item>
+        <item>#FFB6B6</item> <!-- Rosa pastel -->
+        <item>#80E3D4</item> <!-- Verde menta pastel -->
+        <item>#B3E0E5</item> <!-- Azul claro pastel -->
+        <item>#D5F2F2</item> <!-- Aqua suave pastel -->
+        <item>#D9D9D9</item> <!-- Gris suave -->
+        <item>#B9F5A0</item> <!-- Verde claro pastel -->
+        <item>#F9E6A7</item> <!-- Amarillo suave pastel -->
+        <item>#F6B6FF</item> <!-- Púrpura suave pastel -->
+        <item>#A5D6A7</item> <!-- Verde pastel claro (similar a #81C784) -->
+        <item>#80D9F4</item> <!-- Azul cielo claro pastel -->
     </string-array>
     <!-- temas para el intercambio  -->
     <string-array name="themes_array">
-        <item>Selecciona un tema</item>
+        <item>* Selecciona un tema para el intercambio</item>
         <item>Ropa</item>
         <item>Libros</item>
         <item>Tazas</item>

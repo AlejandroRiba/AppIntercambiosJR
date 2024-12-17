@@ -2,19 +2,18 @@ package com.example.intercambios.ui
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.activity.addCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +23,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
-import com.example.intercambios.data.models.Users
+import com.example.intercambios.data.models.IntercambioRepository
+import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
@@ -46,7 +46,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private val firebaseHelper = AuthUtils(this)
 
-    private val usersUtil =  Users()
+    private val usersUtil =  UsersRepository()
 
     // Flag para asegurar que binding esté inicializado
     private var isBindingInitialized = false
@@ -64,7 +64,6 @@ class HomeActivity : AppCompatActivity() {
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         // Inicializamos el binding y configuramos la barra de herramientas
         isBindingInitialized = true
@@ -91,15 +90,45 @@ class HomeActivity : AppCompatActivity() {
             supportActionBar?.title = getString(R.string.menu_home)
         }
 
-        /*// Registrar callbacks de ciclo de vida de fragmentos
-        supportFragmentManager.registerFragmentLifecycleCallbacks(object :
-            FragmentManager.FragmentLifecycleCallbacks() {
-            override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-                super.onFragmentResumed(fm, f)
+        /*// Callback para manejar el evento de retroceso
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val currentFragment =
+                    supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
 
+                if (currentFragment is HomeFragment || currentFragment is LoadingFragment) {
+                    showExitConfirmationDialog() // Mostrar diálogo para salir
+                } else {
+                    // Realiza el "back" normal
+                    supportFragmentManager.popBackStack()
+                    Log.i("BACKBUTTON", "buttonpressed")
+
+                    // Actualiza UI según el fragmento actual
+                    val updatedFragment =
+                        supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+                    when (updatedFragment) {
+                        is HomeFragment -> {
+                            binding.appBarHome.fab.visibility = View.VISIBLE
+                            binding.navView.setCheckedItem(R.id.nav_home)
+                            supportActionBar?.title = getString(R.string.menu_home)
+                        }
+
+                        is PerfilFragment -> {
+                            binding.navView.setCheckedItem(R.id.nav_profile)
+                            supportActionBar?.title = getString(R.string.perfil)
+                        }
+
+                        is SettingFragment -> {
+                            binding.navView.setCheckedItem(R.id.nav_settings)
+                            supportActionBar?.title = getString(R.string.ajustes)
+                        }
+                    }
+                }
             }
-        }, true)*/
+        }
 
+        // Registrar el callback en el dispatcher
+        onBackPressedDispatcher.addCallback(this, callback)*/
 
         // Configuración del listener para manejar clics manualmente
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -110,6 +139,7 @@ class HomeActivity : AppCompatActivity() {
                     if (currentFragment !is HomeFragment){
                         clearBackStack()
                         replaceFragment(HomeFragment(), false)
+                        binding.appBarHome.fab.visibility = View.VISIBLE
                         navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Home"
                         supportActionBar?.title = getString(R.string.menu_home)
                         true
@@ -120,8 +150,9 @@ class HomeActivity : AppCompatActivity() {
 
                 R.id.nav_profile -> {
                     // Reemplazar con el fragmento "Profile"¿
-                    if(currentFragment !is PerfilFragment && currentFragment !is CrearIntercambioFragment){
+                    if(currentFragment !is PerfilFragment){
                         clearBackStack()
+                        binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
                         replaceFragment(PerfilFragment(), true)
                         navView.setCheckedItem(R.id.nav_profile) // Marcar el item de "Profile"
                         supportActionBar?.title = getString(R.string.perfil)
@@ -133,8 +164,9 @@ class HomeActivity : AppCompatActivity() {
 
                 R.id.nav_settings -> {
                     // Reemplazar con el fragmento "Settings"
-                    if(currentFragment !is SettingFragment && currentFragment !is CrearIntercambioFragment){
+                    if(currentFragment !is SettingFragment){
                         clearBackStack()
+                        binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
                         replaceFragment(SettingFragment(), true)
                         navView.setCheckedItem(R.id.nav_settings) // Marcar el item de "Profile"
                         supportActionBar?.title = getString(R.string.ajustes)
@@ -190,6 +222,7 @@ class HomeActivity : AppCompatActivity() {
                 is HomeFragment -> {
                     binding.navView.setCheckedItem(R.id.nav_home)
                     supportActionBar?.title = getString(R.string.menu_home)
+                    binding.appBarHome.fab.visibility = View.VISIBLE
                 }
 
                 is PerfilFragment -> {
@@ -218,6 +251,7 @@ class HomeActivity : AppCompatActivity() {
             currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
             when (currentFragment) {
                 is HomeFragment -> {
+                    binding.appBarHome.fab.visibility = View.VISIBLE
                     binding.navView.setCheckedItem(R.id.nav_home)
                     supportActionBar?.title = getString(R.string.menu_home)
                 }
@@ -308,6 +342,7 @@ class HomeActivity : AppCompatActivity() {
         replaceFragment(HomeFragment(), false)
         supportActionBar?.title = getString(R.string.menu_home)
         binding.navView.setCheckedItem(R.id.nav_home)
+        binding.appBarHome.fab.visibility = View.VISIBLE
         actualizarHeaderPerfil()
         // Habilitar la barra lateral (DrawerLayout)
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
@@ -349,6 +384,7 @@ class HomeActivity : AppCompatActivity() {
             .show()
     }
 
+
     private fun session(): String {
         val prefs = getSharedPreferences(getString(R.string.prefs_file), Context.MODE_PRIVATE)
         val provider = prefs.getString("provider", null)
@@ -359,5 +395,6 @@ class HomeActivity : AppCompatActivity() {
             ""
         }
     }
+
 
 }

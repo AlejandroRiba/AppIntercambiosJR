@@ -12,7 +12,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import com.example.intercambios.data.firebase.AuthUtils
-import com.example.intercambios.data.models.Users
+import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.ui.ProviderType
 import com.example.intercambios.utils.GeneralUtils
 import com.google.firebase.auth.FirebaseAuth
@@ -25,7 +25,7 @@ class EmailVerification : AppCompatActivity() {
     private val resendDelay = 60000L // 1 minuto en milisegundos
     private lateinit var resendButton: Button
     private val genUtils = GeneralUtils(this)
-    private val usersHelper = Users()
+    private val usersHelper = UsersRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

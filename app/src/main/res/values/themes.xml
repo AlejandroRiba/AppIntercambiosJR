@@ -27,6 +27,7 @@
         <item name="android:textSize">21sp</item>
         <item name="android:textColor">@color/black</item>
         <item name="backgroundColor">@color/azulClaro</item>
+        <item name="android:checkable">false</item>
     </style>
 
     <style name="CustomToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">

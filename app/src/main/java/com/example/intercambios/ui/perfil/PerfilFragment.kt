@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.intercambios.data.models.Users
+import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.FragmentPerfilBinding
 import com.example.intercambios.utils.AvatarResources
 
@@ -18,7 +18,7 @@ class PerfilFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val usersUtil =  Users()
+    private val usersUtil =  UsersRepository()
 
     private lateinit var correo: String
     private lateinit var nombre: String

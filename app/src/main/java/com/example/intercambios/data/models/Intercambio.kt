@@ -12,5 +12,6 @@ data class Intercambio(
     val color: String = "",
     val personasRegistradas: Int = 0,
     val participantes: List<Participante> = emptyList(), // Lista de participantes
-    val temas: List<String> = emptyList()
+    val temas: List<String> = emptyList(),
+    val organizador: String = ""
 )

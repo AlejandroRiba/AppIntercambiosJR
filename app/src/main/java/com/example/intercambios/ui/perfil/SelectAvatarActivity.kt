@@ -2,7 +2,6 @@ package com.example.intercambios.ui.perfil
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -13,7 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.intercambios.R
-import com.example.intercambios.data.models.Users
+import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.ui.HomeActivity
 import com.example.intercambios.utils.AvatarAdapter
 import com.example.intercambios.utils.GeneralUtils
@@ -25,7 +24,7 @@ class SelectAvatarActivity : AppCompatActivity() {
     private lateinit var btnGuardar: Button
     private lateinit var btnSaltar: Button
     private var selectedAvatar: Int? = null
-    private val usersHelper = Users()
+    private val usersHelper = UsersRepository()
     private val genUtils = GeneralUtils(this)
     private var returnHome by Delegates.notNull<Boolean>()
 
