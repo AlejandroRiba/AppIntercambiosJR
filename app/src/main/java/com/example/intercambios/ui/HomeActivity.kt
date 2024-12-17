@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.addCallback
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -73,27 +74,31 @@ class HomeActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
 
+        // Configuración del ActionBarDrawerToggle
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            binding.appBarHome.toolbar, // El Toolbar que estás utilizando
+            R.string.navigation_drawer_open, // Texto para accesibilidad (defínelo en strings.xml)
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
         if (savedInstanceState == null) {
             replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
             navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Profile"
             supportActionBar?.title = getString(R.string.menu_home)
         }
 
-        // Registrar callbacks de ciclo de vida de fragmentos
+        /*// Registrar callbacks de ciclo de vida de fragmentos
         supportFragmentManager.registerFragmentLifecycleCallbacks(object :
             FragmentManager.FragmentLifecycleCallbacks() {
             override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
                 super.onFragmentResumed(fm, f)
-                // Mostrar u ocultar el botón flotante según el fragmento actual
-                if (f is HomeFragment) {
-                    binding.appBarHome.fab.show()
-                    supportActionBar?.setDisplayHomeAsUpEnabled(false)
-                } else {
-                    binding.appBarHome.fab.hide()
-                    supportActionBar?.setDisplayHomeAsUpEnabled(true)
-                }
+
             }
-        }, true)
+        }, true)*/
 
 
         // Configuración del listener para manejar clics manualmente
