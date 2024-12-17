@@ -6,4 +6,12 @@
     <color name="azulPrincipal">#05476D</color>
     <color name="azulClaro">#abb6f7</color>
     <color name="dialog">#1e286f</color>
+    <color name="botonesOp">#77A2FF</color>
+    <color name="texto">#161515</color>
+    <color name="textoNegro">#101010</color>
+    <color name="brandColor">#B5FFDA</color>
+    <color name="acceptColor">#A5C7A4</color>
+    <color name="rejectColor">#F27A6E</color>
+    <color name="editText">#888888</color>
+    <color name="spinnerBG">#151516</color>
 </resources>

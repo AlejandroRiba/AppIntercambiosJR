@@ -1,6 +1,8 @@
 package com.example.intercambios.data.models
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -68,6 +70,31 @@ class UsersRepository {
                 exception.printStackTrace()
             }
     }
+
+    fun obtenerUsuarioPorId(uid: String): Task<Usuario> {
+        val taskCompletionSource = TaskCompletionSource<Usuario>()
+        val consulta = db.collection("users").document(uid)
+
+        consulta.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val usuario = document.toObject(Usuario::class.java)
+                    usuario?.let {
+                        taskCompletionSource.setResult(it)
+                    } ?: run {
+                        taskCompletionSource.setException(Exception("Usuario no encontrado"))
+                    }
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception)
+            }
+
+        return taskCompletionSource.task
+    }
+
 
 
 }

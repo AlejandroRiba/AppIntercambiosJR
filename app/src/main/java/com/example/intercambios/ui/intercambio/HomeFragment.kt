@@ -1,5 +1,6 @@
 package com.example.intercambios.ui.intercambio
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -74,14 +75,18 @@ class HomeFragment : Fragment() {
 
                                 textViewNombre.text = intercambio.nombre
                                 textViewFecha.text = dateFormatting(intercambio.fechaIntercambio)
-                                textViewHora.text = intercambio.horaIntercambio
-                                textViewParticipantes.text = "Participantes: ${intercambio.numPersonas}" // Número de participantes
+                                textViewHora.text = "Hora: ${intercambio.horaIntercambio}"
+                                textViewParticipantes.text = "Participantes: ${(intercambio.participantes).size} / ${intercambio.numPersonas}" // Número de participantes
                                 textViewCode.text = "Código: ${intercambio.code}"
 
                                 container.addView(registroView)
 
                                 regViewContainer.setOnClickListener {
-                                    Log.i("HomeActivity", "")
+                                    val intent = Intent(requireActivity(), DetalleIntercambio::class.java).apply {
+                                        putExtra("docId", documentId)
+                                    }
+                                    //requireActivity().finish()
+                                    startActivity(intent)
                                 }
                             } catch (e: Exception) {
                                 Toast.makeText(requireActivity(), "Error al procesar el intercambio.", Toast.LENGTH_SHORT).show()

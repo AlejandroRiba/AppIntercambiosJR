@@ -59,4 +59,30 @@ class IntercambioRepository {
         return taskCompletionSource.task
     }
 
+    // Función para obtener un intercambio por su ID de documento
+    fun obtenerIntercambioPorId(docId: String): Task<Intercambio> {
+        val taskCompletionSource = TaskCompletionSource<Intercambio>()
+        val consulta = db.collection("intercambios").document(docId) // Consulta usando el docId
+
+        consulta.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    // Mapea el documento a un objeto Intercambio
+                    val intercambio = document.toObject(Intercambio::class.java)
+                    intercambio?.let {
+                        taskCompletionSource.setResult(it) // Devuelve el objeto Intercambio
+                    } ?: run {
+                        taskCompletionSource.setException(Exception("Intercambio no encontrado"))
+                    }
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener {
+                taskCompletionSource.setException(it) // Devuelve la excepción si ocurre un error
+            }
+
+        return taskCompletionSource.task
+    }
+
 }

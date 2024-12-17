@@ -34,6 +34,11 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Estilo personalizado para FloatingActionButton -->
+    <style name="MyFloatingActionButton" parent="ShapeAppearanceOverlay.Material3.FloatingActionButton">
+        <item name="background">@drawable/bg_gradient</item> <!-- Usamos un fondo gradiente -->
+    </style>
+
     <style name="Theme.Intercambios.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Intercambios.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

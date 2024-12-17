@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Intercambios"
         tools:targetApi="35">
         <activity
+            android:name=".ui.intercambio.DetalleIntercambio"
+            android:exported="false" />
+        <activity
             android:name=".ui.HomeActivity"
             android:exported="true"
             android:theme="@style/Theme.Intercambios.NoActionBar">
@@ -35,7 +38,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.perfil.SelectAvatarActivity"
-            android:exported="false"/>
+            android:exported="false" />
     </application>
 
 </manifest>
