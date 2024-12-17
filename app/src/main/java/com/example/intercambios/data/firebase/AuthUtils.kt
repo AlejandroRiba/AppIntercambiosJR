@@ -65,6 +65,14 @@ class AuthUtils(private val context: Context){
     // Registro de usuario con correo y contraseña
     suspend fun registerWithEmail(email: String, password: String, name: String, alias: String): Boolean {
         return try {
+            // Verificar si el correo ya existe en Firestore
+            val correoExiste = verificarCorreoExistente(email)
+            if (correoExiste) {
+                Log.e("FirebaseHelper", "El correo ya está registrado en la base de datos.")
+                return false // Detener el registro si el correo ya existe
+            }
+
+            // Crear usuario en FirebaseAuth
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = result.user?.uid ?: return false
 
@@ -78,21 +86,33 @@ class AuthUtils(private val context: Context){
                 "descripcion" to ""
             )
             firestore.collection("users").document(userId).set(userData).await()
+
+            // Actualizar nombre de usuario
             val user = auth.currentUser
             if (user != null) {
                 updateDisplayName(user, name)
             }
-            // Enviar correo de verificación
-            val emailSent = sendEmailVerification()
-            if (emailSent) {
-                Log.e("FirebaseHelper", "Correo de Verificación enviado")
-            }
-            emailSent
+            sendEmailVerification()
         } catch (e: Exception) {
             Log.e("FirebaseHelper", "Error al registrar usuario: ${e.message}")
             false
         }
     }
+
+    // Función para verificar si el correo ya existe
+    private suspend fun verificarCorreoExistente(email: String): Boolean {
+        return try {
+            val querySnapshot = firestore.collection("users")
+                .whereEqualTo("email", email)
+                .get()
+                .await()
+            !querySnapshot.isEmpty
+        } catch (e: Exception) {
+            Log.e("FirebaseHelper", "Error al verificar correo: ${e.message}")
+            false
+        }
+    }
+
 
     //Envia correo de verificacion para usuarios que se registran con Email & Contrasena
     private suspend fun sendEmailVerification(): Boolean {
@@ -201,8 +221,6 @@ class AuthUtils(private val context: Context){
                 }
             }
     }
-
-
 
     // Cerrar sesión
     fun logout() {

@@ -58,18 +58,19 @@ class RegisterActivity : BaseActivity() {
             val loadingDialog = mostrarCarga()
             if (nombre.text.isNotEmpty() && alias.text.isNotEmpty() && correo.text.isNotEmpty() && password.text.isNotEmpty()) {
                 lifecycleScope.launch {
-                    val success = firebaseHelper.registerWithEmail(correo.text.toString(), password.text.toString(), nombre.text.toString(), alias.text.toString())
-                    // Cuando la tarea haya terminado, cerrar el diálogo
+                    val success = firebaseHelper.registerWithEmail(
+                        correo.text.toString(),
+                        password.text.toString(),
+                        nombre.text.toString(),
+                        alias.text.toString()
+                    )
                     loadingDialog.dismiss()
-                    aplicarWindowInsets()
                     if (success) {
-                        // Si el registro fue exitoso, redirige a la pantalla de verificación
                         val intent = Intent(this@RegisterActivity, EmailVerification::class.java)
-                        finish()  // Termina la actividad actual
+                        finish()
                         startActivity(intent)
                     } else {
-                        // Si hubo un error, muestra un mensaje adecuado al usuario
-                        genUtils.showAlert("Error al registrar usuario")
+                        genUtils.showAlert("El correo ya está registrado o hubo un error.")
                     }
                 }
             }
