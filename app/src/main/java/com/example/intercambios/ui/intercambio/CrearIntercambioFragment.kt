@@ -1,6 +1,7 @@
 package com.example.intercambios.ui.intercambio
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -287,31 +288,29 @@ class CrearIntercambioFragment : Fragment() {
             .show()
     }
 
-    private fun sendData(intercambio: Intercambio){
-        if(selectedTheme != null && userId != null){
-            val participantes = listOf(
-                Participante(uid = userId, temaRegalo = selectedTheme!!, asignadoA = ""),
-            )
-            val updatedIntercambio = intercambio.copy(
-                participantes = participantes
-            )
-
-            Log.i("CrearIntercambio", updatedIntercambio.toString())
-
-            CoroutineScope(Dispatchers.IO).launch {
-                val exito = intercambioUtils.addIntercambio(updatedIntercambio)
-                if (exito) {
-                    Log.i("CrearIntercambio","Intercambio guardado correctamente en Firestore")
-                    backHome()
-                } else {
-                    Log.e("CrearIntercambio","Error al guardar el intercambio en Firestore")
+    private fun sendData(intercambio: Intercambio) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val exito = intercambioUtils.addIntercambio(intercambio)
+            if (exito) {
+                intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
+                    if (link != null) {
+                        enviarCorreo(link, intercambio.nombre)
+                    } else {
+                        Log.e("CrearIntercambio", "Error al generar el enlace dinámico")
+                    }
                 }
             }
-
-        }else{
-            genUtils.showAlert("No se pudo enviar el formulario. Verifica de nuevo.")
         }
     }
+
+    private fun enviarCorreo(enlace: String, nombreIntercambio: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_SUBJECT, "Invitación a un intercambio")
+        intent.putExtra(Intent.EXTRA_TEXT, "Te invito al intercambio: $nombreIntercambio. Únete usando este enlace: $enlace")
+        startActivity(Intent.createChooser(intent, "Enviar invitación"))
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

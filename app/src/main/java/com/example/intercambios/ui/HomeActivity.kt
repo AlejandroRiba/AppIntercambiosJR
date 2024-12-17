@@ -28,6 +28,7 @@ import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
+import com.example.intercambios.ui.intercambio.DetalleIntercambio
 import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
 import com.example.intercambios.ui.perfil.SettingFragment
@@ -35,6 +36,7 @@ import com.example.intercambios.utils.AvatarResources
 import com.example.intercambios.utils.LoadingFragment
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 
 enum class ProviderType{
     BASIC,
@@ -64,6 +66,21 @@ class HomeActivity : AppCompatActivity() {
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener { pendingDynamicLinkData ->
+                val deepLink = pendingDynamicLinkData?.link
+                if (deepLink != null) {
+                    val idIntercambio = deepLink.getQueryParameter("id")
+                    if (idIntercambio != null) {
+                        abrirDetalleIntercambio(idIntercambio)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DynamicLink", "Error al obtener enlace dinámico", e)
+            }
 
         // Inicializamos el binding y configuramos la barra de herramientas
         isBindingInitialized = true
@@ -395,6 +412,13 @@ class HomeActivity : AppCompatActivity() {
             ""
         }
     }
+
+    private fun abrirDetalleIntercambio(idIntercambio: String) {
+        val intent = Intent(this, DetalleIntercambio::class.java)
+        intent.putExtra("idIntercambio", idIntercambio)
+        startActivity(intent)
+    }
+
 
 
 }

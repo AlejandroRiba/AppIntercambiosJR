@@ -64,4 +64,6 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.airbnb.android:lottie:6.0.0")
+    implementation ("com.google.firebase:firebase-dynamic-links:22.1.0")
+    implementation ("com.google.firebase:firebase-firestore:25.1.1")
 }

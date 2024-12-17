@@ -1,5 +1,6 @@
 package com.example.intercambios.data.models
 
+import android.net.Uri
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
@@ -8,6 +9,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.ShortDynamicLink
 
 class IntercambioRepository {
     private val db = FirebaseFirestore.getInstance()
@@ -57,6 +61,23 @@ class IntercambioRepository {
             }
 
         return taskCompletionSource.task
+    }
+
+    fun generarEnlaceDinamico(intercambioId: String, callback: (String?) -> Unit) {
+        FirebaseDynamicLinks.getInstance().createDynamicLink()
+            .setLink(Uri.parse("https://intercambios.com/intercambio?id=$intercambioId"))
+            .setDomainUriPrefix("https://intercambios.page.link") // Configurado en Firebase
+            .setAndroidParameters(
+                DynamicLink.AndroidParameters.Builder("com.example.intercambios").build()
+            )
+            .buildShortDynamicLink()
+            .addOnSuccessListener { result ->
+                val shortLink = result.shortLink
+                callback(shortLink.toString())
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
     }
 
 }
