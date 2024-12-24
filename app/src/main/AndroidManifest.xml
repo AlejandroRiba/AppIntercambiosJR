@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Intercambios"
         tools:targetApi="35">
+        <activity
+            android:name=".ui.intercambio.CrearIntercambioActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.intercambio.DetalleIntercambio"
             android:exported="false" />

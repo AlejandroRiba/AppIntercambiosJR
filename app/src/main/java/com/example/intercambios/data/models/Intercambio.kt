@@ -4,6 +4,7 @@ data class Intercambio(
     val code: String = "",
     val nombre: String = "",
     val numPersonas: Int = 0,
+    val monto: Double = 0.0,
     val descripcion: String = "",
     val fechaMaxRegistro: String = "",
     val fechaIntercambio: String = "",

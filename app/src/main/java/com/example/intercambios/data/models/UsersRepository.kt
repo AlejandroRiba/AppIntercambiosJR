@@ -73,14 +73,45 @@ class UsersRepository {
 
     fun obtenerUsuarioPorId(uid: String): Task<Usuario> {
         val taskCompletionSource = TaskCompletionSource<Usuario>()
-        val consulta = db.collection("users").document(uid)
+        if(uid.isNotEmpty()){
+            val consulta = db.collection("users").document(uid)
+
+            consulta.get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val usuario = document.toObject(Usuario::class.java)
+                        usuario?.let {
+                            taskCompletionSource.setResult(it)
+                        } ?: run {
+                            taskCompletionSource.setException(Exception("Usuario no encontrado"))
+                        }
+                    } else {
+                        taskCompletionSource.setException(Exception("Documento no encontrado"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    taskCompletionSource.setException(exception)
+                }
+        }else{
+            taskCompletionSource.setException(Exception("Documento no encontrado"))
+        }
+
+        return taskCompletionSource.task
+    }
+
+    //Función para obtener un usuario en base a su email
+    fun obtenerUsuarioPorEmail(email: String): Task<Pair<Usuario, String>> {
+        val taskCompletionSource = TaskCompletionSource<Pair<Usuario, String>>()
+        val consulta = db.collection("users").whereEqualTo("email", email).limit(1)
 
         consulta.get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val usuario = document.toObject(Usuario::class.java)
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    val documento = querySnapshot.documents[0]
+                    val usuario = documento.toObject(Usuario::class.java)
                     usuario?.let {
-                        taskCompletionSource.setResult(it)
+                        val uid = documento.id // Obtiene el ID del documento
+                        taskCompletionSource.setResult(Pair(it, uid)) // Devuelve el usuario y el uid
                     } ?: run {
                         taskCompletionSource.setException(Exception("Usuario no encontrado"))
                     }
@@ -94,6 +125,7 @@ class UsersRepository {
 
         return taskCompletionSource.task
     }
+
 
 
 

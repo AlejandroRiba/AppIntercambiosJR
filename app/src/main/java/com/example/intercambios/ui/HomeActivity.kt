@@ -27,6 +27,7 @@ import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
+import com.example.intercambios.ui.intercambio.CrearIntercambioActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
 import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
@@ -196,13 +197,8 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.appBarHome.fab.setOnClickListener {
-            // Reemplazar con el fragmento de creación de intercambio
-            val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
-            if(currentFragment is HomeFragment){
-                binding.appBarHome.fab.visibility = View.GONE //Ocultamos el botón de agregar intercambio nuevo
-                supportActionBar?.title = getString(R.string.nuevo_intercambio)
-                replaceFragment(CrearIntercambioFragment(), true)
-            }
+            val newIntercambioIntent = Intent(this, CrearIntercambioActivity::class.java)
+            startActivity(newIntercambioIntent)
         }
 
 

@@ -1,27 +1,29 @@
 package com.example.intercambios.ui.intercambio
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.Build
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.R
 import com.example.intercambios.data.models.Intercambio
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
+import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.NuevoIntercambioBinding
 import com.example.intercambios.utils.ColorSpinnerAdapter
 import com.example.intercambios.utils.DatePickerFragment
@@ -34,21 +36,10 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import android.Manifest
-import android.content.Intent
-import android.net.Uri
-import android.provider.ContactsContract
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import kotlin.properties.Delegates
 
-
-class CrearIntercambioFragment : Fragment() {
-    private var _binding: NuevoIntercambioBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
+class CrearIntercambioActivity : AppCompatActivity() {
+    private lateinit var binding: NuevoIntercambioBinding
 
     private lateinit var spinnerColor: Spinner
     private lateinit var nombreEdtxt: EditText
@@ -72,13 +63,13 @@ class CrearIntercambioFragment : Fragment() {
     private lateinit var botonGuardar: Button
     private lateinit var botonCancelar: Button
 
-    // Variable donde se guarda el tema seleccionado
     private var selectedTheme: String? = null
 
     private var isFormValid by Delegates.notNull<Boolean>()
 
     private lateinit var genUtils: GeneralUtils
     private lateinit var intercambioUtils: IntercambioRepository
+    private lateinit var usersUtils: UsersRepository
 
     private val selectedParticipants = mutableListOf<Participante>()
 
@@ -93,7 +84,7 @@ class CrearIntercambioFragment : Fragment() {
 
     private val pickContactLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            if (result.resultCode == RESULT_OK) {
                 val contactUri: Uri? = result.data?.data
                 if (contactUri != null) {
                     handleContactSelection(contactUri)
@@ -106,24 +97,19 @@ class CrearIntercambioFragment : Fragment() {
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private val emailUsr = FirebaseAuth.getInstance().currentUser?.email
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = NuevoIntercambioBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        _binding = NuevoIntercambioBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        genUtils = GeneralUtils(this)
+        intercambioUtils = IntercambioRepository()
+        usersUtils = UsersRepository()
 
-        return root
+        initializeUI()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        genUtils = GeneralUtils(requireActivity())
-        intercambioUtils = IntercambioRepository()
-
+    private fun initializeUI() {
         nombreEdtxt = binding.edTextNombre
         personasEdtxt = binding.edTextNumPersonas
         descripcionEdtxt = binding.exchangeDescriptionEditText
@@ -136,58 +122,70 @@ class CrearIntercambioFragment : Fragment() {
         botonCancelar = binding.btnSaltar
         spinnerColor = binding.colorSpinner
 
-        //asigna las opciones al spinner
         inicializaSpinners()
 
-        horaIntercambioEdtxt.setOnClickListener { showTimePickerDialog(horaIntercambioEdtxt) }
-        fechaIntercambioEdtxt.setOnClickListener{ showDatePickerDialog(fechaIntercambioEdtxt) }
-        fechaRegistroEdtxt.setOnClickListener{ showDatePickerDialog(fechaRegistroEdtxt)  }
+        //Guardo al usuario actual como organizador
+        val participante = Participante(
+            uid = userId!!,
+            email = emailUsr!!,
+            asignadoA = "",
+            activo = true
+        ) // Se agrega al organizador
+        selectedParticipants.add(participante)
 
-        isFormValid = false  // Flag para verificar si el formulario es válido
-        //Mandar a crear los verificadores
-        val validator = FormularioValidator(binding, requireActivity())
+        horaIntercambioEdtxt.setOnClickListener { showTimePickerDialog(horaIntercambioEdtxt) }
+        fechaIntercambioEdtxt.setOnClickListener { showDatePickerDialog(fechaIntercambioEdtxt) }
+        fechaRegistroEdtxt.setOnClickListener { showDatePickerDialog(fechaRegistroEdtxt) }
+
+        val validator = FormularioValidator(binding, this)
         validator.validarFormulario()
 
-        // Inicializar botón para agregar contactos
         binding.btnAddParticipant.setOnClickListener {
             checkAndRequestContactPermission()
         }
 
         botonGuardar.setOnClickListener {
-            if(validator.getValid()) {
+            if (!isConnectedToInternet()) {
+                genUtils.showAlert("No tienes conexión a Internet. Por favor, verifica e intenta de nuevo.")
+                return@setOnClickListener
+            }
+
+            if (validator.getValid()) {
                 sendFeedBack()
-            }else{
+            } else {
                 genUtils.showAlert("No se pudo enviar el formulario. Verifica de nuevo.")
             }
         }
 
-        botonCancelar.setOnClickListener{
-            backHome()
-        }
-
-    }
-
-    private fun backHome(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            // Código para Android 13 (API 33) o superior
-            requireActivity().onBackPressedDispatcher.onBackPressed()
-        } else {
-            // Código para versiones inferiores a Android 13
-            requireActivity().onBackPressed()
+        botonCancelar.setOnClickListener {
+            finish()
         }
     }
+
+    private fun isConnectedToInternet(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+
 
     private fun checkAndRequestContactPermission() {
         when {
             ContextCompat.checkSelfPermission(
-                requireContext(),
+                this,
                 Manifest.permission.READ_CONTACTS
             ) == PackageManager.PERMISSION_GRANTED -> {
                 openContactPicker()
             }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) -> {
                 showAlert("Es necesario otorgar permisos para acceder a los contactos.")
             }
+
             else -> {
                 requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             }
@@ -200,7 +198,7 @@ class CrearIntercambioFragment : Fragment() {
     }
 
     private fun handleContactSelection(contactUri: Uri) {
-        val cursor = requireActivity().contentResolver.query(
+        val cursor = contentResolver.query(
             contactUri,
             null,
             null,
@@ -211,8 +209,10 @@ class CrearIntercambioFragment : Fragment() {
         cursor?.use {
             if (it.moveToFirst()) {
                 val id = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
-                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-                val hasEmail = it.getInt(it.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0
+                val name =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+                val hasEmail =
+                    it.getInt(it.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0
 
                 if (hasEmail) {
                     val email = getContactEmail(id)
@@ -229,7 +229,7 @@ class CrearIntercambioFragment : Fragment() {
     }
 
     private fun getContactEmail(contactId: String): String? {
-        val emailCursor = requireActivity().contentResolver.query(
+        val emailCursor = contentResolver.query(
             ContactsContract.CommonDataKinds.Email.CONTENT_URI,
             null,
             ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
@@ -247,28 +247,47 @@ class CrearIntercambioFragment : Fragment() {
     }
 
     private fun addParticipant(name: String, email: String) {
-        val participante = Participante(
-            uid = "", // Usamos el email como identificador único,
-            email = email,
-            temaRegalo = "", // Se asignará después
-            asignadoA = "",
-            activo = false
-        )
-
-        if (!selectedParticipants.any { it.email == participante.email }) {
-            selectedParticipants.add(participante)
-            addParticipantChip(name, participante)
-        } else {
-            Toast.makeText(requireContext(), "El participante ya ha sido agregado.", Toast.LENGTH_SHORT).show()
+        // Llamas a la función para obtener el usuario por email
+        usersUtils.obtenerUsuarioPorEmail(email).addOnSuccessListener {  (usuario, uid)  ->
+            // Si el usuario existe, llenas los campos con los datos del usuario
+            val participante = Participante(
+                uid = uid,  // Asegúrate de que la clase Usuario tenga un campo `uid`
+                email = usuario.email,  // Asegúrate de que la clase Usuario tenga un campo `email`
+                temaRegalo = "",  // Asegúrate de que la clase Usuario tenga un campo `temaRegalo`
+                asignadoA = "",  // Asegúrate de que la clase Usuario tenga un campo `asignadoA`
+                activo = false  // Asegúrate de que la clase Usuario tenga un campo `activo`
+            )
+            if (!selectedParticipants.any { it.email == participante.email }) {
+                selectedParticipants.add(participante)
+                addParticipantChip(name, participante)
+            } else {
+                Toast.makeText(this, "El participante ya ha sido agregado.", Toast.LENGTH_SHORT).show()
+            }
+            // Aquí puedes hacer algo con el objeto participante, como llenar campos en la interfaz
+        } .addOnFailureListener {
+            // Si no se encuentra el usuario o ocurre un error, inicializas un objeto Participante por defecto
+            val participante = Participante(
+                uid = "",
+                email = email,
+                temaRegalo = "",
+                asignadoA = "",
+                activo = false
+            )
+            if (!selectedParticipants.any { it.email == participante.email }) {
+                selectedParticipants.add(participante)
+                addParticipantChip(name, participante)
+            } else {
+                Toast.makeText(this, "El participante ya ha sido agregado.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     private fun addParticipantChip(name: String, participante: Participante) {
-        val chip = Chip(requireContext())
+        val chip = Chip(this)
         chip.text = name
         chip.isCloseIconVisible = true
         val chipDrawable =
-            ChipDrawable.createFromAttributes(requireContext(), null, 0, R.style.CustomChip)
+            ChipDrawable.createFromAttributes(this, null, 0, R.style.CustomChip)
         chip.setChipDrawable(chipDrawable)
         chip.setOnCloseIconClickListener {
             binding.chipGroupInvitados.removeView(chip)
@@ -278,14 +297,14 @@ class CrearIntercambioFragment : Fragment() {
     }
 
     private fun showAlert(message: String) {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(this)
             .setTitle("Error")
             .setMessage(message)
             .setPositiveButton("Aceptar", null)
             .show()
     }
 
-    private fun sendFeedBack(){
+    private fun sendFeedBack() {
         nombre = nombreEdtxt.text.toString()
         personas = personasEdtxt.text.toString()
         montoMax = montoMaxEdtxt.text.trim().toString()
@@ -294,9 +313,9 @@ class CrearIntercambioFragment : Fragment() {
         descripcion = descripcionEdtxt.text.toString()
         horaIntercambio = horaIntercambioEdtxt.text.toString()
         lugarIntercambio = lugarIntercambioEdtxt.text.toString()
-        if(nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty()) {
+        if (nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty()) {
             val unicode = genUtils.generarCodigoUnicoConHash()
-            if(descripcion.isEmpty())
+            if (descripcion.isEmpty())
                 descripcion = getString(R.string.no_descripcion)
 
             val newIntercambio = Intercambio(
@@ -310,29 +329,26 @@ class CrearIntercambioFragment : Fragment() {
                 horaIntercambio = horaIntercambio,
                 lugarIntercambio = lugarIntercambio,
                 color = selectedcolor,
-                personasRegistradas = 1, //solo se registra la persona que lo crea
+                personasRegistradas = selectedParticipants.size,
                 participantes = listOf(),
                 temas = selectedThemes,
                 organizador = userId ?: ""
             )
-            Log.i("CrearIntercambio", newIntercambio.toString())
             showThemesDialog(newIntercambio)
-            /**/
-
-        }else{
+        } else {
             genUtils.showAlert("Es necesario rellenar todos los campos.")
         }
     }
 
-    private fun inicializaSpinners() {                                                                                                          
+    private fun inicializaSpinners() {
         // Obtiene el array de colores desde strings.xml
         val colors = resources.getStringArray(R.array.color_items)
         // Configura el adaptador personalizado
-        val adapter = ColorSpinnerAdapter(requireActivity(), colors.toList())
+        val adapter = ColorSpinnerAdapter(this, colors.toList())
         spinnerColor.adapter = adapter
 
         //Spinner color
-        spinnerColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        spinnerColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
                 view: View?,
@@ -344,7 +360,8 @@ class CrearIntercambioFragment : Fragment() {
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                selectedcolor = parent?.getItemAtPosition(0).toString() //Por default tiene el primer color
+                selectedcolor =
+                    parent?.getItemAtPosition(0).toString() //Por default tiene el primer color
             }
 
         }
@@ -353,13 +370,19 @@ class CrearIntercambioFragment : Fragment() {
         val spinnerThemes: Spinner = binding.spinnerThemes
         // Cargar temas desde el string-array
         val themes = resources.getStringArray(R.array.themes_array).toMutableList()
-        val temasAdapter =  ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, themes)
+        val temasAdapter =
+            ArrayAdapter(this, android.R.layout.simple_spinner_item, themes)
         temasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerThemes.adapter = temasAdapter
 
         // Manejar selección de temas
         spinnerThemes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val theme = parent?.getItemAtPosition(position).toString()
 
                 if (position == 0) {
@@ -374,9 +397,17 @@ class CrearIntercambioFragment : Fragment() {
                     Log.i("CrearIntercambio", selectedThemes.toString())
                     addChip(theme)
                 } else if (selectedThemes.contains(theme)) {
-                    Toast.makeText(requireActivity(), "El tema ya está seleccionado", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@CrearIntercambioActivity,
+                        "El tema ya está seleccionado",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
-                    Toast.makeText(requireActivity(), "Solo puedes seleccionar hasta 3 temas", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@CrearIntercambioActivity,
+                        "Solo puedes seleccionar hasta 3 temas",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 spinnerThemes.setSelection(0) //reinicio visual del spinner
             }
@@ -390,11 +421,11 @@ class CrearIntercambioFragment : Fragment() {
 
     //Función para agregar chips a la lista
     private fun addChip(theme: String) {
-        val chip = Chip(requireActivity())
+        val chip = Chip(this)
         chip.text = theme
         chip.isCloseIconVisible = true
         val chipDrawable =
-            ChipDrawable.createFromAttributes(requireActivity(), null, 0, R.style.CustomChip)
+            ChipDrawable.createFromAttributes(this, null, 0, R.style.CustomChip)
         chip.setChipDrawable(chipDrawable)
         chip.setOnCloseIconClickListener {
             binding.chipGroupSelected.removeView(chip)
@@ -412,7 +443,7 @@ class CrearIntercambioFragment : Fragment() {
         val currentSelectedIndex = selectedThemes.indexOf(selectedTheme)
         var tempSelectedIndex = currentSelectedIndex // Variable temporal para actualizar al aceptar
 
-        AlertDialog.Builder(requireActivity())
+        AlertDialog.Builder(this)
             .setTitle("Seleccionar tu tema de interés.")
             .setSingleChoiceItems(selectedThemes.toTypedArray(), currentSelectedIndex) { _, which ->
                 tempSelectedIndex = which // Actualiza el índice temporalmente
@@ -420,59 +451,60 @@ class CrearIntercambioFragment : Fragment() {
             .setPositiveButton("Aceptar") { _, _ ->
                 // Asigna el tema seleccionado a la variable
                 selectedTheme = selectedThemes[tempSelectedIndex]
-                Toast.makeText(requireActivity(), "Seleccionaste: $selectedTheme", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Seleccionaste: $selectedTheme",
+                    Toast.LENGTH_SHORT
+                ).show()
                 sendData(intercambio)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
-    private fun sendData(intercambio: Intercambio){
-        if(selectedTheme != null && userId != null){
-            val participantes = listOf(
-                Participante(uid = userId, email = emailUsr!!, temaRegalo = selectedTheme!!, asignadoA = "", activo = true), //Se agrega al organizador
-            )
+    private fun sendData(intercambio: Intercambio) {
+        if (selectedTheme != null && userId != null) {
+            val indice = selectedParticipants.indexOfFirst { it.uid == userId }
+            if (indice != -1) {
+                // Actualizar solo el temaRegalo del participante
+                selectedParticipants[indice] = selectedParticipants[indice].copy(temaRegalo = selectedTheme!!)
+            }
             val updatedIntercambio = intercambio.copy(
-                participantes = participantes
+                participantes = selectedParticipants
             )
 
             Log.i("CrearIntercambio", updatedIntercambio.toString())
 
-            viewLifecycleOwner.lifecycleScope.launch {
+            lifecycleScope.launch {
                 val exito = intercambioUtils.addIntercambio(updatedIntercambio)
                 withContext(Dispatchers.Main) {
                     if (exito) {
                         Log.i("CrearIntercambio", "Intercambio guardado correctamente en Firestore")
-                        backHome()
+                        finish() // Cierra la actividad
                     } else {
                         Log.e("CrearIntercambio", "Error al guardar el intercambio en Firestore")
                     }
                 }
             }
-
-
-        }else{
+        } else {
             genUtils.showAlert("No se pudo enviar el formulario. Verifica de nuevo.")
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun showTimePickerDialog(editText: EditText) {
         val timePicker = TimePickerFragment { time -> onTimeSelected(time, editText) }
-        timePicker.show(childFragmentManager, "timePicker")
+        timePicker.show(supportFragmentManager, "timePicker")
     }
+
 
     private fun onTimeSelected(time: String, editText: EditText) {
         editText.setText(time)
     }
 
     private fun showDatePickerDialog(editText: EditText) {
-        val datePicker = DatePickerFragment { day, month, year -> onDateSelected(day, month, year, editText) }
-        datePicker.show(childFragmentManager, "datePicker")
+        val datePicker =
+            DatePickerFragment { day, month, year -> onDateSelected(day, month, year, editText) }
+        datePicker.show(supportFragmentManager, "datePicker")
     }
 
     private fun onDateSelected(day: Int, month: Int, year: Int, editText: EditText) {
@@ -480,4 +512,5 @@ class CrearIntercambioFragment : Fragment() {
         val formattedDate = getString(R.string.formatted_date, year, month, day)
         editText.setText(formattedDate)
     }
+
 }

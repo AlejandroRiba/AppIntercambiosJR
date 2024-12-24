@@ -196,6 +196,48 @@
                 app:layout_constraintTop_toBottomOf="@id/tex4title" />
 
             <TextView
+                android:id="@+id/montotitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/alexandria"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="Monto del intercambio"
+                android:textColor="@color/azulPrincipal"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tex4" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="22dp"
+                android:background="@color/azulPrincipal"
+                android:layout_marginTop="2sp"
+                app:layout_constraintTop_toBottomOf="@id/montotitle"/>
+
+            <TextView
+                android:id="@+id/montotext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/poppins"
+                android:gravity="center"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="monto"
+                android:textColor="@color/texto"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/montotitle" />
+
+            <TextView
                 android:id="@+id/tex5title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -210,7 +252,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tex4" />
+                app:layout_constraintTop_toBottomOf="@id/montotext" />
 
             <View
                 android:layout_width="match_parent"

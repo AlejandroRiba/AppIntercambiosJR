@@ -81,6 +81,15 @@ class HomeFragment : Fragment() {
 
                                 container.addView(registroView)
 
+                                // Aplica una animación de desvanecimiento
+                                registroView.translationY = 200f  // Desplazar la vista hacia abajo inicialmente
+                                registroView.alpha = 0f  // Inicialmente invisible
+                                registroView.animate()
+                                    .translationY(0f)
+                                    .alpha(1f)
+                                    .setDuration(500)
+                                    .start()
+
                                 regViewContainer.setOnClickListener {
                                     val intent = Intent(requireActivity(), DetalleIntercambio::class.java).apply {
                                         putExtra("docId", documentId)

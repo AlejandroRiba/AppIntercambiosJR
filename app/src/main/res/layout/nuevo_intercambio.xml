@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.intercambio.CrearIntercambioFragment">
+    android:layout_height="match_parent">
 
     <!-- Título del formulario -->
     <TextView
         android:id="@+id/formTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Crear Nuevo Intercambio"
-        android:textSize="20sp"
+        android:text="@string/nuevo_intercambio"
+        android:textAlignment="center"
+        android:textSize="36sp"
+        android:textColor="@color/azulPrincipal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,6 +26,7 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         android:orientation="vertical"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/formTitleTextView"
         app:layout_constraintBottom_toTopOf="@id/btnLayout"
         app:layout_constraintStart_toStartOf="parent"
@@ -103,20 +105,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp">
 
+                <Spinner
+                    android:id="@+id/spinner_themes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"/>
+
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_group_selected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/chip_background"
+                    android:layout_marginTop="10dp"
                     app:selectionRequired="false"
                     app:singleSelection="false"/>
-
-                <Spinner
-                    android:id="@+id/spinner_themes"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:minHeight="48dp"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -222,15 +224,51 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Selección del tema para el intercambio -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutInvitacion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:hint="Temas de intercambio"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutLugarIntercambio"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chip_group_invitados"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/chip_background"
+                    app:selectionRequired="false"
+                    app:singleSelection="false"/>
+
+                <Button
+                    android:id="@+id/btnAddParticipant"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Agregar participante         +"
+                    android:textColor="@color/white"/>
+
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutSpinnerColor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/textInputLayoutLugarIntercambio"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayoutInvitacion"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="viewStart"
+                    android:text="Identificador de color:"
+                    android:textColor="@color/black"/>
 
                 <Spinner
                     android:id="@+id/color_spinner"

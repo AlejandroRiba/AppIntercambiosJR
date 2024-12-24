@@ -22,7 +22,7 @@ class FormularioValidator(
         validarFechaIntercambio(binding.edTextFechaIntercambio, binding.textInputLayoutFechaIntercambio, binding.edTextFechaRegistro, binding.textInputLayoutFechaRegistro)
         validarCampoTexto(binding.edTextNombre, binding.textInputLayoutNombreIntercambio, "Este campo es obligatorio")
         validarCampoTexto(binding.edTextMontoMax, binding.textInputLayoutMonto, "Este campo es obligatorio")
-        validarCampoNumericoPar(binding.edTextNumPersonas, binding.textInputLayoutPersonas)
+        validarCampoNumerico(binding.edTextNumPersonas, binding.textInputLayoutPersonas)
         validarCampoTexto(binding.edTextHora, binding.textInputLayoutHoraIntercambio, "Este campo es obligatorio")
         validarCampoTexto(binding.edTextLugar, binding.textInputLayoutLugarIntercambio, "Este campo es obligatorio")
     }
@@ -47,7 +47,7 @@ class FormularioValidator(
         })
     }
 
-    private fun validarCampoNumericoPar(editText: EditText, textInputLayout: TextInputLayout) {
+    private fun validarCampoNumerico(editText: EditText, textInputLayout: TextInputLayout) {
         editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
@@ -56,8 +56,8 @@ class FormularioValidator(
                     isFormValid = false
                 } else {
                     val number = input.toIntOrNull()
-                    if (number == null || number % 2 != 0) {
-                        textInputLayout.error = "El número de personas debe ser un número par"
+                    if (number == null || number < 2) {
+                        textInputLayout.error = "El número de personas debe ser mayor a uno"
                         isFormValid = false
                     } else {
                         textInputLayout.error = null

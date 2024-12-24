@@ -31,6 +31,7 @@ class DetalleIntercambio : AppCompatActivity() {
     private lateinit var fechaIntercambio: TextView
     private lateinit var horaIntercambio: TextView
     private lateinit var lugarIntercambio: TextView
+    private lateinit var montoIntercambio: TextView
     private lateinit var color: View
     private lateinit var personasRegistradas: TextView
     private lateinit var participantes: TextView
@@ -63,6 +64,7 @@ class DetalleIntercambio : AppCompatActivity() {
         fechaIntercambio = findViewById(R.id.tex2)
         horaIntercambio = findViewById(R.id.tex3)
         lugarIntercambio = findViewById(R.id.tex4)
+        montoIntercambio = findViewById(R.id.montotext)
         code = findViewById(R.id.tex5)
         fechaMaxRegistro = findViewById(R.id.tex6)
         color = findViewById(R.id.colorRef)
@@ -90,9 +92,10 @@ class DetalleIntercambio : AppCompatActivity() {
                 fechaIntercambio.text = intercambio.fechaIntercambio
                 horaIntercambio.text = intercambio.horaIntercambio
                 lugarIntercambio.text = intercambio.lugarIntercambio
+                montoIntercambio.text = getString(R.string.monto_intercambio, intercambio.monto)
                 code.text = intercambio.code
                 fechaMaxRegistro.text = intercambio.fechaMaxRegistro
-                numPersonas.text = "${intercambio.numPersonas} participantes"
+                numPersonas.text = getString(R.string.num_personas, intercambio.numPersonas)
                 descripcion.text = intercambio.descripcion
                 val regViewBG = color.background
                 try {
@@ -109,7 +112,12 @@ class DetalleIntercambio : AppCompatActivity() {
                 for (participante in intercambio.participantes) {
                     val task = usersUtils.obtenerUsuarioPorId(participante.uid)
                         .onSuccessTask { usuario ->
+                            // Si el task es exitoso, devuelve el par con el participante y el usuario
                             Tasks.forResult(Pair(participante, usuario))
+                        }
+                        .addOnFailureListener { exception ->
+                            // En caso de fallo, agregar un usuario vacío y un participante vacío
+                            tasks.add(Tasks.forResult(Pair(participante, Usuario())))
                         }
                     tasks.add(task)
                 }
@@ -124,15 +132,26 @@ class DetalleIntercambio : AppCompatActivity() {
 
                         if (miParticipante != null) {
                             val (participante, usuario) = miParticipante
-                            organizador.text = "${usuario.nombre} (Alias: ${usuario.alias})\n${usuario.email}"
+                            organizador.text = getString(R.string.usuario_info, usuario.nombre, usuario.alias, usuario.email)
                         } else {
-                            organizador.text = "No encontrado"
+                            organizador.text = getString(R.string.no_encontrado)
                         }
 
                         // Mostrar los participantes en el TextView
-                        participantes.text = participantesInfo.joinToString("\n") { (participante, usuario) ->
-                            "• ${usuario.nombre} (${usuario.alias}) - Tema: ${participante.temaRegalo}"
+                        participantes.text = participantesInfo.joinToString("\n\n") { (participante, usuario) ->
+                            val nombreUsuario = usuario.nombre.ifEmpty { getString(R.string.no_registrado) }
+                            if (participante.activo) {
+                                val (organizadorParticipante, organizadorUsuario) = miParticipante!!
+                                if(organizadorParticipante.email == participante.email){
+                                    getString(R.string.estatus_participante, nombreUsuario, getString(R.string.organizador), participante.email)
+                                }else{
+                                    getString(R.string.estatus_participante, nombreUsuario, getString(R.string.activo), participante.email)
+                                }
+                            } else {
+                                getString(R.string.estatus_participante, nombreUsuario, getString(R.string.inv_pendiente), participante.email)
+                            }
                         }
+
                     }
                     .addOnFailureListener { exception ->
                         Log.e("DetalleIntercambio", "Error al obtener participantes: ${exception.message}")

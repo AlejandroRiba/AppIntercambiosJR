@@ -17,9 +17,30 @@
     <string name="menu_logout">Cerrar sesión</string>
     <string name="perfil">Perfil</string>
     <string name="ajustes">Ajustes</string>
-    <string name="nuevo_intercambio">Nuevo intercambio</string>
     <string name="foto_avatar_de_perfil">Foto/Avatar de perfil</string>
     <string name="no_descripcion">Sin descripción</string>
+    <string name="no_encontrado">No encontrado.</string>
+    <string name="no_registrado">No registrado</string>
+    <string name="usuario_info">Nombre: %1$s (Alias: %2$s)\nEmail: %3$s</string>
+    <!-- Para el monto -->
+    <string name="monto_intercambio">\$%1$.2f</string>
+
+    <!-- Para el código de intercambio -->
+    <string name="codigo_intercambio">Código: %1$s</string>
+
+    <!-- Para la fecha máxima de registro -->
+    <string name="fecha_max_registro">Fecha límite: %1$s</string>
+
+    <!-- Para el número de personas -->
+    <string name="num_personas">%1$d participantes</string>
+
+    <!-- Para el estatus de los participantes -->
+    <string name="estatus_participante">• %1$s - Estatus: %2$s\n\t\t%3$s</string>
+
+    <string name="organizador">Organizador</string>
+    <string name="activo">Activo</string>
+    <string name="inv_pendiente">Invitación pendiente</string>
+    <string name="nuevo_intercambio">Nuevo Intercambio</string>
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">
