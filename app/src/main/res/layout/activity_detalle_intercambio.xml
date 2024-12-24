@@ -573,44 +573,88 @@
 
     </ScrollView>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:gravity="center_horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="36dp"
-        android:orientation="horizontal"
-        android:paddingHorizontal="22dp">
+        android:gravity="center"
+        android:layout_marginBottom="30dp">
 
-        <Button
-            android:id="@+id/btn_delete"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/card_background"
-            android:paddingHorizontal="20dp"
-            android:text="Salir del intercambio"
-            android:textSize="15sp"
-            android:textAllCaps="false"
-            style="@style/CustomButtonThemeReject" />
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
 
-        <Button
-            android:id="@+id/btn_asistido"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:background="@drawable/card_background"
-            android:paddingHorizontal="20dp"
-            android:text="Adelantar sorteo"
-            android:textSize="15sp"
-            android:textAllCaps="false"
-            style="@style/CustomButtonThemeAccept" />
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/btnLayoutchild"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:paddingHorizontal="24dp">
+
+                <Button
+                    android:id="@+id/btn_unirme"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_background"
+                    android:text="@string/unirme_intercambio"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeReject" />
+
+                <Button
+                    android:id="@+id/btn_selecciontema"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_background"
+                    android:text="@string/escoger_tema"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeOK" />
+
+                <Button
+                    android:id="@+id/btn_adelantar"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_background"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/adelantar_sorteo"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeAccept" />
+
+                <Button
+                    android:id="@+id/btn_consultarsorteo"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/card_background"
+                    android:text="@string/consultar_sorteo"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeAdelantar" />
+
+                <Button
+                    android:id="@+id/btn_delete"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:background="@drawable/card_background"
+                    android:text="@string/salir_intercambio"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeReject" />
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+    </FrameLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

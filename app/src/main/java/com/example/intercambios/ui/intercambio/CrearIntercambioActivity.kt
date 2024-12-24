@@ -332,7 +332,8 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 personasRegistradas = selectedParticipants.size,
                 participantes = listOf(),
                 temas = selectedThemes,
-                organizador = userId ?: ""
+                organizador = userId ?: "",
+                sorteo = false
             )
             showThemesDialog(newIntercambio)
         } else {

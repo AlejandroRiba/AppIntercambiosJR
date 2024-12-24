@@ -22,6 +22,14 @@
     <string name="no_encontrado">No encontrado.</string>
     <string name="no_registrado">No registrado</string>
     <string name="usuario_info">Nombre: %1$s (Alias: %2$s)\nEmail: %3$s</string>
+    <string name="salir_intercambio">Salir del\nintercambio</string>
+    <string name="eliminar_intercambio">Eliminar\nintercambio</string>
+    <string name="adelantar_sorteo">Adelantar\nsorteo</string>
+    <string name="escoger_tema">Seleccionar\ntema</string>
+    <string name="unirme_intercambio">Acepto unirme al intercambio</string>
+    <string name="consultar_sorteo">Consultar\nsorteo</string>
+    <string name="warning_salir">El sorteo ya se realizó. Debes cumplir por lo que ya no se te permite abandonar el intercambio.</string>
+    <string name="warning_sorteo">El sorteo aún no se realiza, espera el momento!</string>
     <!-- Para el monto -->
     <string name="monto_intercambio">\$%1$.2f</string>
 

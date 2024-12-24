@@ -28,7 +28,6 @@ import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioActivity
-import com.example.intercambios.ui.intercambio.CrearIntercambioFragment
 import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
 import com.example.intercambios.ui.perfil.SettingFragment

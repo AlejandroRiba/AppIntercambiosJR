@@ -20,6 +20,7 @@ import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.data.models.Usuario
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.auth.FirebaseAuth
 
 class DetalleIntercambio : AppCompatActivity() {
 
@@ -40,6 +41,16 @@ class DetalleIntercambio : AppCompatActivity() {
 
     private lateinit var btnBack: ImageButton
     private lateinit var btnEdit: ImageButton
+    private lateinit var btnAdelentar: Button
+    private lateinit var btnDelete: Button
+    private lateinit var btnUnirme: Button
+    private lateinit var btnTema: Button
+    private lateinit var btnConsultaSort: Button
+    private var autorizaSalir: Boolean = true
+    private var sorteoRealizado = false
+    private var autorizaAdelantarSorteo = false
+
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private lateinit var intercambioUtils: IntercambioRepository
     private val usersUtils = UsersRepository()
@@ -60,6 +71,17 @@ class DetalleIntercambio : AppCompatActivity() {
         //Referencias a los componenetes
         btnBack = findViewById(R.id.back)
         btnEdit = findViewById(R.id.edit)
+        btnAdelentar = findViewById(R.id.btn_adelantar)
+        btnDelete = findViewById(R.id.btn_delete)
+        btnUnirme = findViewById(R.id.btn_unirme)
+        btnTema = findViewById(R.id.btn_selecciontema)
+        btnConsultaSort = findViewById(R.id.btn_consultarsorteo)
+        btnUnirme.visibility = View.GONE //INICIALMENTE OCULTOS
+        btnAdelentar.visibility = View.GONE
+        btnEdit.visibility = View.GONE
+        btnTema.visibility = View.GONE
+        btnDelete.visibility = View.GONE
+        btnConsultaSort.visibility = View.GONE
         nombre = findViewById(R.id.tex1)
         fechaIntercambio = findViewById(R.id.tex2)
         horaIntercambio = findViewById(R.id.tex3)
@@ -82,12 +104,29 @@ class DetalleIntercambio : AppCompatActivity() {
         btnBack.setOnClickListener { finish() }
         btnEdit.setOnClickListener { Toast.makeText(this, "Editar intercambio.", Toast.LENGTH_SHORT).show() }
 
+        btnDelete.setOnClickListener {
+            if(autorizaSalir){
+                Toast.makeText(this, "Eliminar/salir del intercambio.", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(this, getString(R.string.warning_salir), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnConsultaSort.setOnClickListener {
+            if(sorteoRealizado){
+                Toast.makeText(this, "Muestra la pantalla liberando a quien tienes asignado.", Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(this, getString(R.string.warning_sorteo), Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        btnAdelentar.setOnClickListener { Toast.makeText(this, "Adelantar sorteo", Toast.LENGTH_SHORT).show() }
+        btnUnirme.setOnClickListener { Toast.makeText(this, "Unirme al intercambio", Toast.LENGTH_SHORT).show() }
     }
 
     private fun consultarFirebase(docID: String){
         intercambioUtils.obtenerIntercambioPorId(docID)
             .addOnSuccessListener { intercambio ->
-                // Aquí puedes trabajar con el objeto Intercambio
                 nombre.text = intercambio.nombre
                 fechaIntercambio.text = intercambio.fechaIntercambio
                 horaIntercambio.text = intercambio.horaIntercambio
@@ -97,6 +136,10 @@ class DetalleIntercambio : AppCompatActivity() {
                 fechaMaxRegistro.text = intercambio.fechaMaxRegistro
                 numPersonas.text = getString(R.string.num_personas, intercambio.numPersonas)
                 descripcion.text = intercambio.descripcion
+                sorteoRealizado = intercambio.sorteo
+                if(intercambio.sorteo && userId != intercambio.organizador){ //Si no eres el organizador y el sorteo ya se hizo no permite salir
+                    autorizaSalir = false
+                }
                 val regViewBG = color.background
                 try {
                     regViewBG.setTint(Color.parseColor(intercambio.color))
@@ -105,6 +148,28 @@ class DetalleIntercambio : AppCompatActivity() {
                     regViewBG.setTint(Color.parseColor("#FFFFFF")) // Blanco por defecto
                 }
                 temas.text = formatearTemas(intercambio.temas)
+
+                val todosActivos = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isBlank() }
+                if(todosActivos == null){ //si no encuentra ninguno inactivo puede adelantar el sorteo
+                    autorizaAdelantarSorteo = true
+                }
+
+                val userActual =  intercambio.participantes.find { participante -> participante.uid == userId }
+                if(userActual == null){
+                    btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
+                }else{ //EN caso de que si lo encuentre
+                    // Aquí puedes trabajar con el objeto Intercambio
+                    btnConsultaSort.visibility = View.VISIBLE
+                    btnDelete.visibility = View.VISIBLE
+                    btnTema.visibility = View.VISIBLE
+                    if(intercambio.organizador == userId){ //Para quitarle ciertos privilegios al usuario común
+                        btnEdit.visibility = View.VISIBLE
+                        btnDelete.text = getString(R.string.eliminar_intercambio)
+                        if(autorizaAdelantarSorteo){
+                            btnAdelentar.visibility = View.VISIBLE
+                        }
+                    }
+                }
 
                 // Obtener datos de los participantes
                 val tasks = mutableListOf<Task<Pair<Participante, Usuario>>>()

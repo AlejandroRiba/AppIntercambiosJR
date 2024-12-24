@@ -12,6 +12,7 @@
     <color name="brandColor">#B5FFDA</color>
     <color name="acceptColor">#A5C7A4</color>
     <color name="rejectColor">#F27A6E</color>
+    <color name="warning">#f97c30</color>
     <color name="editText">#888888</color>
     <color name="spinnerBG">#151516</color>
 </resources>
