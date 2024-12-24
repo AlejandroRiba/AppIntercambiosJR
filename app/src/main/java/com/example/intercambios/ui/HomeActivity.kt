@@ -8,6 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -28,6 +30,7 @@ import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
 import com.example.intercambios.ui.intercambio.CrearIntercambioActivity
+import com.example.intercambios.ui.intercambio.DetalleIntercambio
 import com.example.intercambios.ui.intercambio.HomeFragment
 import com.example.intercambios.ui.perfil.PerfilFragment
 import com.example.intercambios.ui.perfil.SettingFragment
@@ -196,12 +199,63 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.appBarHome.fab.setOnClickListener {
-            val newIntercambioIntent = Intent(this, CrearIntercambioActivity::class.java)
-            startActivity(newIntercambioIntent)
+            // Crear el AlertDialog
+            mostrarDialogoOpciones()
         }
 
-
     }
+
+    private fun mostrarDialogoOpciones() {
+        val dialogView = layoutInflater.inflate(R.layout.custom_dialog_newexch, null)
+
+        val btnNuevoIntercambio = dialogView.findViewById<Button>(R.id.btnNuevoIntercambio)
+        val btnIngresarCodigo = dialogView.findViewById<Button>(R.id.btnIngresarCodigo)
+
+        val opcionesDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        // Acción para "Nuevo Intercambio"
+        btnNuevoIntercambio.setOnClickListener {
+            val newIntercambioIntent = Intent(this, CrearIntercambioActivity::class.java)
+            startActivity(newIntercambioIntent)
+            opcionesDialog.dismiss()
+        }
+
+        // Acción para "Ingresar Código"
+        btnIngresarCodigo.setOnClickListener {
+            mostrarDialogoCodigo()
+            opcionesDialog.dismiss()
+        }
+
+        opcionesDialog.show()
+    }
+
+    private fun mostrarDialogoCodigo() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_ingresar_codigo, null)
+        val codigoInput = dialogView.findViewById<EditText>(R.id.editTextCodigo)
+
+        val codigoDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnEnviarCodigo).setOnClickListener {
+            val codigo = codigoInput.text.toString()
+            if (codigo.isNotBlank()) {
+                val detalleIntercambioIntent = Intent(this, DetalleIntercambio::class.java).apply {
+                    putExtra("codigo", codigo)
+                    putExtra("union", true)
+                }
+                startActivity(detalleIntercambioIntent)
+                codigoDialog.dismiss()
+            } else {
+                Toast.makeText(this, "Por favor ingresa un código válido", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        codigoDialog.show()
+    }
+
 
     override fun onSupportNavigateUp(): Boolean {
         var currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)

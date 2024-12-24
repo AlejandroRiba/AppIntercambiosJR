@@ -49,6 +49,23 @@
     <string name="activo">Activo</string>
     <string name="inv_pendiente">Invitación pendiente</string>
     <string name="nuevo_intercambio">Nuevo Intercambio</string>
+    <string name="color_del_intercambio">Color del intercambio</string>
+    <string name="descrip_del_intercambio">Descripción del intercambio</string>
+    <string name="no_m_ximo_de_participantes">No. Máximo de participantes</string>
+    <string name="participantes">Participantes</string>
+    <string name="temas_para_regalos">Temas para regalos</string>
+    <string name="fecha_l_mite_de_registro">Fecha límite de registro</string>
+    <string name="c_digo_de_invitaci_n">Código de invitación</string>
+    <string name="monto_del_intercambio">Monto del intercambio</string>
+    <string name="lugar_del_intercambio">Lugar del intercambio</string>
+    <string name="hora_del_intercambio">Hora del intercambio</string>
+    <string name="fecha_del_intercambio">Fecha del intercambio</string>
+    <string name="editar_intercambio">editar intercambio</string>
+    <string name="btn_regresar">Botón regresar</string>
+    <string name="intercambio">Intercambio</string>
+    <string name="ingrese_el_c_digo">Ingrese el código</string>
+    <string name="tengo_un_c_digo">Tengo un código</string>
+    <string name="buscar">Buscar</string>
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">

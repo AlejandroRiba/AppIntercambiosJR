@@ -1,5 +1,7 @@
 /build
 .gradle
+/build.gradle.kts
+/.gradle
 /*/build
 /*/*/build
 /*/*/*/build

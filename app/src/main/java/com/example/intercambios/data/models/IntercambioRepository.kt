@@ -85,4 +85,25 @@ class IntercambioRepository {
         return taskCompletionSource.task
     }
 
+    //obtener la referencia al documento de firebase
+    fun obtenerDocId(codigo: String): Task<String> {
+        val taskCompletionSource = TaskCompletionSource<String>()
+        val consulta = db.collection("intercambios").whereEqualTo("code", codigo).limit(1)
+
+        consulta.get()
+            .addOnSuccessListener { querySnapshot ->
+                if (!querySnapshot.isEmpty) {
+                    val documento = querySnapshot.documents[0]
+                    taskCompletionSource.setResult(documento.id) // Devuelve el document id
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception)
+            }
+
+        return taskCompletionSource.task
+    }
+
 }

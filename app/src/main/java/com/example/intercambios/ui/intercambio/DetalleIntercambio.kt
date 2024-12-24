@@ -1,5 +1,6 @@
 package com.example.intercambios.ui.intercambio
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -49,6 +50,7 @@ class DetalleIntercambio : AppCompatActivity() {
     private var autorizaSalir: Boolean = true
     private var sorteoRealizado = false
     private var autorizaAdelantarSorteo = false
+    private var unirNuevoUser: Boolean = false
 
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -67,6 +69,8 @@ class DetalleIntercambio : AppCompatActivity() {
 
         intercambioUtils = IntercambioRepository()
         val docID = intent.getStringExtra("docId") ?: ""
+        val codigo = intent.getStringExtra("codigo") ?: ""
+        unirNuevoUser = intent.getBooleanExtra("union", false)
 
         //Referencias a los componenetes
         btnBack = findViewById(R.id.back)
@@ -99,6 +103,27 @@ class DetalleIntercambio : AppCompatActivity() {
         if(docID.isNotEmpty()) {
             Log.i("DetalleIntercambio", docID)
             consultarFirebase(docID)
+        }else{
+            if(codigo.isNotBlank()){
+                intercambioUtils.obtenerDocId(codigo)
+                    .addOnSuccessListener { docID ->
+                        // Si se encuentra el documento, llama a consultarFirebase
+                        consultarFirebase(docID)
+                    }
+                    .addOnFailureListener { exception ->
+                        // Si ocurre un error, muestra un AlertDialog y finaliza la Activity
+                        AlertDialog.Builder(this)
+                            .setTitle("Intercambio no encontrado")
+                            .setMessage("No se encontró ningún intercambio con el código proporcionado.")
+                            .setPositiveButton("Aceptar") { _, _ ->
+                                finish() // Finaliza la Activity al cerrar el AlertDialog
+                            }
+                            .setCancelable(false) // Evita que el usuario lo cierre fuera del botón
+                            .show()
+                    }
+            }else{
+                finish() //si el codigo esta vacio y no hay docID entonces bye
+            }
         }
 
         btnBack.setOnClickListener { finish() }
@@ -155,7 +180,7 @@ class DetalleIntercambio : AppCompatActivity() {
                 }
 
                 val userActual =  intercambio.participantes.find { participante -> participante.uid == userId }
-                if(userActual == null){
+                if(userActual == null && unirNuevoUser){ //se debe especificar en el intent
                     btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
                 }else{ //EN caso de que si lo encuentre
                     // Aquí puedes trabajar con el objeto Intercambio

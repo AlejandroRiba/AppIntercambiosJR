@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="25dp"
+    android:background="@drawable/bg_gradient">
+
+    <Button
+        android:id="@+id/btnIngresarCodigo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/botones_nuevointercambio"
+        android:text="@string/tengo_un_c_digo"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textAllCaps="false"
+        style="@style/CustomButtonThemeAdelantar"/>
+
+    <Button
+        android:id="@+id/btnNuevoIntercambio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/botones_nuevointercambio"
+        android:text="@string/nuevo_intercambio"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:textAllCaps="false"
+        style="@style/CustomButtonThemeAdelantar"/>
+
+
+</LinearLayout>
