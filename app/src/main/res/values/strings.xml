@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">IntercambiosJR</string>
-    <string name="prefs_file">com.example.intercambios.PREFERENCE_FILE_KEY</string>
-    <string name="web_client_id">347976186952-e3e2ee9c27iack1cun35ml46qb1iclgk.apps.googleusercontent.com</string>
+    <string name="app_name" translatable="false">IntercambiosJR</string>
+    <string name="prefs_file" translatable="false">com.example.intercambios.PREFERENCE_FILE_KEY</string>
+    <string name="web_client_id" translatable="false">347976186952-e3e2ee9c27iack1cun35ml46qb1iclgk.apps.googleusercontent.com</string>
     <string name="comprueba_conn">Comprueba tu conexión a internet.</string>
     <string name="espera_seg">Espera un segundo…</string>
     <string name="title_activity_home">HomeActivity</string>
@@ -21,7 +21,7 @@
     <string name="no_descripcion">Sin descripción</string>
     <string name="no_encontrado">No encontrado.</string>
     <string name="no_registrado">No registrado</string>
-    <string name="usuario_info">Nombre: %1$s (Alias: %2$s)\nEmail: %3$s</string>
+    <string name="usuario_info">Nombre: %1$s (Alias: %2$s) Email: %3$s</string>
     <string name="salir_intercambio">Salir del\nintercambio</string>
     <string name="eliminar_intercambio">Eliminar\nintercambio</string>
     <string name="adelantar_sorteo">Adelantar\nsorteo</string>
@@ -30,11 +30,20 @@
     <string name="consultar_sorteo">Consultar\nsorteo</string>
     <string name="warning_salir">El sorteo ya se realizó. Debes cumplir por lo que ya no se te permite abandonar el intercambio.</string>
     <string name="warning_sorteo">El sorteo aún no se realiza, espera el momento!</string>
+    <string name="credenciales_erroneas">Error al iniciar sesión. Credenciales erroneas.</string>
+    <string name="error_inicio_google">Error durante el inicio de sesión con Google: %1$s</string>
+    <string name="recuperacion_pass">Recuperación de contraseña</string>
+    <string name="recuperacion_enviado">Correo de recuperación enviado. Por favor, revisa tu bandeja de entrada.</string>
+    <string name="recuperacion_error_enviado">No se pudo enviar el correo de recuperación. Verifica la dirección de correo.</string>
+    <string name="correo_requerido">Por favor, ingresa tu correo electrónico.</string>
     <!-- Para el monto -->
     <string name="monto_intercambio">\$%1$.2f</string>
 
     <!-- Para el código de intercambio -->
     <string name="codigo_intercambio">Código: %1$s</string>
+
+    <!-- Para la hora de intercambio -->
+    <string name="hora_intercambio">Hora: %1$s</string>
 
     <!-- Para la fecha máxima de registro -->
     <string name="fecha_max_registro">Fecha límite: %1$s</string>
@@ -43,7 +52,8 @@
     <string name="num_personas">%1$d participantes</string>
 
     <!-- Para el estatus de los participantes -->
-    <string name="estatus_participante">• %1$s - Estatus: %2$s\n\t\t%3$s</string>
+    <string name="estatus_participante">• %1$s - Estatus: %2$s \t\t%3$s</string>
+    <string name="cantidad_participantes">Participantes: %1$s / %2$s</string>
 
     <string name="organizador">Organizador</string>
     <string name="activo">Activo</string>
@@ -56,7 +66,7 @@
     <string name="temas_para_regalos">Temas para regalos</string>
     <string name="fecha_l_mite_de_registro">Fecha límite de registro</string>
     <string name="c_digo_de_invitaci_n">Código de invitación</string>
-    <string name="monto_del_intercambio">Monto del intercambio</string>
+    <string name="monto_del_intercambio">Monto del intercambio $</string>
     <string name="lugar_del_intercambio">Lugar del intercambio</string>
     <string name="hora_del_intercambio">Hora del intercambio</string>
     <string name="fecha_del_intercambio">Fecha del intercambio</string>
@@ -66,6 +76,26 @@
     <string name="ingrese_el_c_digo">Ingrese el código</string>
     <string name="tengo_un_c_digo">Tengo un código</string>
     <string name="buscar">Buscar</string>
+    <string name="no">No</string>
+    <string name="si">Sí</string>
+    <string name="seguro_que_quieres_salir">¿Seguro que quieres salir de la aplicación?</string>
+    <string name="salir_title">SALIR</string>
+    <string name="error_title">ERROR</string>
+    <string name="ok">Aceptar</string>
+    <string name="contact_no_email">El contacto seleccionado (%1$s) no tiene un email asociado.</string>
+    <string name="limitedepersonas">Alcanzaste el límite de participantes, aumenta el valor si quieres agregar más personas.</string>
+    <string name="personasnecesarias">Es necesario que primero indiques el número de participantes, recuerda que debe ser mayor a uno.</string>
+    <string name="permisos_contatactos">Es necesario otorgar permisos para acceder a los contactos.</string>
+    <string name="envio_denegado_campos_vacios">No se pudo enviar el formulario. Rellena todos los campos.</string>
+    <string name="envio_denegado_conexion">No tienes conexión a Internet. Por favor, verifica e intenta de nuevo.</string>
+    <string name="selecciona_un_tema">Selecciona un tema</string>
+    <string name="rechazar_invitacion">Rechazar invitación</string>
+    <string name="no_encontrado_email">No se encontró ningún intercambio con el código proporcionado.</string>
+    <string name="crear_intercambio">Crear Intercambio</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="invitar_contacto">Invitar contacto +</string>
+    <string name="identificador_de_color">Identificador de color:</string>
+    <string name="nombre_del_intercambio">Nombre del intercambio</string>
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">
@@ -86,6 +116,7 @@
         <item>Ropa</item>
         <item>Libros</item>
         <item>Tazas</item>
+        <item>Perfumes</item>
         <item>Accesorios</item>
         <item>Deportes</item>
         <item>Navideño</item>

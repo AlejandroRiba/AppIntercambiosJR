@@ -2,7 +2,6 @@ package com.example.intercambios.ui
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,11 +10,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.window.OnBackInvokedDispatcher
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,7 +21,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
-import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.ActivityHomeBinding
 import com.example.intercambios.ui.auth.LoginActivity
@@ -38,6 +33,7 @@ import com.example.intercambios.utils.AvatarResources
 import com.example.intercambios.utils.LoadingFragment
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 
 enum class ProviderType{
     BASIC,
@@ -68,6 +64,22 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //Escuchador del link
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener { pendingDynamicLinkData ->
+                val deepLink = pendingDynamicLinkData?.link
+                if (deepLink != null) {
+                    val idIntercambio = deepLink.getQueryParameter("id")
+                    if (idIntercambio != null) {
+                        abrirDetalleIntercambio(idIntercambio)
+                    }
+                }
+            }
+            .addOnFailureListener { e ->
+                Log.e("DynamicLink", "Error al obtener enlace dinámico", e)
+            }
+
         // Inicializamos el binding y configuramos la barra de herramientas
         isBindingInitialized = true
         setSupportActionBar(binding.appBarHome.toolbar)
@@ -86,12 +98,6 @@ class HomeActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
-
-        if (savedInstanceState == null) {
-            replaceFragment(HomeFragment(), false) //Se inicializa con el home fragment
-            navView.setCheckedItem(R.id.nav_home) // Marcar el item de "Profile"
-            supportActionBar?.title = getString(R.string.menu_home)
-        }
 
         /*// Callback para manejar el evento de retroceso
         val callback = object : OnBackPressedCallback(true) {
@@ -203,6 +209,14 @@ class HomeActivity : AppCompatActivity() {
             mostrarDialogoOpciones()
         }
 
+    }
+
+    private fun abrirDetalleIntercambio(codigoIntercambio: String) {
+        val intent = Intent(this, DetalleIntercambio::class.java).apply {
+            putExtra("codigo", codigoIntercambio)
+            putExtra("union", true)
+        }
+        startActivity(intent)
     }
 
     private fun mostrarDialogoOpciones() {
@@ -387,11 +401,14 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun hideNoConnectionScreen() {
-        clearBackStack()
-        replaceFragment(HomeFragment(), false)
-        supportActionBar?.title = getString(R.string.menu_home)
-        binding.navView.setCheckedItem(R.id.nav_home)
-        binding.appBarHome.fab.visibility = View.VISIBLE
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
+        if(currentFragment !is HomeFragment){
+            clearBackStack()
+            replaceFragment(HomeFragment(), false)
+            supportActionBar?.title = getString(R.string.menu_home)
+            binding.navView.setCheckedItem(R.id.nav_home)
+            binding.appBarHome.fab.visibility = View.VISIBLE
+        }
         actualizarHeaderPerfil()
         // Habilitar la barra lateral (DrawerLayout)
         binding.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
@@ -417,20 +434,22 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun showExitConfirmationDialog() {
-        // Crear un AlertDialog con opciones de confirmación
-        AlertDialog.Builder(this)
-            .setMessage("¿Estás seguro de que quieres salir de la aplicación?")
-            .setCancelable(false) // Impide que el usuario cierre el diálogo tocando fuera de él
-            .setPositiveButton("Sí") { _, _ ->
-                // Si el usuario confirma, salir de la aplicación
-                finish() // Cierra la actividad, lo que cerrará la aplicación
-            }
-            .setNegativeButton("No") { dialog, _ ->
-                // Si el usuario cancela, simplemente cerrar el diálogo
-                dialog.dismiss()
-            }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_exit, null)
+
+        val exitDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
             .create()
-            .show()
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            finish()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+            exitDialog.dismiss()
+        }
+
+        exitDialog.show()
     }
 
 

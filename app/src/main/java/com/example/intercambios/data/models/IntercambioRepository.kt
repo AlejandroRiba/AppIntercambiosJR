@@ -1,11 +1,14 @@
 package com.example.intercambios.data.models
 
+import android.net.Uri
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.TaskCompletionSource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.ShortDynamicLink
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -45,7 +48,7 @@ class IntercambioRepository {
                 for (document in result) {
                     val intercambio = document.toObject(Intercambio::class.java) // Mapea el documento a un objeto Intercambio
                     // Filtra si el userId está en la lista de participantes
-                    if (intercambio.participantes.any { it.uid == userId }) {
+                    if (intercambio.participantes.any { it.uid == userId && it.activo }) {
                         // Si el userId es participante, añade el intercambio a la lista
                         intercambios.add(Pair(intercambio, document.id)) // Guarda también el id del documento
                     }
@@ -104,6 +107,24 @@ class IntercambioRepository {
             }
 
         return taskCompletionSource.task
+    }
+
+    //Función para el dinamic link
+    fun generarEnlaceDinamico(intercambioId: String, callback: (String?) -> Unit) {
+        FirebaseDynamicLinks.getInstance().createDynamicLink()
+            .setLink(Uri.parse("https://intercambios.com/intercambio?id=$intercambioId"))
+            .setDomainUriPrefix("https://intercambios.page.link") // Configurado en Firebase
+            .setAndroidParameters(
+                DynamicLink.AndroidParameters.Builder("com.example.intercambios").build()
+            )
+            .buildShortDynamicLink()
+            .addOnSuccessListener { result ->
+                val shortLink = result.shortLink
+                callback(shortLink.toString())
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
     }
 
 }

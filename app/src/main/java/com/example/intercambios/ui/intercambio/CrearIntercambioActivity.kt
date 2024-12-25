@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.R
+import com.example.intercambios.data.firebase.EmailSender
 import com.example.intercambios.data.models.Intercambio
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
@@ -65,7 +66,6 @@ class CrearIntercambioActivity : AppCompatActivity() {
 
     private var selectedTheme: String? = null
 
-    private var isFormValid by Delegates.notNull<Boolean>()
 
     private lateinit var genUtils: GeneralUtils
     private lateinit var intercambioUtils: IntercambioRepository
@@ -78,7 +78,7 @@ class CrearIntercambioActivity : AppCompatActivity() {
             if (isGranted) {
                 openContactPicker()
             } else {
-                showAlert("Es necesario otorgar permisos para acceder a los contactos.")
+                genUtils.showAlert(getString(R.string.permisos_contatactos))
             }
         }
 
@@ -141,19 +141,24 @@ class CrearIntercambioActivity : AppCompatActivity() {
         validator.validarFormulario()
 
         binding.btnAddParticipant.setOnClickListener {
-            checkAndRequestContactPermission()
+            personas = personasEdtxt.text.trim().toString()
+            if(personas.isNotBlank() && personas.toInt() > 1){
+                checkAndRequestContactPermission()
+            }else{
+                genUtils.showAlert(getString(R.string.personasnecesarias))
+            }
         }
 
         botonGuardar.setOnClickListener {
             if (!isConnectedToInternet()) {
-                genUtils.showAlert("No tienes conexión a Internet. Por favor, verifica e intenta de nuevo.")
+                genUtils.showAlert(getString(R.string.envio_denegado_conexion))
                 return@setOnClickListener
             }
 
             if (validator.getValid()) {
                 sendFeedBack()
             } else {
-                genUtils.showAlert("No se pudo enviar el formulario. Verifica de nuevo.")
+                genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
             }
         }
 
@@ -183,7 +188,7 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 this,
                 Manifest.permission.READ_CONTACTS
             ) -> {
-                showAlert("Es necesario otorgar permisos para acceder a los contactos.")
+                genUtils.showAlert(getString(R.string.permisos_contatactos))
             }
 
             else -> {
@@ -211,18 +216,17 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 val id = it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts._ID))
                 val name =
                     it.getString(it.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
-                val hasEmail =
-                    it.getInt(it.getColumnIndexOrThrow(ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0
 
-                if (hasEmail) {
-                    val email = getContactEmail(id)
-                    if (email != null) {
+                val email = getContactEmail(id)
+                if (email != null) {
+                    personas = personasEdtxt.text.toString()
+                    if(selectedParticipants.size < personas.toInt()){
                         addParticipant(name, email)
-                    } else {
-                        showAlert("El contacto seleccionado ($name) no tiene un email asociado.")
+                    }else{
+                        genUtils.showAlert(getString(R.string.limitedepersonas))
                     }
                 } else {
-                    showAlert("El contacto seleccionado ($name) no tiene un email asociado.")
+                    genUtils.showAlert(getString(R.string.contact_no_email, name))
                 }
             }
         }
@@ -296,14 +300,6 @@ class CrearIntercambioActivity : AppCompatActivity() {
         binding.chipGroupInvitados.addView(chip)
     }
 
-    private fun showAlert(message: String) {
-        AlertDialog.Builder(this)
-            .setTitle("Error")
-            .setMessage(message)
-            .setPositiveButton("Aceptar", null)
-            .show()
-    }
-
     private fun sendFeedBack() {
         nombre = nombreEdtxt.text.toString()
         personas = personasEdtxt.text.toString()
@@ -313,7 +309,7 @@ class CrearIntercambioActivity : AppCompatActivity() {
         descripcion = descripcionEdtxt.text.toString()
         horaIntercambio = horaIntercambioEdtxt.text.toString()
         lugarIntercambio = lugarIntercambioEdtxt.text.toString()
-        if (nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty()) {
+        if (nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty() && selectedThemes.isNotEmpty()) {
             val unicode = genUtils.generarCodigoUnicoConHash()
             if (descripcion.isEmpty())
                 descripcion = getString(R.string.no_descripcion)
@@ -337,7 +333,7 @@ class CrearIntercambioActivity : AppCompatActivity() {
             )
             showThemesDialog(newIntercambio)
         } else {
-            genUtils.showAlert("Es necesario rellenar todos los campos.")
+            genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
         }
     }
 
@@ -444,23 +440,60 @@ class CrearIntercambioActivity : AppCompatActivity() {
         val currentSelectedIndex = selectedThemes.indexOf(selectedTheme)
         var tempSelectedIndex = currentSelectedIndex // Variable temporal para actualizar al aceptar
 
-        AlertDialog.Builder(this)
-            .setTitle("Seleccionar tu tema de interés.")
-            .setSingleChoiceItems(selectedThemes.toTypedArray(), currentSelectedIndex) { _, which ->
-                tempSelectedIndex = which // Actualiza el índice temporalmente
+        // Inflar el diseño personalizado
+        val dialogView = layoutInflater.inflate(R.layout.dialog_selecciontema, null)
+
+        // Obtener el RadioGroup para las opciones
+        val selectionGroup = dialogView.findViewById<RadioGroup>(R.id.selectionGroup)
+
+        // Agregar las opciones dinámicamente
+        selectedThemes.forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                id = View.generateViewId()
+                text = option
+                textSize = 15f
+                setTextAppearance(R.style.CustomRadioButton)
             }
-            .setPositiveButton("Aceptar") { _, _ ->
-                // Asigna el tema seleccionado a la variable
-                selectedTheme = selectedThemes[tempSelectedIndex]
-                Toast.makeText(
-                    this,
-                    "Seleccionaste: $selectedTheme",
-                    Toast.LENGTH_SHORT
-                ).show()
-                sendData(intercambio)
+            selectionGroup.addView(radioButton)
+            if (index == tempSelectedIndex && tempSelectedIndex != -1) {
+                radioButton.isChecked = true // Preseleccionar la opción definida
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        // Crear y configurar el AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Configurar el botón de confirmación
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            val selectedId = selectionGroup.checkedRadioButtonId
+            if (selectedId == -1) {
+                // No se ha seleccionado ninguna opción
+                Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+            } else {
+                // Se ha seleccionado una opción
+                val selectedRadioButton = dialogView.findViewById<RadioButton>(selectedId)
+                val selectedOption = selectedRadioButton?.text?.toString()
+
+                if (!selectedOption.isNullOrBlank()) {
+                    tempSelectedIndex = selectedThemes.indexOf(selectedOption)
+                    if (tempSelectedIndex != -1) {
+                        selectedTheme = selectedThemes[tempSelectedIndex]
+                        Log.i("NewIntercambio", selectedTheme!!)
+                        sendData(intercambio)
+                    } else {
+                        Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        // Mostrar el diálogo
+        alertDialog.show()
     }
 
     private fun sendData(intercambio: Intercambio) {
@@ -480,15 +513,37 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 val exito = intercambioUtils.addIntercambio(updatedIntercambio)
                 withContext(Dispatchers.Main) {
                     if (exito) {
-                        Log.i("CrearIntercambio", "Intercambio guardado correctamente en Firestore")
-                        finish() // Cierra la actividad
+                        usersUtils.obtenerUsuarioPorId(userId).addOnSuccessListener { organizadorUser ->
+                            intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
+                                if (link != null) {
+                                    enviarCorreoAListaDeEmails(selectedParticipants, updatedIntercambio.code, updatedIntercambio.nombre, organizadorUser.nombre, organizadorUser.email, link)
+                                    Log.i("CrearIntercambio", "Intercambio guardado correctamente en Firestore")
+                                    finish() // Cierra la actividad
+                                } else {
+                                    Log.e("CrearIntercambio", "Error al generar el enlace dinámico")
+                                }
+                            }
+                        }.addOnFailureListener{
+                            finish()
+                        }
                     } else {
                         Log.e("CrearIntercambio", "Error al guardar el intercambio en Firestore")
                     }
                 }
             }
         } else {
-            genUtils.showAlert("No se pudo enviar el formulario. Verifica de nuevo.")
+            genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
+        }
+    }
+
+    private fun enviarCorreoAListaDeEmails(participantes: List<Participante>, codigo: String, nombreIntercambio: String, organizador: String, organizadorMail: String, link: String) {
+        // Crea un array de los correos que quieres enviar la invitación
+        val emailList = participantes // Lista de correos
+        val emailSender = EmailSender()
+        // Llama a la función Firebase Functions para enviar el correo
+        emailList.forEach { participante ->
+            if(participante.email != organizadorMail)
+                emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link)
         }
     }
 

@@ -42,7 +42,7 @@
                 android:id="@+id/textInputLayoutNombreIntercambio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Nombre del intercambio"
+                android:hint="@string/nombre_del_intercambio"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
@@ -61,7 +61,7 @@
                 android:id="@+id/textInputLayoutPersonas"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Participantes del intecambio"
+                android:hint="@string/no_m_ximo_de_participantes"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutNombreIntercambio"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +80,7 @@
                 android:id="@+id/textInputLayoutDescripcion"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Descripción"
+                android:hint="@string/descrip_del_intercambio"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutPersonas"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +99,8 @@
                 android:id="@+id/textInputLayoutTemas"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Temas de intercambio"
+
+                android:background="@drawable/chip_background"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutDescripcion"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -109,14 +110,15 @@
                     android:id="@+id/spinner_themes"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
                     android:minHeight="48dp"/>
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_group_selected"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/chip_background"
                     android:layout_marginTop="10dp"
+                    android:paddingHorizontal="10dp"
                     app:selectionRequired="false"
                     app:singleSelection="false"/>
 
@@ -128,7 +130,7 @@
                 android:id="@+id/textInputLayoutMonto"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Monto máximo $"
+                android:hint="@string/monto_del_intercambio"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutTemas"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -147,7 +149,7 @@
                 android:id="@+id/textInputLayoutFechaRegistro"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Fecha límite para registro: "
+                android:hint="@string/fecha_l_mite_de_registro"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutMonto"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -168,7 +170,7 @@
                 android:id="@+id/textInputLayoutFechaIntercambio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Fecha del intercambio: "
+                android:hint="@string/fecha_del_intercambio"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutFechaRegistro"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -189,7 +191,7 @@
                 android:id="@+id/textInputLayoutHoraIntercambio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Hora del intercambio"
+                android:hint="@string/hora_del_intercambio"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutFechaIntercambio"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -210,7 +212,7 @@
                 android:id="@+id/textInputLayoutLugarIntercambio"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Lugar del intercambio"
+                android:hint="@string/lugar_del_intercambio"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutHoraIntercambio"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -224,12 +226,12 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Selección del tema para el intercambio -->
+            <!-- Selección del participantes con invitación previa -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayoutInvitacion"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Temas de intercambio"
+                android:background="@drawable/chip_background"
                 app:layout_constraintTop_toBottomOf="@id/textInputLayoutLugarIntercambio"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -239,8 +241,8 @@
                     android:id="@+id/chip_group_invitados"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/chip_background"
                     app:selectionRequired="false"
+                    android:paddingHorizontal="10dp"
                     app:singleSelection="false"/>
 
                 <Button
@@ -248,8 +250,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Agregar participante         +"
-                    android:textColor="@color/white"/>
+                    android:layout_marginHorizontal="8dp"
+                    android:text="@string/invitar_contacto"
+                    style="@style/CustomButtonThemeAdelantar"/>
 
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -267,7 +270,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="viewStart"
-                    android:text="Identificador de color:"
+                    android:text="@string/identificador_de_color"
                     android:textColor="@color/black"/>
 
                 <Spinner
@@ -301,11 +304,12 @@
         <Button
             android:id="@+id/btnSaltar"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="Cancelar"
-            android:textColor="@color/white"
-            android:layout_marginHorizontal="8dp"/>
+            android:text="@string/cancelar"
+            android:layout_marginHorizontal="8dp"
+            android:paddingVertical="6dp"
+            style="@style/CustomButtonThemeReject"/>
 
 
         <!-- Botón para crear el intercambio -->
@@ -313,10 +317,10 @@
             android:id="@+id/createExchangeButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Crear Intercambio"
+            android:text="@string/crear_intercambio"
             android:layout_weight="1"
-            android:textColor="@color/white"
-            android:layout_marginHorizontal="8dp"/>
+            android:layout_marginHorizontal="8dp"
+            style="@style/CustomButtonThemeAccept"/>
 
     </LinearLayout>
 

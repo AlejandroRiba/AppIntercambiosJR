@@ -58,10 +58,6 @@ class LoginActivity : BaseActivity() {
         val correo = findViewById<EditText>(R.id.etEmail)
         val password = findViewById<EditText>(R.id.etPassword)
         val animationView = findViewById<com.airbnb.lottie.LottieAnimationView>(R.id.animateSending)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-
-        var isPasswordVisible = false
-
 
         findViewById<Button>(R.id.btnLogin).setOnClickListener {
             val loadingDialog = mostrarCarga()
@@ -77,7 +73,7 @@ class LoginActivity : BaseActivity() {
                             genUtils.showHome(ProviderType.BASIC, user.email.toString())
                         }
                     } else {
-                        genUtils.showAlert("Error al iniciar sesión")
+                        genUtils.showAlert(getString(R.string.credenciales_erroneas))
                     }
                 }
             }
@@ -106,13 +102,13 @@ class LoginActivity : BaseActivity() {
                     // Cuando la tarea haya terminado, cerrar el diálogo
                     loadingDialog.dismiss()
                     aplicarWindowInsets()
-                    genUtils.showAlert("Inicio de sesión cancelado por el usuario.")
+                    //genUtils.showAlert("Inicio de sesión cancelado por el usuario.")
                 } catch (e: Exception) {
                     Log.e("LoginActivity", "Error durante el inicio de sesión con Google: ${e.message}", e)
                     // Cuando la tarea haya terminado, cerrar el diálogo
                     loadingDialog.dismiss()
                     aplicarWindowInsets()
-                    genUtils.showAlert("Error durante el inicio de sesión con Google: ${e.message}")
+                    genUtils.showAlert(getString(R.string.error_inicio_google, e.message))
                 }
             }
         }
@@ -126,13 +122,13 @@ class LoginActivity : BaseActivity() {
                 firebaseHelper.sendPasswordResetEmail(email) { success ->
                     animationView.visibility = View.GONE // Oculta la animación
                     if (success) {
-                        genUtils.showAlert("Correo de recuperación enviado. Por favor, revisa tu bandeja de entrada.")
+                        genUtils.alertRecuperacion(getString(R.string.recuperacion_enviado))
                     } else {
-                        genUtils.showAlert("No se pudo enviar el correo de recuperación. Verifica la dirección de correo.")
+                        genUtils.alertRecuperacion(getString(R.string.recuperacion_error_enviado))
                     }
                 }
             } else {
-                genUtils.showAlert("Por favor, ingresa tu correo electrónico.")
+                genUtils.showAlert(getString(R.string.correo_requerido))
             }
         }
 

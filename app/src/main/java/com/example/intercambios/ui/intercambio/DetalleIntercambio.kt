@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -19,6 +20,7 @@ import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.data.models.Usuario
+import com.example.intercambios.utils.GeneralUtils
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
@@ -47,10 +49,14 @@ class DetalleIntercambio : AppCompatActivity() {
     private lateinit var btnUnirme: Button
     private lateinit var btnTema: Button
     private lateinit var btnConsultaSort: Button
+    private lateinit var btnRechazar: Button
     private var autorizaSalir: Boolean = true
     private var sorteoRealizado = false
     private var autorizaAdelantarSorteo = false
     private var unirNuevoUser: Boolean = false
+    private lateinit var docID: String
+
+    private lateinit var genUtils: GeneralUtils
 
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
 
@@ -67,8 +73,9 @@ class DetalleIntercambio : AppCompatActivity() {
             insets
         }
 
+        genUtils = GeneralUtils(this)
         intercambioUtils = IntercambioRepository()
-        val docID = intent.getStringExtra("docId") ?: ""
+        docID = intent.getStringExtra("docId") ?: ""
         val codigo = intent.getStringExtra("codigo") ?: ""
         unirNuevoUser = intent.getBooleanExtra("union", false)
 
@@ -79,6 +86,7 @@ class DetalleIntercambio : AppCompatActivity() {
         btnDelete = findViewById(R.id.btn_delete)
         btnUnirme = findViewById(R.id.btn_unirme)
         btnTema = findViewById(R.id.btn_selecciontema)
+        btnRechazar = findViewById(R.id.btn_rechazar)
         btnConsultaSort = findViewById(R.id.btn_consultarsorteo)
         btnUnirme.visibility = View.GONE //INICIALMENTE OCULTOS
         btnAdelentar.visibility = View.GONE
@@ -86,6 +94,7 @@ class DetalleIntercambio : AppCompatActivity() {
         btnTema.visibility = View.GONE
         btnDelete.visibility = View.GONE
         btnConsultaSort.visibility = View.GONE
+        btnRechazar.visibility = View.GONE
         nombre = findViewById(R.id.tex1)
         fechaIntercambio = findViewById(R.id.tex2)
         horaIntercambio = findViewById(R.id.tex3)
@@ -106,20 +115,29 @@ class DetalleIntercambio : AppCompatActivity() {
         }else{
             if(codigo.isNotBlank()){
                 intercambioUtils.obtenerDocId(codigo)
-                    .addOnSuccessListener { docID ->
+                    .addOnSuccessListener { interID ->
                         // Si se encuentra el documento, llama a consultarFirebase
-                        consultarFirebase(docID)
+                        docID = interID
+                        consultarFirebase(interID)
                     }
-                    .addOnFailureListener { exception ->
+                    .addOnFailureListener {
                         // Si ocurre un error, muestra un AlertDialog y finaliza la Activity
-                        AlertDialog.Builder(this)
-                            .setTitle("Intercambio no encontrado")
-                            .setMessage("No se encontró ningún intercambio con el código proporcionado.")
-                            .setPositiveButton("Aceptar") { _, _ ->
-                                finish() // Finaliza la Activity al cerrar el AlertDialog
-                            }
-                            .setCancelable(false) // Evita que el usuario lo cierre fuera del botón
-                            .show()
+                        val inflater = LayoutInflater.from(this)
+                        val dialogView = inflater.inflate(R.layout.dialog_error_general, null)
+                        val errorText = dialogView.findViewById<TextView>(R.id.mensajeText)
+                        errorText.text = getString(R.string.no_encontrado_email)
+
+                        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setView(dialogView)
+                            .setCancelable(false)
+                            .create()
+
+                        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+                            alertDialog.dismiss()
+                            finish()
+                        }
+
+                        alertDialog.show()
                     }
             }else{
                 finish() //si el codigo esta vacio y no hay docID entonces bye
@@ -180,8 +198,11 @@ class DetalleIntercambio : AppCompatActivity() {
                 }
 
                 val userActual =  intercambio.participantes.find { participante -> participante.uid == userId }
-                if(userActual == null && unirNuevoUser){ //se debe especificar en el intent
+                if((userActual == null && unirNuevoUser) || (userActual != null && unirNuevoUser && !userActual.activo)){ //se debe especificar en el intent
                     btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
+                    if(userActual != null){ //Si el participante ya está en la lista de participantes pero no ha aceptado
+                        btnRechazar.visibility = View.VISIBLE
+                    }
                 }else{ //EN caso de que si lo encuentre
                     // Aquí puedes trabajar con el objeto Intercambio
                     btnConsultaSort.visibility = View.VISIBLE

@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.LottieAnimationView
 import com.example.intercambios.R
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.databinding.FragmentHomeBinding
@@ -24,7 +25,7 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var intercambioUtils: IntercambioRepository
-
+    private lateinit var animacionBuscar: LottieAnimationView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,9 +42,19 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         intercambioUtils = IntercambioRepository()
+        animacionBuscar = binding.animateSearch
+        animacionBuscar.visibility = View.GONE
         //Cargar los registros de intercambios hechos
         fetchDataFromFirestore()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Limpia el contenedor cada vez que el fragmento se muestra nuevamente
+        val container = binding.containerLayout
+        container.removeAllViews()
+        fetchDataFromFirestore()
     }
 
     private fun fetchDataFromFirestore() {
@@ -75,9 +86,9 @@ class HomeFragment : Fragment() {
 
                                 textViewNombre.text = intercambio.nombre
                                 textViewFecha.text = dateFormatting(intercambio.fechaIntercambio)
-                                textViewHora.text = "Hora: ${intercambio.horaIntercambio}"
-                                textViewParticipantes.text = "Participantes: ${(intercambio.participantes).size} / ${intercambio.numPersonas}" // Número de participantes
-                                textViewCode.text = "Código: ${intercambio.code}"
+                                textViewHora.text = getString(R.string.hora_intercambio, intercambio.horaIntercambio)
+                                textViewParticipantes.text = getString(R.string.cantidad_participantes, ((intercambio.participantes).size).toString(), intercambio.numPersonas.toString()) // Número de participantes
+                                textViewCode.text = getString(R.string.codigo_intercambio, intercambio.code)
 
                                 container.addView(registroView)
 
@@ -87,7 +98,7 @@ class HomeFragment : Fragment() {
                                 registroView.animate()
                                     .translationY(0f)
                                     .alpha(1f)
-                                    .setDuration(500)
+                                    .setDuration(1000)
                                     .start()
 
                                 regViewContainer.setOnClickListener {
@@ -101,8 +112,8 @@ class HomeFragment : Fragment() {
                                 Toast.makeText(requireActivity(), "Error al procesar el intercambio.", Toast.LENGTH_SHORT).show()
                             }
                         }
-                    } else {
-                        Toast.makeText(requireActivity(), "No se encontraron intercambios.", Toast.LENGTH_SHORT).show()
+                    }else{
+                        animacionBuscar.visibility = View.VISIBLE
                     }
                 }
             }
