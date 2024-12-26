@@ -55,7 +55,7 @@
                 android:text="@string/tema"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:textColor="@color/editText" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switchTema"
@@ -90,7 +90,7 @@
                 android:text="@string/idioma"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:textColor="@color/editText" />
 
             <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/switchIdioma"

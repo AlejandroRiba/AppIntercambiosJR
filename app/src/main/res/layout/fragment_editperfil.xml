@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="43dp">
 
         <!-- Avatar -->
         <ImageView
@@ -26,15 +26,15 @@
         <!-- Botón para editar avatar -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/editAvatarFab"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
             android:layout_gravity="bottom|end"
             android:layout_margin="0dp"
             app:srcCompat="@drawable/ic_edit"
             app:tint="@null"
-            app:fabCustomSize="40dp"
+            app:fabCustomSize="55dp"
             android:padding="0dp"
-            android:contentDescription="Editar avatar"
+            android:contentDescription="@string/editar_avatar"
             android:backgroundTint="@color/azulPrincipal"
             android:elevation="0dp"/>
     </FrameLayout>
@@ -105,15 +105,15 @@
         <!-- Botón para editar datos personales -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/editDataFab"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="bottom|end"
             android:layout_marginTop="0dp"
             app:srcCompat="@drawable/ic_editadata"
             app:tint="@null"
-            app:fabCustomSize="48dp"
+            app:fabCustomSize="60dp"
             android:padding="0dp"
-            android:contentDescription="Editar datos"
+            android:contentDescription="@string/editar_datos"
             android:backgroundTint="@color/azulPrincipal"
             android:elevation="2dp"/>
     </FrameLayout>

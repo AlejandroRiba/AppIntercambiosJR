@@ -40,7 +40,7 @@
     <string name="descrip_del_intercambio">Exchage description</string>
     <string name="no_m_ximo_de_participantes">Maximum participants</string>
     <string name="participantes">Participants</string>
-    <string name="ingrese_el_c_digo">Enter de code</string>
+    <string name="ingrese_el_c_digo">Enter the code</string>
     <string name="tengo_un_c_digo">I have a code</string>
     <string name="buscar">Search</string>
     <string name="no">No</string>
@@ -146,5 +146,11 @@
     <string name="claro">Light</string>
     <string name="language_changed">Language changed to %1$s</string>
     <string name="theme_changed">Theme changed to %1$s</string>
-
+    <string name="editar_avatar">Edit avatar</string>
+    <string name="editar_datos">Edit data</string>
+    <string name="selecciona_un_avatar">Select an avatar</string>
+    <string name="saltar">Skip</string>
+    <string name="guardar">Save</string>
+    <string name="please_select">Please, select an avatar</string>
+    <string name="email_existe">The email is already registered or there was an error.</string>
 </resources>

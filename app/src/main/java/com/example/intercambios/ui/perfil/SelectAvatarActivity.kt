@@ -86,7 +86,7 @@ class SelectAvatarActivity : AppCompatActivity() {
         val avatarSeleccionadoExtra = intent.getStringExtra("avatar") ?: "avatardef"
         returnHome = intent.getBooleanExtra("backHome", true)
         if(!returnHome)
-            btnSaltar.text = "Cancelar"
+            btnSaltar.text = getString(R.string.cancelar)
         val index = avatarNames.indexOf(avatarSeleccionadoExtra)
         avatarAdapter.setSelectedPosition(index)
 
@@ -102,7 +102,7 @@ class SelectAvatarActivity : AppCompatActivity() {
                 usersHelper.updateAvatarImage(avatarNames[avatarIndex])
                 backtoHome()
             } else {
-                Toast.makeText(this, "Por favor, selecciona un avatar", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.please_select), Toast.LENGTH_SHORT).show()
             }
         }
 

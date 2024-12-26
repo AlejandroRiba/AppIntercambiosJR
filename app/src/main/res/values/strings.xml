@@ -172,5 +172,12 @@
 
     <string name="language_changed">Idioma cambiado a %1$s</string>
     <string name="theme_changed">Tema cambiado a %1$s</string>
+    <string name="editar_avatar">Editar avatar</string>
+    <string name="editar_datos">Editar datos</string>
+    <string name="selecciona_un_avatar">Selecciona un avatar</string>
+    <string name="saltar">Saltar</string>
+    <string name="guardar">Guardar</string>
+    <string name="please_select">Por favor, selecciona un avatar</string>
+    <string name="email_existe">El correo ya está registrado o hubo un error.</string>
 
 </resources>

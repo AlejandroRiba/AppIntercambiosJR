@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="@drawable/bg_gradient">
@@ -12,15 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/ingrese_el_c_digo"
-        android:outlineSpotShadowColor="@color/azulPrincipal">
+        android:outlineSpotShadowColor="@color/dialog"
+        android:textColorHint="@color/dialog"
+        app:boxStrokeColor="@color/dialog"
+        app:hintTextColor="@color/dialog">
 
         <EditText
             android:id="@+id/editTextCodigo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:autofillHints="none"
             android:inputType="text"
-            android:textStyle="bold"
-            android:textColor="@color/azulPrincipal"/>
+            android:textColor="@color/dialog"
+            android:textStyle="bold" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
