@@ -43,7 +43,6 @@ class HomeFragment : Fragment() {
 
         intercambioUtils = IntercambioRepository()
         animacionBuscar = binding.animateSearch
-        animacionBuscar.visibility = View.GONE
         //Cargar los registros de intercambios hechos
         fetchDataFromFirestore()
 
@@ -59,6 +58,7 @@ class HomeFragment : Fragment() {
 
     private fun fetchDataFromFirestore() {
         val container = binding.containerLayout
+        animacionBuscar.visibility = View.GONE
         intercambioUtils.obtenerIntercambios()
             .addOnSuccessListener { intercambios ->
                 // Verifica si el fragmento está adjunto antes de actualizar la UI
@@ -113,6 +113,7 @@ class HomeFragment : Fragment() {
                             }
                         }
                     }else{
+                        Log.i("Home", "Sin intercambios")
                         animacionBuscar.visibility = View.VISIBLE
                     }
                 }

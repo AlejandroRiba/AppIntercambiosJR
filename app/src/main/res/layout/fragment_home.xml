@@ -38,6 +38,15 @@
                     android:textSize="28sp"
                     android:textStyle="bold" />
 
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animateSearch"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_marginVertical="120dp"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/search" />
+
                 <LinearLayout
                     android:id="@+id/container_layout"
                     android:layout_width="match_parent"
@@ -45,15 +54,6 @@
                     android:gravity="center_horizontal"
                     android:orientation="vertical"
                     android:layout_margin="8dp">
-
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/animateSearch"
-                        android:layout_width="200dp"
-                        android:layout_height="200dp"
-                        android:layout_marginVertical="120dp"
-                        app:lottie_autoPlay="true"
-                        app:lottie_loop="true"
-                        app:lottie_rawRes="@raw/search" />
 
                 </LinearLayout>
             </LinearLayout>
