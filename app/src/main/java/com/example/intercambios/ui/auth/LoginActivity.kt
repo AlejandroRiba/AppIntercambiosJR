@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import android.app.AlertDialog
+import android.graphics.Paint
 import android.text.InputType
 import android.widget.ImageView
 import androidx.core.view.ViewCompat
@@ -38,6 +39,7 @@ class LoginActivity : BaseActivity() {
         aplicarWindowInsets()
 
         val btnRegister = findViewById<Button>(R.id.btnRegister)
+        btnRegister.paintFlags = btnRegister.paintFlags or Paint.UNDERLINE_TEXT_FLAG
         btnRegister.setOnClickListener {
             // Cambia al registro
             val regIntent = Intent(this, RegisterActivity::class.java)
@@ -76,6 +78,9 @@ class LoginActivity : BaseActivity() {
                         genUtils.showAlert(getString(R.string.credenciales_erroneas))
                     }
                 }
+            }else{
+                genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
+                loadingDialog.dismiss()
             }
         }
 
@@ -113,7 +118,9 @@ class LoginActivity : BaseActivity() {
             }
         }
 
-        findViewById<Button>(R.id.btnForgotPassword).setOnClickListener {
+        val btnForgot = findViewById<Button>(R.id.btnForgotPassword)
+        btnForgot.paintFlags = btnForgot.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        btnForgot.setOnClickListener {
             val email = correo.text.toString()
             if (email.isNotEmpty()) {
                 // Muestra la animación mientras se envía el correo

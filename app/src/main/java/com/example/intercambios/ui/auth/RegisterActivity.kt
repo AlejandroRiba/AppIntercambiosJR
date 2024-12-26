@@ -2,6 +2,7 @@ package com.example.intercambios.ui.auth
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Paint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,7 +40,9 @@ class RegisterActivity : BaseActivity() {
         setContentView(R.layout.register_layout)
         aplicarWindowInsets()
 
-        findViewById<Button>(R.id.btnLogin).setOnClickListener {
+        val btnLogin = findViewById<Button>(R.id.btnLogin)
+        btnLogin.paintFlags = btnLogin.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        btnLogin.setOnClickListener {
             // Cambia al login
             val loginIntent = Intent(this, LoginActivity::class.java)
             startActivity(loginIntent)//regresa a la pantalla principal
@@ -72,9 +75,12 @@ class RegisterActivity : BaseActivity() {
                         finish()
                         startActivity(intent)
                     } else {
-                        genUtils.showAlert("El correo ya está registrado o hubo un error.")
+                        genUtils.showAlert(getString(R.string.email_existe))
                     }
                 }
+            }else{
+                genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
+                loadingDialog.dismiss()
             }
         }
 
