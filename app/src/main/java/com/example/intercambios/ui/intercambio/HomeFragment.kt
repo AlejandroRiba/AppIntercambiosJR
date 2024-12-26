@@ -66,7 +66,7 @@ class HomeFragment : Fragment() {
                     // Aquí tienes la lista de intercambios
                     if (intercambios.isNotEmpty()) {
                         container.removeAllViews() // Limpia el contenedor antes de agregar nuevas vistas
-
+                        Log.i("Home", intercambios.size.toString())
                         for ((intercambio, documentId) in intercambios) {
                             try {
                                 val registroView = layoutInflater.inflate(R.layout.item_registro, container, false)
@@ -87,7 +87,7 @@ class HomeFragment : Fragment() {
                                 textViewNombre.text = intercambio.nombre
                                 textViewFecha.text = dateFormatting(intercambio.fechaIntercambio)
                                 textViewHora.text = getString(R.string.hora_intercambio, intercambio.horaIntercambio)
-                                textViewParticipantes.text = getString(R.string.cantidad_participantes, ((intercambio.participantes).size).toString(), intercambio.numPersonas.toString()) // Número de participantes
+                                textViewParticipantes.text = getString(R.string.cantidad_participantes, (intercambio.personasRegistradas).toString(), intercambio.numPersonas.toString()) // Número de participantes
                                 textViewCode.text = getString(R.string.codigo_intercambio, intercambio.code)
 
                                 container.addView(registroView)
@@ -119,6 +119,7 @@ class HomeFragment : Fragment() {
             }
             .addOnFailureListener {
                 if (isAdded) {
+                    animacionBuscar.visibility = View.VISIBLE
                     Toast.makeText(requireActivity(), "Error al obtener intercambios.", Toast.LENGTH_SHORT).show()
                 }
             }

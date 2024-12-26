@@ -127,4 +127,169 @@ class IntercambioRepository {
             }
     }
 
+    //Función para eliminar un intercambio
+    fun eliminarIntercambioPorId(docId: String): Task<Boolean> {
+        val taskCompletionSource = TaskCompletionSource<Boolean>()
+        val consulta = db.collection("intercambios").document(docId)
+
+        consulta.delete()
+            .addOnSuccessListener {
+                taskCompletionSource.setResult(true) // Eliminación exitosa
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception) // Error al eliminar
+            }
+
+        return taskCompletionSource.task
+    }
+
+    //Función para salir o rechazar un intercambio
+    fun eliminarParticipante(docId: String, email: String): Task<Boolean> {
+        val taskCompletionSource = TaskCompletionSource<Boolean>()
+        val intercambioRef = db.collection("intercambios").document(docId)
+
+        intercambioRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val intercambio = document.toObject(Intercambio::class.java)
+                    if (intercambio != null) {
+                        val participantesActualizados = intercambio.participantes.filterNot {
+                            it.email == email && (it.uid == userId || it.uid.isEmpty())
+                        }
+                        val personasRegistradasActualizadas = intercambio.personasRegistradas -
+                                (intercambio.participantes.size - participantesActualizados.size)
+
+                        // Actualiza el intercambio con la lista modificada y personas registradas
+                        intercambioRef.update(
+                            mapOf(
+                                "participantes" to participantesActualizados,
+                                "personasRegistradas" to personasRegistradasActualizadas
+                            )
+                        ).addOnSuccessListener {
+                            taskCompletionSource.setResult(true) // Eliminación exitosa
+                        }.addOnFailureListener { exception ->
+                            taskCompletionSource.setException(exception) // Error al actualizar
+                        }
+                    } else {
+                        taskCompletionSource.setException(Exception("Intercambio no encontrado"))
+                    }
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception)
+            }
+
+        return taskCompletionSource.task
+    }
+
+    //Función para unirse a un intercambio
+    fun agregarParticipante(docId: String, email: String, selectedTheme: String): Task<Boolean> {
+        val taskCompletionSource = TaskCompletionSource<Boolean>()
+        val intercambioRef = db.collection("intercambios").document(docId)
+
+        intercambioRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val intercambio = document.toObject(Intercambio::class.java)
+                    if (intercambio != null) {
+                        // Buscar si el participante existe
+                        val participanteExistente = intercambio.participantes.find { it.email == email }
+                        val participantesActualizados = if (participanteExistente != null) {
+                            intercambio.participantes.map { participante ->
+                                if (participante.email == email) {
+                                    if (participante.uid.isBlank()) {
+                                        // Si el UID está vacío, lo asigna y activa
+                                        participante.copy(uid = userId!!, activo = true)
+                                    } else {
+                                        // Si el UID no está vacío, solo activa al participante
+                                        participante.copy(activo = true)
+                                    }
+                                } else {
+                                    participante
+                                }
+                            }
+                        } else {
+                            // Si no encuentra el participante, lo agrega como nuevo
+                            intercambio.participantes + Participante(
+                                uid = userId!!,
+                                email = email,
+                                temaRegalo = selectedTheme,
+                                asignadoA = null,
+                                activo = true
+                            )
+                        }
+
+                        // Actualizar personasRegistradas con los participantes activos
+                        val personasRegistradasActualizadas = intercambio.personasRegistradas + 1
+
+                        // Actualizar en Firestore
+                        intercambioRef.update(
+                            mapOf(
+                                "participantes" to participantesActualizados,
+                                "personasRegistradas" to personasRegistradasActualizadas
+                            )
+                        ).addOnSuccessListener {
+                            taskCompletionSource.setResult(true) // Actualización exitosa
+                        }.addOnFailureListener { exception ->
+                            taskCompletionSource.setException(exception) // Error al actualizar
+                        }
+                    } else {
+                        taskCompletionSource.setException(Exception("Intercambio no encontrado"))
+                    }
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception)
+            }
+
+        return taskCompletionSource.task
+    }
+
+
+
+    //Función para editar el tema seleccionado
+    fun editarTemaRegalo(docId: String, nuevoTema: String): Task<Boolean> {
+        val taskCompletionSource = TaskCompletionSource<Boolean>()
+        val intercambioRef = db.collection("intercambios").document(docId)
+
+        intercambioRef.get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    val intercambio = document.toObject(Intercambio::class.java)
+                    if (intercambio != null) {
+                        val participantesActualizados = intercambio.participantes.map { participante ->
+                            if (participante.uid == userId) {
+                                participante.copy(temaRegalo = nuevoTema) // Actualiza el tema
+                            } else {
+                                participante
+                            }
+                        }
+
+                        // Actualiza el intercambio con la lista modificada
+                        intercambioRef.update("participantes", participantesActualizados)
+                            .addOnSuccessListener {
+                                taskCompletionSource.setResult(true) // Actualización exitosa
+                            }.addOnFailureListener { exception ->
+                                taskCompletionSource.setException(exception) // Error al actualizar
+                            }
+                    } else {
+                        taskCompletionSource.setException(Exception("Intercambio no encontrado"))
+                    }
+                } else {
+                    taskCompletionSource.setException(Exception("Documento no encontrado"))
+                }
+            }
+            .addOnFailureListener { exception ->
+                taskCompletionSource.setException(exception)
+            }
+
+        return taskCompletionSource.task
+    }
+
+
+
 }

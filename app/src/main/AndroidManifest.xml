@@ -16,6 +16,12 @@
         android:theme="@style/Theme.Intercambios"
         tools:targetApi="35">
         <activity
+            android:name=".ui.participante.AsignacionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.intercambio.SorteoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.intercambio.CrearIntercambioActivity"
             android:exported="false" />
         <activity

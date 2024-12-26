@@ -1,6 +1,7 @@
 package com.example.intercambios.ui.intercambio
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,8 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -16,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.intercambios.R
+import com.example.intercambios.data.models.Intercambio
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.data.models.UsersRepository
@@ -50,15 +54,21 @@ class DetalleIntercambio : AppCompatActivity() {
     private lateinit var btnTema: Button
     private lateinit var btnConsultaSort: Button
     private lateinit var btnRechazar: Button
+    private lateinit var btnInvitacion: Button
     private var autorizaSalir: Boolean = true
     private var sorteoRealizado = false
     private var autorizaAdelantarSorteo = false
     private var unirNuevoUser: Boolean = false
+    private var actualIsOwner: Boolean = false
     private lateinit var docID: String
+
+    private var selectedThemes = mutableListOf<String>() // Lista vacía inicialmente
+
 
     private lateinit var genUtils: GeneralUtils
 
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
     private lateinit var intercambioUtils: IntercambioRepository
     private val usersUtils = UsersRepository()
@@ -87,9 +97,11 @@ class DetalleIntercambio : AppCompatActivity() {
         btnUnirme = findViewById(R.id.btn_unirme)
         btnTema = findViewById(R.id.btn_selecciontema)
         btnRechazar = findViewById(R.id.btn_rechazar)
+        btnInvitacion = findViewById(R.id.btn_invitar)
         btnConsultaSort = findViewById(R.id.btn_consultarsorteo)
         btnUnirme.visibility = View.GONE //INICIALMENTE OCULTOS
         btnAdelentar.visibility = View.GONE
+        btnInvitacion.visibility = View.GONE
         btnEdit.visibility = View.GONE
         btnTema.visibility = View.GONE
         btnDelete.visibility = View.GONE
@@ -149,9 +161,29 @@ class DetalleIntercambio : AppCompatActivity() {
 
         btnDelete.setOnClickListener {
             if(autorizaSalir){
-                Toast.makeText(this, "Eliminar/salir del intercambio.", Toast.LENGTH_SHORT).show()
+                if(actualIsOwner){
+                    intercambioUtils.eliminarIntercambioPorId(docID).addOnSuccessListener { success ->
+                        if(success){
+                            genUtils.showAlertandFinish(getString(R.string.success_message), getString(R.string.success_salida_titulo))
+                        }else{
+                            genUtils.showAlertandFinish(getString(R.string.error_eliminar), getString(R.string.error_title))
+                        }
+                    }.addOnFailureListener{
+                        genUtils.showAlertandFinish(getString(R.string.error_eliminar), getString(R.string.error_title))
+                    }
+                }else if(userEmail != null){
+                    intercambioUtils.eliminarParticipante(docID,userEmail).addOnSuccessListener { success ->
+                        if(success){
+                            genUtils.showAlertandFinish(getString(R.string.success_salir_exchange), getString(R.string.success_salida_titulo))
+                        }else{
+                            genUtils.showAlertandFinish(getString(R.string.error_rechazo), getString(R.string.error_title))
+                        }
+                    }.addOnFailureListener{
+                        genUtils.showAlertandFinish(getString(R.string.error_rechazo), getString(R.string.error_title))
+                    }
+                }
             }else{
-                Toast.makeText(this, getString(R.string.warning_salir), Toast.LENGTH_SHORT).show()
+                genUtils.showAlert(getString(R.string.warning_salir))
             }
         }
 
@@ -163,14 +195,118 @@ class DetalleIntercambio : AppCompatActivity() {
             }
         }
 
-        btnAdelentar.setOnClickListener { Toast.makeText(this, "Adelantar sorteo", Toast.LENGTH_SHORT).show() }
-        btnUnirme.setOnClickListener { Toast.makeText(this, "Unirme al intercambio", Toast.LENGTH_SHORT).show() }
+        btnAdelentar.setOnClickListener {
+            val sorteoIntent = Intent(this, SorteoActivity::class.java).apply {
+                putExtra("docId", docID)
+            }
+            startActivity(sorteoIntent)
+        }
+
+        btnInvitacion.setOnClickListener {
+            if(code.text.isNotBlank() && nombre.text.isNotBlank()){
+                intercambioUtils.generarEnlaceDinamico(code.text.toString()) { link ->
+                    if (link != null) {
+                        enviarInvitacion(link, nombre.text.toString(), code.text.toString())
+                    } else {
+                        Log.e("CrearIntercambio", "Error al generar el enlace dinámico")
+                    }
+                }
+            }else{
+                genUtils.showAlert(getString(R.string.no_encontrado_email))
+            }
+        }
+
+        btnRechazar.setOnClickListener {
+            if (userEmail != null) {
+                intercambioUtils.eliminarParticipante(docID,userEmail).addOnSuccessListener { success ->
+                    if(success){
+                        genUtils.showAlertandFinish(getString(R.string.invitacion_rechazada),getString(R.string.rechazo_titulo))
+                    }else{
+                        genUtils.showAlertandFinish(getString(R.string.error_rechazo), getString(R.string.error_title))
+                    }
+                }.addOnFailureListener{
+                    genUtils.showAlertandFinish(getString(R.string.error_rechazo), getString(R.string.error_title))
+                }
+            }
+        }
+
+        btnUnirme.setOnClickListener {
+            showThemesDialog()
+        }
+    }
+
+    private fun showThemesDialog() {
+        // Inflar el diseño personalizado
+        val dialogView = layoutInflater.inflate(R.layout.dialog_selecciontema, null)
+        // Obtener el RadioGroup para las opciones
+        val selectionGroup = dialogView.findViewById<RadioGroup>(R.id.selectionGroup)
+
+        // Agregar las opciones dinámicamente
+        selectedThemes.forEachIndexed { index, option ->
+            val radioButton = RadioButton(this).apply {
+                id = View.generateViewId()
+                text = option
+                textSize = 15f
+                setTextAppearance(R.style.CustomRadioButton)
+            }
+            selectionGroup.addView(radioButton)
+        }
+
+        // Crear y configurar el AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        // Configurar el botón de confirmación
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            val selectedId = selectionGroup.checkedRadioButtonId
+            if (selectedId == -1) {
+                // No se ha seleccionado ninguna opción
+                Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+            } else {
+                // Se ha seleccionado una opción
+                val selectedRadioButton = dialogView.findViewById<RadioButton>(selectedId)
+                val selectedOption = selectedRadioButton?.text?.toString()
+
+                if (!selectedOption.isNullOrBlank()) {
+                    val tempSelectedIndex = selectedThemes.indexOf(selectedOption)
+                    if (tempSelectedIndex != -1) {
+                        alertDialog.dismiss()
+                        agregarParticipanteFirebase(selectedOption)
+                    } else {
+                        Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        // Mostrar el diálogo
+        alertDialog.show()
+    }
+
+    private fun agregarParticipanteFirebase(selectedTheme: String){
+        if(userEmail != null){
+            intercambioUtils.agregarParticipante(docID,userEmail, selectedTheme).addOnSuccessListener { success ->
+                if(success){
+                    genUtils.showAlertandFinish(getString(R.string.union_message), getString(R.string.union_title))
+                }else{
+                    genUtils.showAlertandFinish(getString(R.string.error_union), getString(R.string.error_title))
+                }
+            }.addOnFailureListener{
+                genUtils.showAlertandFinish(getString(R.string.error_union), getString(R.string.error_title))
+            }
+        }
     }
 
     private fun consultarFirebase(docID: String){
         intercambioUtils.obtenerIntercambioPorId(docID)
             .addOnSuccessListener { intercambio ->
+                findViewById<TextView>(R.id.tex9title).text = getString(R.string.cantidad_participantes, intercambio.personasRegistradas.toString(), intercambio.numPersonas.toString())
                 nombre.text = intercambio.nombre
+                selectedThemes = intercambio.temas.toMutableList() // Asignar la lista de temas al valor de selectedThemes
                 fechaIntercambio.text = intercambio.fechaIntercambio
                 horaIntercambio.text = intercambio.horaIntercambio
                 lugarIntercambio.text = intercambio.lugarIntercambio
@@ -183,6 +319,7 @@ class DetalleIntercambio : AppCompatActivity() {
                 if(intercambio.sorteo && userId != intercambio.organizador){ //Si no eres el organizador y el sorteo ya se hizo no permite salir
                     autorizaSalir = false
                 }
+
                 val regViewBG = color.background
                 try {
                     regViewBG.setTint(Color.parseColor(intercambio.color))
@@ -193,7 +330,7 @@ class DetalleIntercambio : AppCompatActivity() {
                 temas.text = formatearTemas(intercambio.temas)
 
                 val todosActivos = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isBlank() }
-                if(todosActivos == null){ //si no encuentra ninguno inactivo puede adelantar el sorteo
+                if(todosActivos == null && intercambio.personasRegistradas == intercambio.numPersonas){ //si no encuentra ninguno inactivo puede adelantar el sorteo
                     autorizaAdelantarSorteo = true
                 }
 
@@ -205,10 +342,18 @@ class DetalleIntercambio : AppCompatActivity() {
                     }
                 }else{ //EN caso de que si lo encuentre
                     // Aquí puedes trabajar con el objeto Intercambio
-                    btnConsultaSort.visibility = View.VISIBLE
+                    if(intercambio.sorteo){
+                        btnConsultaSort.visibility = View.VISIBLE
+                    }
+                    if(!autorizaAdelantarSorteo){ //todos los usuarios listos
+                        btnInvitacion.visibility = View.VISIBLE
+                    }
                     btnDelete.visibility = View.VISIBLE
-                    btnTema.visibility = View.VISIBLE
+                    if(userActual?.temaRegalo.isNullOrBlank()){
+                        btnTema.visibility = View.VISIBLE
+                    }
                     if(intercambio.organizador == userId){ //Para quitarle ciertos privilegios al usuario común
+                        actualIsOwner = true
                         btnEdit.visibility = View.VISIBLE
                         btnDelete.text = getString(R.string.eliminar_intercambio)
                         if(autorizaAdelantarSorteo){
@@ -235,9 +380,10 @@ class DetalleIntercambio : AppCompatActivity() {
 
                 Tasks.whenAllComplete(tasks)
                     .addOnSuccessListener { results ->
-                        val participantesInfo = results.mapNotNull { task ->
-                            if (task.isSuccessful) task.result as Pair<Participante, Usuario> else null
-                        }
+                        @Suppress("UNCHECKED_CAST")
+                            val participantesInfo = results.mapNotNull { task ->
+                                if (task.isSuccessful) task.result as Pair<Participante, Usuario> else null
+                            }
 
                         val miParticipante = participantesInfo.find { (participante, _) -> participante.uid == intercambio.organizador }
 
@@ -269,10 +415,18 @@ class DetalleIntercambio : AppCompatActivity() {
                     }
 
             }
-            .addOnFailureListener { exception ->
+            .addOnFailureListener {
                 // Maneja el error si no se puede obtener el intercambio
                 finish()
             }
+    }
+
+    private fun enviarInvitacion(enlace: String, nombreIntercambio: String, codigo: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.inv_asunto))
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.inv_mensaje, nombreIntercambio, enlace, codigo))
+        startActivity(Intent.createChooser(intent, getString(R.string.enviar_invitacion)))
     }
 
     private fun formatearTemas(temas: List<String>): String {

@@ -39,6 +39,31 @@ class GeneralUtils(private val context: Context){
          alertDialog.show()
     }
 
+    fun showAlertandFinish(message: String, title: String?) {
+        val inflater = LayoutInflater.from(context)
+        val dialogView = inflater.inflate(R.layout.dialog_error_general, null)
+        if(!title.isNullOrEmpty()){
+            val titulo = dialogView.findViewById<TextView>(R.id.tituloError)
+            titulo.text = title
+        }
+        val errorText = dialogView.findViewById<TextView>(R.id.mensajeText)
+        errorText.text = message
+
+        val alertDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .setCancelable(false)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            if (context is Activity) {
+                context.finish() // Finaliza la actividad si el contexto es una actividad
+            }
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
     fun alertRecuperacion(message: String) {
         val inflater = LayoutInflater.from(context)
         val dialogView = inflater.inflate(R.layout.dialog_error_general, null)

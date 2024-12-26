@@ -91,11 +91,27 @@
     <string name="selecciona_un_tema">Selecciona un tema</string>
     <string name="rechazar_invitacion">Rechazar invitación</string>
     <string name="no_encontrado_email">No se encontró ningún intercambio con el código proporcionado.</string>
+    <string name="sorteo_listo">El sorteo ya se realizó.</string>
+    <string name="resultados_listos">Las asignaciones están listas, ya puedes consultar la tuya desde los detalles.</string>
     <string name="crear_intercambio">Crear Intercambio</string>
     <string name="cancelar">Cancelar</string>
     <string name="invitar_contacto">Invitar contacto +</string>
+    <string name="invitacion_rechazada">Saliste del intercambio, no se le notificará a nadie que declinaste la invitación.</string>
+    <string name="error_rechazo">Algo salió mal al intentar salir del intercambio.</string>
+    <string name="error_union">Algo salió mal al intentar unirte al intercambio.</string>
+    <string name="rechazo_titulo">INVITACIÓN RECHAZADA</string>
+    <string name="union_title">UNIÓN EXITOSA</string>
+    <string name="union_message">Has entrado al intercambio con éxito!!</string>
+    <string name="success_salida_titulo">INTERCAMBIO ELIMINADO</string>
+    <string name="success_message">El intercambio fue eliminado con éxito junto con sus participantes.</string>
+    <string name="success_salir_exchange">Saliste del intercambio correctamente, no se le notificará a nadie de tu ausencia.</string>
+    <string name="error_eliminar">Algo salió mal al intentar eliminar el intercambio.</string>
     <string name="identificador_de_color">Identificador de color:</string>
     <string name="nombre_del_intercambio">Nombre del intercambio</string>
+    <string name="realizando_sorteo_espera_un_momento">Realizando sorteo, espera un momento.</string>
+    <string name="enviar_invitacion">Enviar invitación</string>
+    <string name="inv_asunto">Invitación a un intercambio</string>
+    <string name="inv_mensaje">Hola! Te invito al intercambio: %1$s. Únete usando este enlace: %2$s o el siguiente código: %3$s.</string>
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">

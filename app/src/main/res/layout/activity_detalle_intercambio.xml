@@ -567,7 +567,7 @@
     <FrameLayout
         android:id="@+id/btnLayout"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -582,7 +582,7 @@
 
             <LinearLayout
                 android:id="@+id/btnLayoutchild"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="24dp">
@@ -614,6 +614,17 @@
                     android:background="@drawable/card_background"
                     android:layout_marginStart="10dp"
                     android:text="@string/adelantar_sorteo"
+                    android:textSize="15sp"
+                    android:textAllCaps="false"
+                    style="@style/CustomButtonThemeAccept" />
+
+                <Button
+                    android:id="@+id/btn_invitar"
+                    android:layout_width="180dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/card_background"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/enviar_invitacion"
                     android:textSize="15sp"
                     android:textAllCaps="false"
                     style="@style/CustomButtonThemeAccept" />
