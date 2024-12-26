@@ -41,8 +41,8 @@ class LoginActivity : BaseActivity() {
         btnRegister.setOnClickListener {
             // Cambia al registro
             val regIntent = Intent(this, RegisterActivity::class.java)
-            finish()//finaliza la actividad
             startActivity(regIntent)//regresa a la pantalla principal
+            finish()//finaliza la actividad
         }
 
         //SETUP

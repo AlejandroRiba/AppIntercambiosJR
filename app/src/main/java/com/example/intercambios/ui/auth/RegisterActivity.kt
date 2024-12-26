@@ -3,6 +3,7 @@ package com.example.intercambios.ui.auth
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -15,6 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.BaseActivity
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
+import com.example.intercambios.ui.ProviderType
 import com.example.intercambios.utils.GeneralUtils
 import kotlinx.coroutines.launch
 
@@ -40,8 +42,8 @@ class RegisterActivity : BaseActivity() {
         findViewById<Button>(R.id.btnLogin).setOnClickListener {
             // Cambia al login
             val loginIntent = Intent(this, LoginActivity::class.java)
-            finish()//finaliza la actividad
             startActivity(loginIntent)//regresa a la pantalla principal
+            finish()//finaliza la actividad
         }
 
         //Setup
@@ -72,6 +74,40 @@ class RegisterActivity : BaseActivity() {
                     } else {
                         genUtils.showAlert("El correo ya está registrado o hubo un error.")
                     }
+                }
+            }
+        }
+
+        findViewById<Button>(R.id.btnGoogle).setOnClickListener {
+            val loadingDialog = mostrarCarga()
+            lifecycleScope.launch {
+                try {
+                    val success = firebaseHelper.loginWithGoogle()
+                    // Cuando la tarea haya terminado, cerrar el diálogo
+                    loadingDialog.dismiss()
+                    aplicarWindowInsets()
+                    if(success.first){
+                        val user = firebaseHelper.getCurrentUser()
+                        if (user != null) {
+                            if(success.second){
+                                genUtils.showAvatars(ProviderType.GOOGLE, user.email.toString())
+                            }else{
+                                genUtils.showHome(ProviderType.GOOGLE, user.email.toString())
+                            }
+                        }
+                    }
+                } catch (e: androidx.credentials.exceptions.GetCredentialCancellationException) {
+                    Log.e("LoginActivity", "Inicio de sesión cancelado por el usuario.")
+                    // Cuando la tarea haya terminado, cerrar el diálogo
+                    loadingDialog.dismiss()
+                    aplicarWindowInsets()
+                    //genUtils.showAlert("Inicio de sesión cancelado por el usuario.")
+                } catch (e: Exception) {
+                    Log.e("LoginActivity", "Error durante el inicio de sesión con Google: ${e.message}", e)
+                    // Cuando la tarea haya terminado, cerrar el diálogo
+                    loadingDialog.dismiss()
+                    aplicarWindowInsets()
+                    genUtils.showAlert(getString(R.string.error_inicio_google, e.message))
                 }
             }
         }

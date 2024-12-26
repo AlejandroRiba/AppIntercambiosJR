@@ -12,12 +12,12 @@
         android:layout_height="wrap_content"
         android:text="@string/nuevo_intercambio"
         android:textAlignment="center"
-        android:textSize="36sp"
+        android:textSize="28sp"
         android:textColor="@color/azulPrincipal"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="34dp"
         android:textStyle="bold"/>
 
     <ScrollView

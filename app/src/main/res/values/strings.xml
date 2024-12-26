@@ -37,7 +37,7 @@
     <string name="recuperacion_error_enviado">No se pudo enviar el correo de recuperación. Verifica la dirección de correo.</string>
     <string name="correo_requerido">Por favor, ingresa tu correo electrónico.</string>
     <!-- Para el monto -->
-    <string name="monto_intercambio">\$%1$.2f</string>
+    <string name="monto_intercambio">$%1$.2f</string>
 
     <!-- Para el código de intercambio -->
     <string name="codigo_intercambio">Código: %1$s</string>
@@ -112,6 +112,24 @@
     <string name="enviar_invitacion">Enviar invitación</string>
     <string name="inv_asunto">Invitación a un intercambio</string>
     <string name="inv_mensaje">Hola! Te invito al intercambio: %1$s. Únete usando este enlace: %2$s o el siguiente código: %3$s.</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="correo_electr_nico">Correo electrónico</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="acceder_con_google">Acceder con Google</string>
+    <string name="crear_una_cuenta">Crear una cuenta</string>
+    <string name="olvidaste_tu_contrase_a">¿Olvidaste tu contraseña?</string>
+    <string name="iniciar_sesi_n">Iniciar Sesión</string>
+    <string name="nombre_completo">Nombre completo</string>
+    <string name="alias">Alias</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="ya_tengo_una_cuenta">Ya tengo una cuenta</string>
+    <string name="tus_intercambios">Tus intercambios</string>
+    <string name="idioma">Idioma</string>
+    <string name="tema">Tema</string>
+    <string name="ingles">Inglés</string>
+    <string name="espanol">Español</string>
+    <string name="oscuro">Oscuro</string>
+    <string name="claro">Claro</string>
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">
@@ -128,7 +146,7 @@
     </string-array>
     <!-- temas para el intercambio  -->
     <string-array name="themes_array">
-        <item>* Selecciona un tema para el intercambio</item>
+        <item>* Selecciona un tema</item>
         <item>Ropa</item>
         <item>Libros</item>
         <item>Tazas</item>
@@ -144,7 +162,15 @@
         <item>Marvel</item>
         <item>Anime</item>
         <item>Cómputo</item>
+        <item>Juegos</item> <!-- Added -->
+        <item>Música</item> <!-- Added -->
+        <item>Viajes</item> <!-- Added -->
+        <item>Decoración del hogar</item> <!-- Added -->
+        <item>Material de arte</item> <!-- Added -->
+        <item>Fitness</item> <!-- Added -->
     </string-array>
 
+    <string name="language_changed">Idioma cambiado a %1$s</string>
+    <string name="theme_changed">Tema cambiado a %1$s</string>
 
 </resources>
