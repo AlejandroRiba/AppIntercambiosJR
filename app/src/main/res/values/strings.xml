@@ -21,7 +21,7 @@
     <string name="no_descripcion">Sin descripción</string>
     <string name="no_encontrado">No encontrado.</string>
     <string name="no_registrado">No registrado</string>
-    <string name="usuario_info">Nombre: %1$s (Alias: %2$s) Email: %3$s</string>
+    <string name="usuario_info">Nombre: %1$s (Alias: %2$s)\nEmail: %3$s</string>
     <string name="salir_intercambio">Salir del\nintercambio</string>
     <string name="eliminar_intercambio">Eliminar\nintercambio</string>
     <string name="adelantar_sorteo">Adelantar\nsorteo</string>
@@ -52,7 +52,7 @@
     <string name="num_personas">%1$d participantes</string>
 
     <!-- Para el estatus de los participantes -->
-    <string name="estatus_participante">• %1$s - Estatus: %2$s \t\t%3$s</string>
+    <string name="estatus_participante">• %1$s - Estatus: %2$s\n\t\t%3$s</string>
     <string name="cantidad_participantes">Participantes: %1$s / %2$s</string>
 
     <string name="organizador">Organizador</string>
@@ -70,7 +70,7 @@
     <string name="lugar_del_intercambio">Lugar del intercambio</string>
     <string name="hora_del_intercambio">Hora del intercambio</string>
     <string name="fecha_del_intercambio">Fecha del intercambio</string>
-    <string name="editar_intercambio">editar intercambio</string>
+    <string name="editar_intercambio">Editar intercambio</string>
     <string name="btn_regresar">Botón regresar</string>
     <string name="intercambio">Intercambio</string>
     <string name="ingrese_el_c_digo">Ingrese el código</string>
@@ -179,5 +179,31 @@
     <string name="guardar">Guardar</string>
     <string name="please_select">Por favor, selecciona un avatar</string>
     <string name="email_existe">El correo ya está registrado o hubo un error.</string>
-
+    <string name="inconsistencia_participantes">Existe un error en el número de participantes y el número de invitados, comprueba e intenta de nuevo.</string>
+    <string name="campo_obligatorio">Este campo es obligatorio</string>
+    <string name="num_personas_mayor_uno">El número de personas debe ser mayor a uno</string>
+    <string name="ingresar_fecha_interc">Debe ingresar una fecha de intercambio</string>
+    <string name="ingresar_fecha_registro">Debe ingresar una fecha máxima de registro</string>
+    <string name="fecha_posterior_error">La fecha de registro no puede ser posterior a la fecha del intercambio</string>
+    <string name="dia_holgura">Debe haber al menos un día de diferencia entre las fechas</string>
+    <string name="formato_fecha_invalido">Formato de fecha inválido</string>
+    <string name="tres_temas">Solo puedes seleccionar hasta 3 temas</string>
+    <string name="tema_seleccionado">El tema ya está seleccionado</string>
+    <string name="tema_seleccionado_exito">Seleccionaste tu tema con éxito.</string>
+    <string name="error_tema_selecc">Algo salió mal al editar tu tema.</string>
+    <string name="titulo_exito">EDICIÓN CON ÉXITO</string>
+    <string-array name="meses">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
 </resources>

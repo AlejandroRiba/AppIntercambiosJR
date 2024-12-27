@@ -24,6 +24,8 @@ import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.data.models.Usuario
+import com.example.intercambios.utils.DateUtils.dateFormatting
+import com.example.intercambios.utils.DateUtils.isDatePast
 import com.example.intercambios.utils.GeneralUtils
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -41,7 +43,6 @@ class DetalleIntercambio : AppCompatActivity() {
     private lateinit var lugarIntercambio: TextView
     private lateinit var montoIntercambio: TextView
     private lateinit var color: View
-    private lateinit var personasRegistradas: TextView
     private lateinit var participantes: TextView
     private lateinit var temas: TextView
     private lateinit var organizador: TextView
@@ -60,7 +61,9 @@ class DetalleIntercambio : AppCompatActivity() {
     private var autorizaAdelantarSorteo = false
     private var unirNuevoUser: Boolean = false
     private var actualIsOwner: Boolean = false
+    private var isDateExpired: Boolean = false
     private lateinit var docID: String
+    private lateinit var codigo: String
 
     private var selectedThemes = mutableListOf<String>() // Lista vacía inicialmente
 
@@ -86,7 +89,7 @@ class DetalleIntercambio : AppCompatActivity() {
         genUtils = GeneralUtils(this)
         intercambioUtils = IntercambioRepository()
         docID = intent.getStringExtra("docId") ?: ""
-        val codigo = intent.getStringExtra("codigo") ?: ""
+        codigo = intent.getStringExtra("codigo") ?: ""
         unirNuevoUser = intent.getBooleanExtra("union", false)
 
         //Referencias a los componenetes
@@ -121,43 +124,13 @@ class DetalleIntercambio : AppCompatActivity() {
         numPersonas = findViewById(R.id.texA)
         descripcion = findViewById(R.id.texB)
 
-        if(docID.isNotEmpty()) {
-            Log.i("DetalleIntercambio", docID)
-            consultarFirebase(docID)
-        }else{
-            if(codigo.isNotBlank()){
-                intercambioUtils.obtenerDocId(codigo)
-                    .addOnSuccessListener { interID ->
-                        // Si se encuentra el documento, llama a consultarFirebase
-                        docID = interID
-                        consultarFirebase(interID)
-                    }
-                    .addOnFailureListener {
-                        // Si ocurre un error, muestra un AlertDialog y finaliza la Activity
-                        val inflater = LayoutInflater.from(this)
-                        val dialogView = inflater.inflate(R.layout.dialog_error_general, null)
-                        val errorText = dialogView.findViewById<TextView>(R.id.mensajeText)
-                        errorText.text = getString(R.string.no_encontrado_email)
-
-                        val alertDialog = androidx.appcompat.app.AlertDialog.Builder(this)
-                            .setView(dialogView)
-                            .setCancelable(false)
-                            .create()
-
-                        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
-                            alertDialog.dismiss()
-                            finish()
-                        }
-
-                        alertDialog.show()
-                    }
-            }else{
-                finish() //si el codigo esta vacio y no hay docID entonces bye
-            }
-        }
-
         btnBack.setOnClickListener { finish() }
-        btnEdit.setOnClickListener { Toast.makeText(this, "Editar intercambio.", Toast.LENGTH_SHORT).show() }
+        btnEdit.setOnClickListener {
+            val intentEdit = Intent(this, EditarIntercambio::class.java).apply {
+                putExtra("docId", docID)
+            }
+            startActivity(intentEdit)
+        }
 
         btnDelete.setOnClickListener {
             if(autorizaSalir){
@@ -231,11 +204,38 @@ class DetalleIntercambio : AppCompatActivity() {
         }
 
         btnUnirme.setOnClickListener {
-            showThemesDialog()
+            showThemesDialog(false)
+        }
+
+        btnTema.setOnClickListener {
+            showThemesDialog(true)
         }
     }
 
-    private fun showThemesDialog() {
+    override fun onResume() {
+        super.onResume()
+        if(docID.isNotEmpty()) {
+            Log.i("DetalleIntercambio", docID)
+            consultarFirebase(docID)
+        }else{
+            if(codigo.isNotBlank()){
+                intercambioUtils.obtenerDocId(codigo)
+                    .addOnSuccessListener { interID ->
+                        // Si se encuentra el documento, llama a consultarFirebase
+                        docID = interID
+                        consultarFirebase(interID)
+                    }
+                    .addOnFailureListener { e ->
+                        Log.e("Detalle", "Mensaje de error $e")
+                        genUtils.showAlertandFinish(getString(R.string.no_encontrado_email), getString(R.string.error_title))
+                    }
+            }else{
+                finish() //si el codigo esta vacio y no hay docID entonces bye
+            }
+        }
+    }
+
+    private fun showThemesDialog(edit: Boolean) {
         // Inflar el diseño personalizado
         val dialogView = layoutInflater.inflate(R.layout.dialog_selecciontema, null)
         // Obtener el RadioGroup para las opciones
@@ -273,7 +273,11 @@ class DetalleIntercambio : AppCompatActivity() {
                     val tempSelectedIndex = selectedThemes.indexOf(selectedOption)
                     if (tempSelectedIndex != -1) {
                         alertDialog.dismiss()
-                        agregarParticipanteFirebase(selectedOption)
+                        if(edit){
+                            editarParticipanteFirebase(selectedOption)
+                        }else{
+                            agregarParticipanteFirebase(selectedOption)
+                        }
                     } else {
                         Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
                     }
@@ -301,18 +305,35 @@ class DetalleIntercambio : AppCompatActivity() {
         }
     }
 
+    private fun editarParticipanteFirebase(selectedTheme: String){
+        if(userId != null){
+            intercambioUtils.editarTemaRegalo(docID, selectedTheme).addOnSuccessListener { success ->
+                if(success){
+                    genUtils.showAlertandFinish(getString(R.string.tema_seleccionado_exito), getString(R.string.titulo_exito))
+                }else{
+                    genUtils.showAlertandFinish(getString(R.string.error_tema_selecc), getString(R.string.error_title))
+                }
+            }.addOnFailureListener{
+                genUtils.showAlertandFinish(getString(R.string.error_tema_selecc), getString(R.string.error_title))
+            }
+        }
+    }
+
     private fun consultarFirebase(docID: String){
         intercambioUtils.obtenerIntercambioPorId(docID)
             .addOnSuccessListener { intercambio ->
                 findViewById<TextView>(R.id.tex9title).text = getString(R.string.cantidad_participantes, intercambio.personasRegistradas.toString(), intercambio.numPersonas.toString())
                 nombre.text = intercambio.nombre
                 selectedThemes = intercambio.temas.toMutableList() // Asignar la lista de temas al valor de selectedThemes
-                fechaIntercambio.text = intercambio.fechaIntercambio
+                fechaIntercambio.text = dateFormatting(this, intercambio.fechaIntercambio)
                 horaIntercambio.text = intercambio.horaIntercambio
                 lugarIntercambio.text = intercambio.lugarIntercambio
                 montoIntercambio.text = getString(R.string.monto_intercambio, intercambio.monto)
                 code.text = intercambio.code
-                fechaMaxRegistro.text = intercambio.fechaMaxRegistro
+                fechaMaxRegistro.text = dateFormatting(this, intercambio.fechaMaxRegistro)
+                if(isDatePast(intercambio.fechaMaxRegistro)){
+                    isDateExpired = true
+                }
                 numPersonas.text = getString(R.string.num_personas, intercambio.numPersonas)
                 descripcion.text = intercambio.descripcion
                 sorteoRealizado = intercambio.sorteo
@@ -336,9 +357,11 @@ class DetalleIntercambio : AppCompatActivity() {
 
                 val userActual =  intercambio.participantes.find { participante -> participante.uid == userId }
                 if((userActual == null && unirNuevoUser) || (userActual != null && unirNuevoUser && !userActual.activo)){ //se debe especificar en el intent
-                    btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
-                    if(userActual != null){ //Si el participante ya está en la lista de participantes pero no ha aceptado
-                        btnRechazar.visibility = View.VISIBLE
+                    if(!isDateExpired){
+                        btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
+                        if(userActual != null){ //Si el participante ya está en la lista de participantes pero no ha aceptado
+                            btnRechazar.visibility = View.VISIBLE
+                        }
                     }
                 }else{ //EN caso de que si lo encuentre
                     // Aquí puedes trabajar con el objeto Intercambio
@@ -420,6 +443,8 @@ class DetalleIntercambio : AppCompatActivity() {
                 finish()
             }
     }
+
+
 
     private fun enviarInvitacion(enlace: String, nombreIntercambio: String, codigo: String) {
         val intent = Intent(Intent.ACTION_SEND)

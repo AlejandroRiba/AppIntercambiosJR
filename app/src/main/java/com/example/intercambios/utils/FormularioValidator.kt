@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import com.example.intercambios.R
 import com.example.intercambios.databinding.NuevoIntercambioBinding
 import com.google.android.material.textfield.TextInputLayout
 import java.text.ParseException
@@ -20,11 +21,11 @@ class FormularioValidator(
     fun validarFormulario() {
         validarFechaRegistro(binding.edTextFechaRegistro, binding.textInputLayoutFechaRegistro, binding.edTextFechaIntercambio, binding.textInputLayoutFechaIntercambio)
         validarFechaIntercambio(binding.edTextFechaIntercambio, binding.textInputLayoutFechaIntercambio, binding.edTextFechaRegistro, binding.textInputLayoutFechaRegistro)
-        validarCampoTexto(binding.edTextNombre, binding.textInputLayoutNombreIntercambio, "Este campo es obligatorio")
-        validarCampoTexto(binding.edTextMontoMax, binding.textInputLayoutMonto, "Este campo es obligatorio")
+        validarCampoTexto(binding.edTextNombre, binding.textInputLayoutNombreIntercambio, context.getString(R.string.campo_obligatorio))
+        validarCampoTexto(binding.edTextMontoMax, binding.textInputLayoutMonto, context.getString(R.string.campo_obligatorio))
         validarCampoNumerico(binding.edTextNumPersonas, binding.textInputLayoutPersonas)
-        validarCampoTexto(binding.edTextHora, binding.textInputLayoutHoraIntercambio, "Este campo es obligatorio")
-        validarCampoTexto(binding.edTextLugar, binding.textInputLayoutLugarIntercambio, "Este campo es obligatorio")
+        validarCampoTexto(binding.edTextHora, binding.textInputLayoutHoraIntercambio, context.getString(R.string.campo_obligatorio))
+        validarCampoTexto(binding.edTextLugar, binding.textInputLayoutLugarIntercambio, context.getString(R.string.campo_obligatorio))
     }
 
     private fun validarCampoTexto(editText: EditText, textInputLayout: TextInputLayout, errorMsg: String) {
@@ -45,6 +46,13 @@ class FormularioValidator(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        val input = editText.text
+        if (input.isNotBlank()) {
+            textInputLayout.error = null
+            textInputLayout.isErrorEnabled = false
+            isFormValid = true
+        }
     }
 
     private fun validarCampoNumerico(editText: EditText, textInputLayout: TextInputLayout) {
@@ -52,12 +60,12 @@ class FormularioValidator(
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 if (input.isBlank()) {
-                    textInputLayout.error = "Este campo es obligatorio"
+                    textInputLayout.error = context.getString(R.string.campo_obligatorio)
                     isFormValid = false
                 } else {
                     val number = input.toIntOrNull()
                     if (number == null || number < 2) {
-                        textInputLayout.error = "El número de personas debe ser mayor a uno"
+                        textInputLayout.error = context.getString(R.string.num_personas_mayor_uno)
                         isFormValid = false
                     } else {
                         textInputLayout.error = null
@@ -71,6 +79,20 @@ class FormularioValidator(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        val input = editText.text.toString()
+        if (input.isNotBlank()) {
+            val number = input.toIntOrNull()
+            if (number == null || number < 2) {
+                textInputLayout.error = context.getString(R.string.num_personas_mayor_uno)
+                isFormValid = false
+            } else {
+                textInputLayout.error = null
+                textInputLayout.isErrorEnabled = false
+                isFormValid = true
+            }
+        }
+
     }
 
     private fun validarFechaRegistro(
@@ -85,7 +107,7 @@ class FormularioValidator(
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 if (input.isBlank()) {
-                    fechaRegistroLayout.error = "Este campo es obligatorio"
+                    fechaRegistroLayout.error = context.getString(R.string.campo_obligatorio)
                     isFormValid = false
                 } else {
                     try {
@@ -98,7 +120,7 @@ class FormularioValidator(
 
                             if (fechaIntercambio == null) { //el campo de fecha de intercambio sigue vacio, entonces lo indicamos
                                 // Si no se ha ingresado la fecha de intercambio, mostramos el error
-                                binding.textInputLayoutFechaIntercambio.error = "Debe ingresar una fecha de intercambio"
+                                binding.textInputLayoutFechaIntercambio.error = context.getString(R.string.ingresar_fecha_interc)
                                 isFormValid = false
                             } else { //si el campo si tiene un valor comprobamos
                                 // Si la fecha de registro es posterior a la fecha del intercambio, mostramos el error
@@ -107,10 +129,10 @@ class FormularioValidator(
                                 // Convierte la diferencia a días
                                 val diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
                                 if (fechaRegistro.after(fechaIntercambio)) {
-                                    fechaRegistroLayout.error = "La fecha de registro no puede ser posterior a la fecha del intercambio"
+                                    fechaRegistroLayout.error = context.getString(R.string.fecha_posterior_error)
                                     isFormValid = false
                                 }else if(diferenciaEnDias < 1){
-                                    fechaRegistroLayout.error = "Debe haber al menos un día de diferencia entre las fechas"
+                                    fechaRegistroLayout.error = context.getString(R.string.dia_holgura)
                                     isFormValid = false
                                 } else{
                                     // Si todo es correcto, eliminamos el error en ambos inputs
@@ -123,7 +145,7 @@ class FormularioValidator(
                             }
                         }
                     } catch (e: ParseException) {
-                        fechaRegistroLayout.error = "Formato de fecha inválido"
+                        fechaRegistroLayout.error = context.getString(R.string.formato_fecha_invalido)
                         isFormValid = false
                     }
                 }
@@ -133,6 +155,49 @@ class FormularioValidator(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        val input = fechaRegistroEdtxt.text.toString()
+        if (input.isNotBlank()) {
+            try {
+                val fechaRegistro = sdf.parse(input)
+                if(fechaRegistro != null){
+                    val fechaIntercambioString = fechaIntercambioEdtxt.text.toString()
+                    val fechaIntercambio = if (fechaIntercambioString.isNotEmpty()) {
+                        sdf.parse(fechaIntercambioString)
+                    } else null
+
+                    if (fechaIntercambio == null) { //el campo de fecha de intercambio sigue vacio, entonces lo indicamos
+                        // Si no se ha ingresado la fecha de intercambio, mostramos el error
+                        binding.textInputLayoutFechaIntercambio.error = context.getString(R.string.ingresar_fecha_interc)
+                        isFormValid = false
+                    } else { //si el campo si tiene un valor comprobamos
+                        // Si la fecha de registro es posterior a la fecha del intercambio, mostramos el error
+                        // Calcula la diferencia en milisegundos
+                        val diferenciaEnMilisegundos = fechaIntercambio.time - fechaRegistro.time
+                        // Convierte la diferencia a días
+                        val diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
+                        if (fechaRegistro.after(fechaIntercambio)) {
+                            fechaRegistroLayout.error = context.getString(R.string.fecha_posterior_error)
+                            isFormValid = false
+                        }else if(diferenciaEnDias < 1){
+                            fechaRegistroLayout.error = context.getString(R.string.dia_holgura)
+                            isFormValid = false
+                        } else{
+                            // Si todo es correcto, eliminamos el error en ambos inputs
+                            fechaRegistroLayout.error = null
+                            fechaIntercambioLayout.error = null
+                            fechaRegistroLayout.isErrorEnabled = false
+                            fechaIntercambioLayout.isErrorEnabled = false
+                            isFormValid = true
+                        }
+                    }
+                }
+            } catch (e: ParseException) {
+                fechaRegistroLayout.error = context.getString(R.string.formato_fecha_invalido)
+                isFormValid = false
+            }
+        }
+
     }
 
     private fun validarFechaIntercambio(
@@ -147,7 +212,7 @@ class FormularioValidator(
             override fun afterTextChanged(s: Editable?) {
                 val input = s.toString()
                 if (input.isBlank()) {
-                    fechaIntercambioLayout.error = "Este campo es obligatorio"
+                    fechaIntercambioLayout.error =  context.getString(R.string.campo_obligatorio)
                     isFormValid = false
                 } else {
                     try {
@@ -160,7 +225,7 @@ class FormularioValidator(
 
                             if (fechaRegistro == null) {
                                 // Si no se ha ingresado la fecha de registro, mostramos el error
-                                fechaRegistroLayout.error = "Debe ingresar una fecha de registro"
+                                fechaRegistroLayout.error = context.getString(R.string.ingresar_fecha_registro)
                                 isFormValid = false
                             } else {
                                 // Si la fecha de registro es posterior a la fecha de intercambio, mostramos el error
@@ -169,10 +234,10 @@ class FormularioValidator(
                                 // Convierte la diferencia a días
                                 val diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
                                 if (fechaRegistro.after(fechaIntercambio)) {
-                                    fechaIntercambioLayout.error = "La fecha de registro no puede ser posterior a la fecha del intercambio"
+                                    fechaIntercambioLayout.error = context.getString(R.string.fecha_posterior_error)
                                     isFormValid = false
                                 } else if(diferenciaEnDias < 1){
-                                    fechaIntercambioLayout.error = "Debe haber al menos un día de diferencia entre las fechas"
+                                    fechaIntercambioLayout.error = context.getString(R.string.dia_holgura)
                                     isFormValid = false
                                 } else {
                                     // Si todo es correcto, eliminamos el error en ambos inputs
@@ -187,7 +252,7 @@ class FormularioValidator(
                         }
 
                     } catch (e: ParseException) {
-                        fechaIntercambioLayout.error = "Formato de fecha inválido"
+                        fechaIntercambioLayout.error =  context.getString(R.string.formato_fecha_invalido)
                         isFormValid = false
                     }
                 }
@@ -197,6 +262,51 @@ class FormularioValidator(
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
+
+        val input = fechaIntercambioEdtxt.text.toString()
+        if (input.isNotBlank()) {
+            try {
+                val fechaIntercambio = sdf.parse(input)
+                if(fechaIntercambio != null){
+                    val fechaRegistroString = fechaRegistroEdtxt.text.toString()
+                    val fechaRegistro = if (fechaRegistroString.isNotEmpty()) {
+                        sdf.parse(fechaRegistroString)
+                    } else null
+
+                    if (fechaRegistro == null) {
+                        // Si no se ha ingresado la fecha de registro, mostramos el error
+                        fechaRegistroLayout.error =  context.getString(R.string.ingresar_fecha_registro)
+                        isFormValid = false
+                    } else {
+                        // Si la fecha de registro es posterior a la fecha de intercambio, mostramos el error
+                        // Calcula la diferencia en milisegundos
+                        val diferenciaEnMilisegundos = fechaIntercambio.time - fechaRegistro.time
+                        // Convierte la diferencia a días
+                        val diferenciaEnDias = diferenciaEnMilisegundos / (1000 * 60 * 60 * 24)
+                        if (fechaRegistro.after(fechaIntercambio)) {
+                            fechaIntercambioLayout.error =  context.getString(R.string.fecha_posterior_error)
+                            isFormValid = false
+                        } else if(diferenciaEnDias < 1){
+                            fechaIntercambioLayout.error =  context.getString(R.string.dia_holgura)
+                            isFormValid = false
+                        } else {
+                            // Si todo es correcto, eliminamos el error en ambos inputs
+                            fechaIntercambioLayout.error = null
+                            fechaRegistroLayout.error = null
+                            fechaRegistroLayout.isErrorEnabled = false
+                            fechaIntercambioLayout.isErrorEnabled = false
+                            isFormValid = true
+                        }
+                    }
+
+                }
+
+            } catch (e: ParseException) {
+                fechaIntercambioLayout.error =  context.getString(R.string.formato_fecha_invalido)
+                isFormValid = false
+            }
+        }
+
     }
 
     fun getValid() :Boolean{

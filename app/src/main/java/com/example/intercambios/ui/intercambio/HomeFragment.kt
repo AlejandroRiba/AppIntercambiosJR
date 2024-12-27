@@ -15,6 +15,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.intercambios.R
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.databinding.FragmentHomeBinding
+import com.example.intercambios.utils.DateUtils.dateFormatting
 
 class HomeFragment : Fragment() {
 
@@ -85,7 +86,7 @@ class HomeFragment : Fragment() {
                                 val textViewCode = registroView.findViewById<TextView>(R.id.textViewCode)
 
                                 textViewNombre.text = intercambio.nombre
-                                textViewFecha.text = dateFormatting(intercambio.fechaIntercambio)
+                                textViewFecha.text = dateFormatting(requireActivity(),intercambio.fechaIntercambio)
                                 textViewHora.text = getString(R.string.hora_intercambio, intercambio.horaIntercambio)
                                 textViewParticipantes.text = getString(R.string.cantidad_participantes, (intercambio.personasRegistradas).toString(), intercambio.numPersonas.toString()) // Número de participantes
                                 textViewCode.text = getString(R.string.codigo_intercambio, intercambio.code)
@@ -98,7 +99,7 @@ class HomeFragment : Fragment() {
                                 registroView.animate()
                                     .translationY(0f)
                                     .alpha(1f)
-                                    .setDuration(1000)
+                                    .setDuration(800)
                                     .start()
 
                                 regViewContainer.setOnClickListener {
@@ -124,18 +125,6 @@ class HomeFragment : Fragment() {
                     Toast.makeText(requireActivity(), "Error al obtener intercambios.", Toast.LENGTH_SHORT).show()
                 }
             }
-    }
-
-
-    // Cambia el formato de las fechas
-    fun dateFormatting(date: String): String {
-        var meses = arrayOf("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
-
-        var anio = date.substring(0, 4)
-        var mes = meses[(date.substring(5, 7).toInt()) - 1]
-        var dia = date.substring(8)
-
-        return "$dia - $mes - $anio"
     }
 
     override fun onDestroyView() {

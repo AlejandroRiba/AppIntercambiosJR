@@ -21,7 +21,6 @@
         <item name="android:windowMinWidthMinor">80%</item>
     </style>
 
-
     <style name="CustomToolbarTitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textStyle">bold</item>
     </style>

@@ -46,7 +46,7 @@ class SorteoActivity : AppCompatActivity() {
             btnListo = findViewById(R.id.listo)
             titulo = findViewById(R.id.TitleTextView)
             animacion = findViewById(R.id.animateSort)
-            //btnListo.visibility = View.INVISIBLE
+            btnListo.visibility = View.INVISIBLE
             btnListo.setOnClickListener {
                 finish()
             }
@@ -65,6 +65,7 @@ class SorteoActivity : AppCompatActivity() {
                     Log.i("SorteoAct", listaParticipantes.toString())
                     Handler(Looper.getMainLooper()).postDelayed({
                         animacion.setAnimation(R.raw.success) // Cambia el recurso de Lottie
+                        animacion.playAnimation()
                         btnListo.visibility = View.VISIBLE // Muestra el botón
                         titulo.text = getString(R.string.resultados_listos)
                     }, 6000) // Tiempo en milisegundos (6 segundos)

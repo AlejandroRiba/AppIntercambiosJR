@@ -11,13 +11,26 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.text.Editable
 import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.RadioButton
+import android.widget.RadioGroup
+import android.widget.Spinner
+import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.EmailSender
@@ -25,21 +38,24 @@ import com.example.intercambios.data.models.Intercambio
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.data.models.UsersRepository
+import com.example.intercambios.data.models.Usuario
 import com.example.intercambios.databinding.NuevoIntercambioBinding
 import com.example.intercambios.utils.ColorSpinnerAdapter
 import com.example.intercambios.utils.DatePickerFragment
 import com.example.intercambios.utils.FormularioValidator
 import com.example.intercambios.utils.GeneralUtils
 import com.example.intercambios.utils.TimePickerFragment
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.properties.Delegates
 
-class CrearIntercambioActivity : AppCompatActivity() {
+class EditarIntercambio : AppCompatActivity() {
+
     private lateinit var binding: NuevoIntercambioBinding
 
     private lateinit var spinnerColor: Spinner
@@ -52,26 +68,31 @@ class CrearIntercambioActivity : AppCompatActivity() {
     private lateinit var horaIntercambioEdtxt: EditText
     private lateinit var lugarIntercambioEdtxt: EditText
 
-    private lateinit var selectedcolor: String
+
     private lateinit var nombre: String
     private lateinit var personas: String
     private lateinit var descripcion: String
+    private var selectedThemes = mutableListOf<String>() // Lista vacía inicialmente para los nuevos temas
+    private var selectedThemesConsult = mutableListOf<String>() //Lista vacía inicialmente para los cachados de firebase
     private lateinit var montoMax: String
     private lateinit var fechaRegistro: String
     private lateinit var fechaIntercambio: String
     private lateinit var horaIntercambio: String
     private lateinit var lugarIntercambio: String
+    private lateinit var organizador: String
+    private var selectedParticipants = mutableListOf<Participante>() //Lista de participantes
+    private var selectedParticipantsCopia = mutableListOf<Participante>() //Lista de participantes
+    private lateinit var selectedcolor: String
     private lateinit var botonGuardar: Button
     private lateinit var botonCancelar: Button
 
     private var selectedTheme: String? = null
-
+    private lateinit var intercambioViejo: Intercambio
 
     private lateinit var genUtils: GeneralUtils
     private lateinit var intercambioUtils: IntercambioRepository
     private lateinit var usersUtils: UsersRepository
 
-    private val selectedParticipants = mutableListOf<Participante>()
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -92,10 +113,10 @@ class CrearIntercambioActivity : AppCompatActivity() {
             }
         }
 
-    private val selectedThemes = mutableListOf<String>()
+    private lateinit var docID: String
 
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
-    private val emailUsr = FirebaseAuth.getInstance().currentUser?.email
+    private val userEmail = FirebaseAuth.getInstance().currentUser?.email
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -105,8 +126,38 @@ class CrearIntercambioActivity : AppCompatActivity() {
         genUtils = GeneralUtils(this)
         intercambioUtils = IntercambioRepository()
         usersUtils = UsersRepository()
+        docID = intent.getStringExtra("docId") ?: ""
+        if(docID.isNotEmpty()) {
+            Log.i("EditarIntercambio", docID)
+            consultarFirebase(docID) //busqueda de intercambio en firebase
+        }else{
+            genUtils.showAlertandFinish(getString(R.string.no_encontrado_email), getString(R.string.error_title))
+        }
+    }
 
-        initializeUI()
+    private fun consultarFirebase(docID: String){
+        intercambioUtils.obtenerIntercambioPorId(docID)
+            .addOnSuccessListener { intercambio ->
+                intercambioViejo = intercambio
+                nombre = intercambio.nombre
+                selectedThemes = intercambio.temas.toMutableList() // Asignar la lista de temas al valor de selectedThemes
+                selectedThemesConsult = intercambio.temas.toMutableList() //Lo usamos como auxiliar para guardar una copia de datos
+                fechaIntercambio = intercambio.fechaIntercambio
+                horaIntercambio = intercambio.horaIntercambio
+                lugarIntercambio = intercambio.lugarIntercambio
+                montoMax = intercambio.monto.toString()
+                fechaRegistro = intercambio.fechaMaxRegistro
+                personas = intercambio.numPersonas.toString()
+                descripcion = intercambio.descripcion
+                organizador = intercambio.organizador
+                selectedcolor = intercambio.color
+                Log.i("EditarIntercambio", "Color seleccionado : $selectedcolor")
+                selectedParticipants = intercambio.participantes.toMutableList()
+                selectedParticipantsCopia = intercambio.participantes.toMutableList()
+                initializeUI() //referencias a componentes
+            }.addOnFailureListener{
+                genUtils.showAlertandFinish(getString(R.string.no_encontrado_email), getString(R.string.error_title))
+            }
     }
 
     private fun initializeUI() {
@@ -122,16 +173,25 @@ class CrearIntercambioActivity : AppCompatActivity() {
         botonCancelar = binding.btnSaltar
         spinnerColor = binding.colorSpinner
 
-        inicializaSpinners()
+        val tituloTxt = binding.formTitleTextView
+        tituloTxt.text = getString(R.string.editar_intercambio)
+        botonGuardar.text = getString(R.string.guardar)
+        botonCancelar.text = getString(R.string.cancelar)
 
-        //Guardo al usuario actual como organizador
-        val participante = Participante(
-            uid = userId!!,
-            email = emailUsr!!,
-            asignadoA = "",
-            activo = true
-        ) // Se agrega al organizador
-        selectedParticipants.add(participante)
+        inicializaSpinners()
+        //Asignacion de valores
+        nombreEdtxt.text = Editable.Factory.getInstance().newEditable(nombre)
+        personasEdtxt.text = Editable.Factory.getInstance().newEditable(personas)
+        descripcionEdtxt.text = Editable.Factory.getInstance().newEditable(descripcion)
+        montoMaxEdtxt.text = Editable.Factory.getInstance().newEditable(montoMax)
+        fechaRegistroEdtxt.text = Editable.Factory.getInstance().newEditable(fechaRegistro)
+        fechaIntercambioEdtxt.text = Editable.Factory.getInstance().newEditable(fechaIntercambio)
+        horaIntercambioEdtxt.text = Editable.Factory.getInstance().newEditable(horaIntercambio)
+        lugarIntercambioEdtxt.text = Editable.Factory.getInstance().newEditable(lugarIntercambio)
+        //cargar participantes
+        loadParticipants()
+        loadThemes()
+
 
         horaIntercambioEdtxt.setOnClickListener { showTimePickerDialog(horaIntercambioEdtxt) }
         fechaIntercambioEdtxt.setOnClickListener { showDatePickerDialog(fechaIntercambioEdtxt) }
@@ -158,12 +218,79 @@ class CrearIntercambioActivity : AppCompatActivity() {
             if (validator.getValid()) {
                 sendFeedBack()
             } else {
+                Log.i("EditarIntercambio", "No es validado")
                 genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
             }
         }
 
         botonCancelar.setOnClickListener {
             finish()
+        }
+    }
+
+    private fun sendFeedBack() {
+        nombre = nombreEdtxt.text.toString()
+        personas = personasEdtxt.text.toString()
+        montoMax = montoMaxEdtxt.text.trim().toString()
+        fechaIntercambio = fechaIntercambioEdtxt.text.toString()
+        fechaRegistro = fechaRegistroEdtxt.text.toString()
+        descripcion = descripcionEdtxt.text.toString()
+        horaIntercambio = horaIntercambioEdtxt.text.toString()
+        lugarIntercambio = lugarIntercambioEdtxt.text.toString()
+        if (nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty() && selectedThemes.isNotEmpty()) {
+            if(personas.toInt() < selectedParticipants.size){
+                genUtils.showAlert(getString(R.string.inconsistencia_participantes))
+                return
+            }
+
+            if (descripcion.isEmpty())
+                descripcion = getString(R.string.no_descripcion)
+
+            val updatedIntercambio = intercambioViejo.copy(
+                nombre = nombre,
+                monto = montoMax.toDouble(),
+                numPersonas = personas.toInt(),
+                descripcion = descripcion,
+                fechaMaxRegistro = fechaRegistro,
+                fechaIntercambio = fechaIntercambio,
+                horaIntercambio = horaIntercambio,
+                lugarIntercambio = lugarIntercambio,
+                color = selectedcolor,
+                personasRegistradas = selectedParticipants.size,
+                participantes = selectedParticipants,
+                temas = selectedThemes,
+            )
+            Log.i("EditarIntercambio", updatedIntercambio.toString())
+            val newThemesSet = selectedThemes.toSet()
+            val oldThemesSet = selectedThemesConsult.toSet()
+
+            // Temas agregados
+            val addedThemes = newThemesSet - oldThemesSet
+            // Temas eliminados
+            val removedThemes = oldThemesSet - newThemesSet
+
+            Log.i("EditarIntercambio", "Temas quitados : $removedThemes")
+            Log.i("EditarIntercambio", "Temas agregados : $addedThemes")
+            selectedParticipants.forEach{ participante ->
+                if(participante.temaRegalo in removedThemes && participante.uid != organizador){
+                    participante.temaRegalo = ""
+                }
+            }
+
+            val userActual = selectedParticipants.find { participante -> participante.uid == organizador }
+            if(userActual != null){
+                val userActualTema = userActual.temaRegalo
+                if(userActualTema in removedThemes){
+                    Log.i("EditarIntercambio", "El tema actual esta en los temas que se quitaron, es necesaria una actualización.")
+                    showThemesDialog(updatedIntercambio)
+                }else{
+                    Log.i("EditarIntercambio", "Pasa a la actualización.")
+                    selectedTheme = userActual.temaRegalo
+                    sendData(updatedIntercambio, false)
+                }
+            }
+        } else {
+            genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
         }
     }
 
@@ -221,7 +348,13 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 if (email != null) {
                     personas = personasEdtxt.text.toString()
                     if(selectedParticipants.size < personas.toInt()){
-                        addParticipant(name, email)
+                        val userExistente = selectedParticipantsCopia.find { participante -> participante.email == email }
+                        if(userExistente !=  null){ //Significa que ya estaba en la lista
+                            selectedParticipants.add(userExistente) //solo copia sus datos que ya estaban antes
+                            addParticipantChip(name, userExistente)
+                        }else{ //nunca estuvo en la lista
+                            addParticipant(name, email) //Aquí tengo que manejar el método para el copiado de datos
+                        }
                     }else{
                         genUtils.showAlert(getString(R.string.limitedepersonas))
                     }
@@ -300,54 +433,16 @@ class CrearIntercambioActivity : AppCompatActivity() {
         binding.chipGroupInvitados.addView(chip)
     }
 
-    private fun sendFeedBack() {
-        nombre = nombreEdtxt.text.toString()
-        personas = personasEdtxt.text.toString()
-        montoMax = montoMaxEdtxt.text.trim().toString()
-        fechaIntercambio = fechaIntercambioEdtxt.text.toString()
-        fechaRegistro = fechaRegistroEdtxt.text.toString()
-        descripcion = descripcionEdtxt.text.toString()
-        horaIntercambio = horaIntercambioEdtxt.text.toString()
-        lugarIntercambio = lugarIntercambioEdtxt.text.toString()
-        if (nombre.isNotEmpty() && personas.isNotEmpty() && montoMax.isNotEmpty() && fechaIntercambio.isNotEmpty() && fechaRegistro.isNotEmpty() && horaIntercambio.isNotEmpty() && lugarIntercambio.isNotEmpty() && selectedThemes.isNotEmpty()) {
-            if(personas.toInt() < selectedParticipants.size){
-                genUtils.showAlert(getString(R.string.inconsistencia_participantes))
-                return
-            }
-
-            val unicode = genUtils.generarCodigoUnicoConHash()
-            if (descripcion.isEmpty())
-                descripcion = getString(R.string.no_descripcion)
-
-            val newIntercambio = Intercambio(
-                code = unicode,
-                nombre = nombre,
-                monto = montoMax.toDouble(),
-                numPersonas = personas.toInt(),
-                descripcion = descripcion,
-                fechaMaxRegistro = fechaRegistro,
-                fechaIntercambio = fechaIntercambio,
-                horaIntercambio = horaIntercambio,
-                lugarIntercambio = lugarIntercambio,
-                color = selectedcolor,
-                personasRegistradas = selectedParticipants.size,
-                participantes = listOf(),
-                temas = selectedThemes,
-                organizador = userId ?: "",
-                sorteo = false
-            )
-            showThemesDialog(newIntercambio)
-        } else {
-            genUtils.showAlert(getString(R.string.envio_denegado_campos_vacios))
-        }
-    }
-
     private fun inicializaSpinners() {
         // Obtiene el array de colores desde strings.xml
         val colors = resources.getStringArray(R.array.color_items)
         // Configura el adaptador personalizado
         val adapter = ColorSpinnerAdapter(this, colors.toList())
         spinnerColor.adapter = adapter
+
+        val indexTemp = colors.indexOfFirst { it.equals(selectedcolor, ignoreCase = true) }
+        // Configura el color predefinido
+        spinnerColor.setSelection(if (indexTemp != -1) indexTemp else 0)
 
         //Spinner color
         spinnerColor.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -400,13 +495,13 @@ class CrearIntercambioActivity : AppCompatActivity() {
                     addChip(theme)
                 } else if (selectedThemes.contains(theme)) {
                     Toast.makeText(
-                        this@CrearIntercambioActivity,
+                        this@EditarIntercambio,
                         getString(R.string.tema_seleccionado),
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     Toast.makeText(
-                        this@CrearIntercambioActivity,
+                        this@EditarIntercambio,
                         getString(R.string.tres_temas),
                         Toast.LENGTH_SHORT
                     ).show()
@@ -419,6 +514,44 @@ class CrearIntercambioActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun loadParticipants() {
+        val tasks = mutableListOf<Task<Pair<Participante, Usuario>>>()
+
+        for (participante in selectedParticipants) {
+            val task = usersUtils.obtenerUsuarioPorId(participante.uid)
+                .onSuccessTask { usuario ->
+                    Tasks.forResult(Pair(participante, usuario))
+                }
+                .addOnFailureListener {
+                    tasks.add(Tasks.forResult(Pair(participante, Usuario())))
+                }
+            tasks.add(task)
+        }
+
+        Tasks.whenAllComplete(tasks).addOnSuccessListener { results ->
+            @Suppress("UNCHECKED_CAST")
+            val participantesInfo = results.mapNotNull { task ->
+                if (task.isSuccessful) task.result as Pair<Participante, Usuario> else null
+            }
+
+            participantesInfo.forEach { (participante, usuario) ->
+                // Excluir al organizador
+                if (participante.uid != organizador) {
+                    val alias = usuario.alias.ifEmpty { getString(R.string.no_registrado) }
+                    addParticipantChip(alias, participante)
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("EditarIntercambio", "Error al obtener participantes: ${exception.message}")
+        }
+    }
+
+    private fun loadThemes() {
+        selectedThemes.forEach { theme ->
+            addChip(theme)
+        }
     }
 
     //Función para agregar chips a la lista
@@ -486,8 +619,8 @@ class CrearIntercambioActivity : AppCompatActivity() {
                     tempSelectedIndex = selectedThemes.indexOf(selectedOption)
                     if (tempSelectedIndex != -1) {
                         selectedTheme = selectedThemes[tempSelectedIndex]
-                        Log.i("NewIntercambio", selectedTheme!!)
-                        sendData(intercambio)
+                        Log.i("EditarIntercambio", selectedTheme!!)
+                        sendData(intercambio, true)
                     } else {
                         Toast.makeText(this, getString(R.string.selecciona_un_tema), Toast.LENGTH_SHORT).show()
                     }
@@ -501,27 +634,30 @@ class CrearIntercambioActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
-    private fun sendData(intercambio: Intercambio) {
+    private fun sendData(intercambio: Intercambio, flagCambioTema: Boolean) {
         if (selectedTheme != null && userId != null) {
-            val indice = selectedParticipants.indexOfFirst { it.uid == userId }
-            if (indice != -1) {
-                // Actualizar solo el temaRegalo del participante
-                selectedParticipants[indice] = selectedParticipants[indice].copy(temaRegalo = selectedTheme!!)
+            var updatedIntercambio = intercambio
+            if(flagCambioTema){
+                val indice = selectedParticipants.indexOfFirst { it.uid == userId }
+                if (indice != -1) {
+                    // Actualizar solo el temaRegalo del participante
+                    selectedParticipants[indice] = selectedParticipants[indice].copy(temaRegalo = selectedTheme!!)
+                }
+                updatedIntercambio = intercambio.copy(
+                    participantes = selectedParticipants
+                )
             }
-            val updatedIntercambio = intercambio.copy(
-                participantes = selectedParticipants
-            )
 
             Log.i("CrearIntercambio", updatedIntercambio.toString())
 
             lifecycleScope.launch {
-                val exito = intercambioUtils.addIntercambio(updatedIntercambio)
+                val exito = intercambioUtils.actualizarIntercambio(updatedIntercambio, docID)
                 withContext(Dispatchers.Main) {
                     if (exito) {
                         usersUtils.obtenerUsuarioPorId(userId).addOnSuccessListener { organizadorUser ->
                             intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
                                 if (link != null) {
-                                    enviarCorreoAListaDeEmails(selectedParticipants, updatedIntercambio.code, updatedIntercambio.nombre, organizadorUser.nombre, organizadorUser.email, link)
+                                    enviarCorreoAListaDeEmails(updatedIntercambio.code, updatedIntercambio.nombre, organizadorUser.nombre, organizadorUser.email, link)
                                     Log.i("CrearIntercambio", "Intercambio guardado correctamente en Firestore")
                                     finish() // Cierra la actividad
                                 } else {
@@ -541,14 +677,25 @@ class CrearIntercambioActivity : AppCompatActivity() {
         }
     }
 
-    private fun enviarCorreoAListaDeEmails(participantes: List<Participante>, codigo: String, nombreIntercambio: String, organizador: String, organizadorMail: String, link: String) {
+    private fun enviarCorreoAListaDeEmails(codigo: String, nombreIntercambio: String, organizador: String, organizadorMail: String, link: String) {
         // Crea un array de los correos que quieres enviar la invitación
-        val emailList = participantes // Lista de correos
+        //personas agregadas
+        val newParticipants = selectedParticipants.toSet()
+        val oldParticipants = selectedParticipantsCopia.toSet()
+
+        // Temas agregados
+        val addedParticipants = newParticipants - oldParticipants
+        val emailList = addedParticipants // Lista de correos
         val emailSender = EmailSender()
         // Llama a la función Firebase Functions para enviar el correo
         emailList.forEach { participante ->
             if(participante.email != organizadorMail)
                 emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link)
+        }
+        selectedParticipantsCopia.forEach{ participante ->
+            if(participante.temaRegalo.isBlank()){
+                emailSender.notificacionCambioTemas(participante.email, organizador, codigo, nombre, link) //se envia el nombre viejo
+            }
         }
     }
 

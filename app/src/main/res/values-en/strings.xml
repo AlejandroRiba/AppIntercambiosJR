@@ -24,7 +24,7 @@
     <string name="no_descripcion">No description</string>
     <string name="no_encontrado">No found.</string>
     <string name="no_registrado">Not registered</string>
-    <string name="usuario_info">Name: %1$s (Alias: %2$s) Email: %3$s</string>
+    <string name="usuario_info">Name: %1$s (Alias: %2$s)\nEmail: %3$s</string>
     <string name="salir_intercambio">Leave the exchange</string>
     <string name="eliminar_intercambio">Delete exchange</string>
     <string name="adelantar_sorteo">Make a raffle</string>
@@ -32,7 +32,7 @@
     <string name="unirme_intercambio">I agree to join the exchange</string>
     <string name="consultar_sorteo">Consult raffle</string>
     <string name="warning_salir">The draw has already been made. You must participate so you are not longer allowed to leave the exchange.</string>
-    <string name="estatus_participante">• %1$s - Status: %2$s \t\t%3$s</string>
+    <string name="estatus_participante">• %1$s - Status: %2$s\n\t\t%3$s</string>
     <string name="cantidad_participantes">Participants: %1$s / %2$s</string>
     <string name="organizador">Owner</string>
     <string name="activo">Active</string>
@@ -74,7 +74,7 @@
     <string name="recuperacion_enviado">Recovery email sent. Please check your inbox.</string>
     <string name="recuperacion_error_enviado">Recovery email could not be sent. Verify the email address.</string>
     <string name="correo_requerido">Please enter your email.</string>
-    <string name="editar_intercambio">edit exchange</string>
+    <string name="editar_intercambio">Edit exchange</string>
     <string name="contact_no_email">The selected contact (%1$s) does not have an associated email.</string>
     <string name="limitedepersonas">You reached the limit of participants, increase the value if you want to add more people.</string>
     <string name="personasnecesarias">It is necessary that you first indicate the number of participants, remember that it must be greater than one.</string>
@@ -153,4 +153,31 @@
     <string name="guardar">Save</string>
     <string name="please_select">Please, select an avatar</string>
     <string name="email_existe">The email is already registered or there was an error.</string>
+    <string-array name="meses">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string name="inconsistencia_participantes">There is an error in the number of participants and the number of guests, please check and try again.</string>
+    <string name="campo_obligatorio">This field is required</string>
+    <string name="num_personas_mayor_uno">The number of people must be greater than one</string>
+    <string name="ingresar_fecha_interc">You must enter an exchange date</string>
+    <string name="ingresar_fecha_registro">You must enter a maximum registration date</string>
+    <string name="fecha_posterior_error">The registration date cannot be later than the exchange date</string>
+    <string name="dia_holgura">There must be at least one day of difference between the dates</string>
+    <string name="formato_fecha_invalido">Invalid date format</string>
+    <string name="tres_temas">You can only select up to 3 topics</string>
+    <string name="tema_seleccionado">The topic is already selected</string>
+    <string name="tema_seleccionado_exito">You successfully selected your topic.</string>
+    <string name="error_tema_selecc">Something went wrong while editing your topic.</string>
+    <string name="titulo_exito">SUCCESSFUL EDIT</string>
 </resources>

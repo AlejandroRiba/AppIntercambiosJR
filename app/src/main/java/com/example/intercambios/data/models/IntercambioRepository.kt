@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.dynamiclinks.ShortDynamicLink
+import com.google.firebase.firestore.SetOptions
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -186,6 +187,7 @@ class IntercambioRepository {
 
     //Función para unirse a un intercambio
     fun agregarParticipante(docId: String, email: String, selectedTheme: String): Task<Boolean> {
+        var personasRegistradasActualizadas = 0
         val taskCompletionSource = TaskCompletionSource<Boolean>()
         val intercambioRef = db.collection("intercambios").document(docId)
 
@@ -201,10 +203,10 @@ class IntercambioRepository {
                                 if (participante.email == email) {
                                     if (participante.uid.isBlank()) {
                                         // Si el UID está vacío, lo asigna y activa
-                                        participante.copy(uid = userId!!, activo = true)
+                                        participante.copy(uid = userId!!, activo = true, temaRegalo = selectedTheme)
                                     } else {
                                         // Si el UID no está vacío, solo activa al participante
-                                        participante.copy(activo = true)
+                                        participante.copy(activo = true, temaRegalo = selectedTheme)
                                     }
                                 } else {
                                     participante
@@ -216,14 +218,12 @@ class IntercambioRepository {
                                 uid = userId!!,
                                 email = email,
                                 temaRegalo = selectedTheme,
-                                asignadoA = null,
+                                asignadoA = "",
                                 activo = true
                             )
                         }
-
                         // Actualizar personasRegistradas con los participantes activos
-                        val personasRegistradasActualizadas = intercambio.personasRegistradas + 1
-
+                        personasRegistradasActualizadas = participantesActualizados.size
                         // Actualizar en Firestore
                         intercambioRef.update(
                             mapOf(
@@ -290,6 +290,46 @@ class IntercambioRepository {
         return taskCompletionSource.task
     }
 
+
+    //Función para editar un intercambio
+    suspend fun actualizarIntercambio(
+        updated: Intercambio,
+        docId: String
+    ): Boolean = suspendCoroutine { continuation ->
+
+        // Referencia a la subcolección de intercambios del usuario
+        val intercambioRef = db.collection("intercambios").document(docId)
+
+        // Guardar el objeto en Firestore
+        intercambioRef.get()
+            .addOnSuccessListener { document ->
+                if(document.exists()){
+                    val intercambio = document.toObject(Intercambio::class.java)
+                    if (intercambio != null) {
+                        // Actualiza el intercambio con la lista modificada
+                        intercambioRef.set(updated, SetOptions.merge())
+                            .addOnSuccessListener {
+                                Log.e("EditarIntercambio", "Intercambio guardado exitosamente")
+                                continuation.resume(true)  // Devuelve true si fue exitoso
+                            }.addOnFailureListener {
+                                Log.e("EditarIntercambio","Error al guardar el intercambio")
+                                continuation.resume(false)  // Devuelve false si hubo un error
+                            }
+                    } else {
+                        Log.e("EditarIntercambio","Error al guardar el intercambio")
+                        continuation.resume(false)  // Devuelve false si hubo un error
+                    }
+                }else{
+                    Log.e("EditarIntercambio","Error al guardar el intercambio")
+                    continuation.resume(false)  // Devuelve false si hubo un error
+                }
+
+            }
+            .addOnFailureListener { e ->
+                Log.e("EditarIntercambio","Error al guardar el intercambio: ${e.message}")
+                continuation.resume(false)  // Devuelve false si hubo un error
+            }
+    }
 
 
 }

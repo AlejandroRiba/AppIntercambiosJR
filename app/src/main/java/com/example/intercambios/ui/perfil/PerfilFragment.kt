@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.intercambios.R
 import com.example.intercambios.data.models.UsersRepository
 import com.example.intercambios.databinding.FragmentPerfilBinding
 import com.example.intercambios.utils.AvatarResources
@@ -55,7 +56,7 @@ class PerfilFragment : Fragment() {
                 nombrevisible.text = nombre
                 aliasvisible.text = usuario.alias
                 if(descript.isEmpty()){
-                    descripcionvisible.text = "Sin descripción."
+                    descripcionvisible.text = getString(R.string.no_descripcion)
                 }else{
                     descripcionvisible.text = descript
                 }

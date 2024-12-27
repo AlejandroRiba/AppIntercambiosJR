@@ -78,4 +78,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.airbnb.android:lottie:6.0.0")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

@@ -402,7 +402,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun hideNoConnectionScreen() {
         val currentFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_home)
-        if(currentFragment !is HomeFragment){
+        if(currentFragment !is LoadingFragment){
             clearBackStack()
             replaceFragment(HomeFragment(), false)
             supportActionBar?.title = getString(R.string.menu_home)

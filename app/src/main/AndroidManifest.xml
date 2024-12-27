@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Intercambios"
         tools:targetApi="35">
         <activity
+            android:name=".ui.intercambio.EditarIntercambio"
+            android:exported="false" />
+        <activity
             android:name=".ui.participante.AsignacionActivity"
             android:exported="false" />
         <activity
