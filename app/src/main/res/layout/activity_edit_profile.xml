@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/main"
+    android:background="@drawable/bg_gradient">
+
+    <!-- Título de la pantalla -->
+    <TextView
+        android:id="@+id/tvEditTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/editar_perfil"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="50dp" />
+
+    <!-- Campo de alias -->
+    <EditText
+        android:id="@+id/editAlias"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/alias"
+        android:inputType="text"
+        android:background="@drawable/bg_edittext"
+        android:padding="16dp"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEditTitle"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <!-- Campo de nombre -->
+    <EditText
+        android:id="@+id/editNombre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/nombre"
+        android:inputType="text"
+        android:background="@drawable/bg_edittext"
+        android:padding="16dp"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editAlias"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <!-- Campo de descripción -->
+    <EditText
+        android:id="@+id/editDescripcion"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/descripcion"
+        android:inputType="text"
+        android:background="@drawable/bg_edittext"
+        android:padding="16dp"
+        android:textSize="15sp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editNombre"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+    <!-- Botón guardar -->
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/guardar"
+        android:background="@drawable/bg_button"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editDescripcion"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -180,4 +180,8 @@
     <string name="tema_seleccionado_exito">You successfully selected your topic.</string>
     <string name="error_tema_selecc">Something went wrong while editing your topic.</string>
     <string name="titulo_exito">SUCCESSFUL EDIT</string>
+    <string name="editar_perfil">Edit Profile</string>
+    <string name="nombre">Name</string>
+    <string name="descripcion">Description</string>
+
 </resources>

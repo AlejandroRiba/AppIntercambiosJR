@@ -52,6 +52,9 @@
         <activity
             android:name=".ui.perfil.SelectAvatarActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.perfil.EditProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
