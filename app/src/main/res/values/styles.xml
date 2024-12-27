@@ -66,8 +66,9 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:paddingStart">10dp</item>
-        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
         <item name="android:textColor">@color/dialog</item>
+        <item name="buttonTint">@color/strong_warning</item>
     </style>
 
     <style name="CustomChip" parent="Widget.MaterialComponents.Chip.Entry">

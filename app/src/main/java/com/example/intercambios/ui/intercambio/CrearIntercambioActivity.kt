@@ -453,12 +453,9 @@ class CrearIntercambioActivity : AppCompatActivity() {
 
         // Agregar las opciones dinámicamente
         selectedThemes.forEachIndexed { index, option ->
-            val radioButton = RadioButton(this).apply {
-                id = View.generateViewId()
-                text = option
-                textSize = 15f
-                setTextAppearance(R.style.CustomRadioButton)
-            }
+            val radioButton = layoutInflater.inflate(R.layout.radio_button, selectionGroup, false) as RadioButton
+            radioButton.text = option
+            radioButton.id = View.generateViewId()
             selectionGroup.addView(radioButton)
             if (index == tempSelectedIndex && tempSelectedIndex != -1) {
                 radioButton.isChecked = true // Preseleccionar la opción definida

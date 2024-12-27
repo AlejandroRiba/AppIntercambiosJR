@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
@@ -243,12 +244,10 @@ class DetalleIntercambio : AppCompatActivity() {
 
         // Agregar las opciones dinámicamente
         selectedThemes.forEachIndexed { index, option ->
-            val radioButton = RadioButton(this).apply {
-                id = View.generateViewId()
-                text = option
-                textSize = 15f
-                setTextAppearance(R.style.CustomRadioButton)
-            }
+            val radioButton = layoutInflater.inflate(R.layout.radio_button, selectionGroup, false) as RadioButton
+            radioButton.text = option
+            radioButton.id = View.generateViewId()
+
             selectionGroup.addView(radioButton)
         }
 
