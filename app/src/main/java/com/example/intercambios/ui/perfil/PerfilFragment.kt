@@ -69,15 +69,13 @@ class PerfilFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.editAvatarFab.setOnClickListener{
-            val avatarIntent = Intent(context, SelectAvatarActivity::class.java).apply {
-                putExtra("avatar", avatarName)
-                putExtra("backHome", false)
+        binding.editDataFab.setOnClickListener {
+            val editIntent = Intent(context, EditProfileActivity::class.java).apply {
+                putExtra("alias", binding.aliasTextView.text.toString())
+                putExtra("nombre", binding.nameTextView.text.toString())
+                putExtra("descripcion", binding.descriptionContent.text.toString())
             }
-            startActivity(avatarIntent)
-        }
-        binding.editDataFab.setOnClickListener{
-            Toast.makeText(requireActivity(), "Editar datos", Toast.LENGTH_SHORT).show()
+            startActivity(editIntent)
         }
     }
 

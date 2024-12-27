@@ -206,4 +206,7 @@
         <item>Noviembre</item>
         <item>Diciembre</item>
     </string-array>
+    <string name="editar_perfil">Editar Perfil</string>
+    <string name="nombre">Nombre</string>
+    <string name="descripcion">Descripción</string>
 </resources>
