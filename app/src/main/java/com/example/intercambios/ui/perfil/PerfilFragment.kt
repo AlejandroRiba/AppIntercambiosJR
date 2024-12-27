@@ -67,8 +67,20 @@ class PerfilFragment : Fragment() {
         return root
     }
 
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Listener para editar avatar
+        binding.editAvatarFab.setOnClickListener {
+            val avatarIntent = Intent(context, SelectAvatarActivity::class.java).apply {
+                putExtra("avatar", avatarName) // Pasar el avatar actual seleccionado
+                putExtra("backHome", false)   // Para indicar si regresa al home o al fragmento actual
+            }
+            startActivity(avatarIntent)
+        }
+
         binding.editDataFab.setOnClickListener {
             val editIntent = Intent(context, EditProfileActivity::class.java).apply {
                 putExtra("alias", binding.aliasTextView.text.toString())
