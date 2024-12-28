@@ -201,6 +201,7 @@ class DetalleIntercambio : AppCompatActivity() {
 
 
 
+
         btnAdelentar.setOnClickListener {
             val sorteoIntent = Intent(this, SorteoActivity::class.java).apply {
                 putExtra("docId", docID)
@@ -225,7 +226,10 @@ class DetalleIntercambio : AppCompatActivity() {
                     }
 
                     // Crear el objeto actualizado de intercambio
-                    val intercambioActualizado = intercambio.copy(participantes = participantesAsignados)
+                    val intercambioActualizado = intercambio.copy(
+                        participantes = participantesAsignados,
+                        sorteo = true // Activar el booleano "sorteo"
+                    )
 
                     // Guardar el intercambio actualizado en Firebase
                     lifecycleScope.launch {
@@ -440,17 +444,16 @@ class DetalleIntercambio : AppCompatActivity() {
                             btnRechazar.visibility = View.VISIBLE
                         }
                     }
-                }else{ //EN caso de que si lo encuentre
-                    // Aquí puedes trabajar con el objeto Intercambio
+                }else{
+                    val userActual = intercambio.participantes.find { participante -> participante.uid == userId }
                     if (intercambio.sorteo) {
-                        val userActual = intercambio.participantes.find { participante -> participante.uid == userId }
-                        if (userActual != null && !userActual.asignadoA.isNullOrEmpty() && intercambio.organizador != userId) {
-
+                        if (userActual != null && !userActual.asignadoA.isNullOrEmpty()) {
                             btnConsultaSort.visibility = View.VISIBLE
                         } else {
                             btnConsultaSort.visibility = View.GONE
                         }
                     }
+
 
                     if(!autorizaAdelantarSorteo){ //todos los usuarios listos
                         btnInvitacion.visibility = View.VISIBLE
