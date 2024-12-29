@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Paint
 import android.text.InputType
 import android.widget.ImageView
@@ -19,9 +20,14 @@ import androidx.lifecycle.lifecycleScope
 import com.example.intercambios.BaseActivity
 import com.example.intercambios.R
 import com.example.intercambios.data.firebase.AuthUtils
+import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.ui.ProviderType
 import com.example.intercambios.ui.perfil.SelectAvatarActivity
 import com.example.intercambios.utils.GeneralUtils
+import com.example.intercambios.utils.SortManager.cancelarAlarmaSorteo
+import com.example.intercambios.utils.SortManager.configurarAlarmaSorteo
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import kotlinx.coroutines.launch
 
 class LoginActivity : BaseActivity() {
@@ -72,6 +78,7 @@ class LoginActivity : BaseActivity() {
                     if (success) {
                         val user = firebaseHelper.getCurrentUser()
                         if (user != null) {
+                            reprogramarSorteos()
                             genUtils.showHome(ProviderType.BASIC, user.email.toString())
                         }
                     } else {
@@ -98,6 +105,7 @@ class LoginActivity : BaseActivity() {
                             if(success.second){
                                 genUtils.showAvatars(ProviderType.GOOGLE, user.email.toString())
                             }else{
+                                reprogramarSorteos()
                                 genUtils.showHome(ProviderType.GOOGLE, user.email.toString())
                             }
                         }
@@ -166,6 +174,27 @@ class LoginActivity : BaseActivity() {
             insets
         }
         mainView.requestApplyInsets()
+    }
+
+    private fun reprogramarSorteos(){
+        try {
+            val userId = Firebase.auth.currentUser?.uid
+            if(userId != null){
+                val intercambioUtils = IntercambioRepository()
+                intercambioUtils.obtenerIntercambios().addOnSuccessListener { intercambios ->
+                    if(intercambios.isNotEmpty()){
+                        for ((intercambio, documentId) in intercambios) {
+                            if(!intercambio.sorteo && intercambio.organizador == userId){
+                                configurarAlarmaSorteo(this, intercambio.fechaMaxRegistro,documentId)
+                            }
+                        }
+                    }
+                }
+                Log.i("Login", "Reprogramar alarmas")
+            }
+        } catch (e: Exception) {
+            Log.e("Logout", "Error en el proceso de logout: ${e.message}")
+        }
     }
 
 }

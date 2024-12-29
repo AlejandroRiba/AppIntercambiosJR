@@ -29,6 +29,7 @@ import com.example.intercambios.data.models.Usuario
 import com.example.intercambios.utils.DateUtils.dateFormatting
 import com.example.intercambios.utils.DateUtils.isDatePast
 import com.example.intercambios.utils.GeneralUtils
+import com.example.intercambios.utils.SortManager.cancelarAlarmaSorteo
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
@@ -144,6 +145,7 @@ class DetalleIntercambio : AppCompatActivity() {
                 if(actualIsOwner){
                     intercambioUtils.eliminarIntercambioPorId(docID).addOnSuccessListener { success ->
                         if(success){
+                            cancelarAlarmaSorteo(this@DetalleIntercambio, docID)
                             genUtils.showAlertandFinish(getString(R.string.success_message), getString(R.string.success_salida_titulo))
                         }else{
                             genUtils.showAlertandFinish(getString(R.string.error_eliminar), getString(R.string.error_title))
@@ -381,7 +383,7 @@ class DetalleIntercambio : AppCompatActivity() {
 
                 val userActual =  intercambio.participantes.find { participante -> participante.uid == userId }
                 if((userActual == null && unirNuevoUser) || (userActual != null && unirNuevoUser && !userActual.activo)){ //se debe especificar en el intent
-                    if(!isDateExpired){
+                    if(!isDateExpired || !intercambio.sorteo){
                         btnUnirme.visibility = View.VISIBLE //MOSTRAMOS EL BOTÓN PARA UNIRSE
                         if(userActual != null){ //Si el participante ya está en la lista de participantes pero no ha aceptado
                             btnRechazar.visibility = View.VISIBLE

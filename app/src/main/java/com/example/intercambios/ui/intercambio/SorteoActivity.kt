@@ -18,6 +18,7 @@ import com.example.intercambios.R
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.utils.GeneralUtils
+import com.example.intercambios.utils.SortManager.cancelarAlarmaSorteo
 import kotlinx.coroutines.launch
 
 class SorteoActivity : AppCompatActivity() {
@@ -89,6 +90,7 @@ class SorteoActivity : AppCompatActivity() {
                         lifecycleScope.launch {
                             val result = intercambioUtils.actualizarIntercambio(intercambioActualizado, docId)
                             if (result) {
+                                cancelarAlarmaSorteo(this@SorteoActivity, docId)
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     animacion.setAnimation(R.raw.success) // Cambia el recurso de Lottie
                                     animacion.playAnimation()

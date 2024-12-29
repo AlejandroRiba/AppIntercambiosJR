@@ -7,6 +7,8 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import com.example.intercambios.R
+import com.example.intercambios.data.models.IntercambioRepository
+import com.example.intercambios.utils.SortManager.cancelarAlarmaSorteo
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -224,10 +226,24 @@ class AuthUtils(private val context: Context){
 
     // Cerrar sesión
     fun logout() {
-        val prefs = context.getSharedPreferences(context.getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
-        prefs.clear()
-        prefs.apply()
-        auth.signOut()
+        try {
+            val intercambioUtils = IntercambioRepository()
+            intercambioUtils.obtenerIntercambios().addOnSuccessListener { intercambios ->
+                if(intercambios.isNotEmpty()){
+                    for ((_, documentId) in intercambios) {
+                        cancelarAlarmaSorteo(context, documentId)
+                    }
+                }
+            }
+            Log.i("Logout", "Cancelado de alarmas")
+        } catch (e: Exception) {
+            Log.e("Logout", "Error en el proceso de logout: ${e.message}")
+        }finally {
+            val prefs = context.getSharedPreferences(context.getString(R.string.prefs_file), Context.MODE_PRIVATE).edit()
+            prefs.clear()
+            prefs.apply()
+            auth.signOut()
+        }
     }
 
     // Obtener el usuario actual

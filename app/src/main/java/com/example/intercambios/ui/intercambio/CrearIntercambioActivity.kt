@@ -30,6 +30,7 @@ import com.example.intercambios.utils.ColorSpinnerAdapter
 import com.example.intercambios.utils.DatePickerFragment
 import com.example.intercambios.utils.FormularioValidator
 import com.example.intercambios.utils.GeneralUtils
+import com.example.intercambios.utils.SortManager.configurarAlarmaSorteo
 import com.example.intercambios.utils.TimePickerFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipDrawable
@@ -515,6 +516,9 @@ class CrearIntercambioActivity : AppCompatActivity() {
                 val exito = intercambioUtils.addIntercambio(updatedIntercambio)
                 withContext(Dispatchers.Main) {
                     if (exito) {
+                        intercambioUtils.obtenerDocId(intercambio.code).addOnSuccessListener { documentId ->
+                            configurarAlarmaSorteo(this@CrearIntercambioActivity, fechaRegistro, documentId)
+                        }
                         usersUtils.obtenerUsuarioPorId(userId).addOnSuccessListener { organizadorUser ->
                             intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
                                 if (link != null) {

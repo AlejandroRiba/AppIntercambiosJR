@@ -133,16 +133,27 @@
 
     <!-- Colores para la tarjeta de intercambio -->
     <string-array name="color_items">
-        <item>#FFB6B6</item> <!-- Rosa pastel -->
-        <item>#80E3D4</item> <!-- Verde menta pastel -->
-        <item>#B3E0E5</item> <!-- Azul claro pastel -->
-        <item>#D5F2F2</item> <!-- Aqua suave pastel -->
-        <item>#D9D9D9</item> <!-- Gris suave -->
-        <item>#B9F5A0</item> <!-- Verde claro pastel -->
-        <item>#F9E6A7</item> <!-- Amarillo suave pastel -->
-        <item>#F6B6FF</item> <!-- Púrpura suave pastel -->
-        <item>#A5D6A7</item> <!-- Verde pastel claro (similar a #81C784) -->
-        <item>#80D9F4</item> <!-- Azul cielo claro pastel -->
+        <item>#FFB6B6</item> <!-- Pastel Pink -->
+        <item>#FF9A8B</item> <!-- Pastel Red -->
+        <item>#FF7F50</item> <!-- Pastel Coral -->
+        <item>#FFCC99</item> <!-- Pastel Peach -->
+        <item>#80E3D4</item> <!-- Pastel Mint Green -->
+        <item>#B3E0E5</item> <!-- Pastel Light Blue -->
+        <item>#A7C6ED</item> <!-- Pastel Sky Blue -->
+        <item>#D5F2F2</item> <!-- Soft Aqua Pastel -->
+        <item>#D9D9D9</item> <!-- Soft Gray -->
+        <item>#F9E6A7</item> <!-- Pastel Yellow -->
+        <item>#F6B6FF</item> <!-- Soft Lavender Pastel -->
+        <item>#F6C3D6</item> <!-- Pastel Rose -->
+        <item>#A5D6A7</item> <!-- Pastel Light Green -->
+        <item>#FFB3E6</item> <!-- Pastel Lilac -->
+        <item>#F5D0A9</item> <!-- Pastel Orange -->
+        <item>#FFFAE3</item> <!-- Light Lemon Yellow -->
+        <item>#A5D8FF</item> <!-- Pastel Light Blue -->
+        <item>#F3C1B0</item> <!-- Light Salmon Pastel -->
+        <item>#FFBF80</item> <!-- Light Apricot -->
+        <item>#D1C6E3</item> <!-- Lavender Pastel -->
+        <item>#E0E0E0</item> <!-- Light Silver Pastel -->
     </string-array>
     <!-- temas para el intercambio  -->
     <string-array name="themes_array">
@@ -216,4 +227,6 @@
     <string name="tema_seleccionado_titulo">Tema que seleccionó 🎁</string>
     <string name="algo_salio_mal_consulta">Algo salió mal con la consulta.</string>
     <string name="warning_imposible_editar">El sorteo ya se realizó, actualmente ya no es posible editar este intercambio. Te invitamos a crear uno nuevo si no estás de acuerdo con el actual.</string>
+    <string name="notif_message_success">El sorteo se realizó con éxito.</string>
+    <string name="notif_message_error">No se pudo obtener el intercambio para el sorteo.</string>
 </resources>

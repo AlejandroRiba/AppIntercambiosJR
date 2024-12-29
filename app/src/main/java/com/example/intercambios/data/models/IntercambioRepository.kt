@@ -54,7 +54,7 @@ class IntercambioRepository {
                         intercambios.add(Pair(intercambio, document.id)) // Guarda también el id del documento
                     }
                 }
-                taskCompletionSource.setResult(intercambios) // Devuelve la lista de citas
+                taskCompletionSource.setResult(intercambios) // Devuelve la lista de intercambios
             }
             .addOnFailureListener {
                 taskCompletionSource.setException(it) // Devuelve la excepción

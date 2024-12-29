@@ -1,7 +1,11 @@
 package com.example.intercambios.ui
 
+import android.Manifest
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.AlarmManagerCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -34,6 +39,8 @@ import com.example.intercambios.utils.LoadingFragment
 import com.example.intercambios.utils.NetworkUtils
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import android.provider.Settings
+import androidx.annotation.RequiresApi
 
 enum class ProviderType{
     BASIC,
@@ -41,6 +48,10 @@ enum class ProviderType{
 }
 
 class HomeActivity : AppCompatActivity() {
+
+    companion object {
+        private const val REQUEST_CODE_ALARMS = 100
+    }
 
     private lateinit var binding: ActivityHomeBinding
     private val firebaseHelper = AuthUtils(this)
@@ -209,7 +220,56 @@ class HomeActivity : AppCompatActivity() {
             mostrarDialogoOpciones()
         }
 
+        verificarPermisos()
     }
+
+    private fun verificarPermisos() {
+        // Verifica si el permiso para alarmas exactas está habilitado (Android 12 y superior)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                solicitarPermisosAlarmas()
+            }
+        }
+
+        // Verifica el permiso de notificaciones (Android 13 y superior)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            solicitarPermisosNotificaciones()
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun solicitarPermisosAlarmas() {
+        // Solicita al usuario activar el permiso de alarmas exactas
+        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+        startActivity(intent)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun solicitarPermisosNotificaciones() {
+        // Solicita el permiso de notificaciones
+        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_CODE_ALARMS)
+    }
+
+    // Manejar la respuesta del usuario para permisos
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == REQUEST_CODE_ALARMS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("HomeActivity", "Permiso de notificaciones concedido")
+            } else {
+                Log.w("HomeActivity", "Permiso de notificaciones denegado")
+                // Puedes mostrar un mensaje al usuario indicando que las notificaciones son importantes
+            }
+        }
+    }
+
 
     private fun abrirDetalleIntercambio(codigoIntercambio: String) {
         val intent = Intent(this, DetalleIntercambio::class.java).apply {

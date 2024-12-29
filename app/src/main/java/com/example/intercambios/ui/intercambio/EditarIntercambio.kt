@@ -44,6 +44,8 @@ import com.example.intercambios.utils.ColorSpinnerAdapter
 import com.example.intercambios.utils.DatePickerFragment
 import com.example.intercambios.utils.FormularioValidator
 import com.example.intercambios.utils.GeneralUtils
+import com.example.intercambios.utils.SortManager.cancelarAlarmaSorteo
+import com.example.intercambios.utils.SortManager.configurarAlarmaSorteo
 import com.example.intercambios.utils.TimePickerFragment
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -76,6 +78,7 @@ class EditarIntercambio : AppCompatActivity() {
     private var selectedThemesConsult = mutableListOf<String>() //Lista vacía inicialmente para los cachados de firebase
     private lateinit var montoMax: String
     private lateinit var fechaRegistro: String
+    private lateinit var fechaRespaldo: String
     private lateinit var fechaIntercambio: String
     private lateinit var horaIntercambio: String
     private lateinit var lugarIntercambio: String
@@ -147,6 +150,7 @@ class EditarIntercambio : AppCompatActivity() {
                 lugarIntercambio = intercambio.lugarIntercambio
                 montoMax = intercambio.monto.toString()
                 fechaRegistro = intercambio.fechaMaxRegistro
+                fechaRespaldo = intercambio.fechaMaxRegistro
                 personas = intercambio.numPersonas.toString()
                 descripcion = intercambio.descripcion
                 organizador = intercambio.organizador
@@ -654,6 +658,8 @@ class EditarIntercambio : AppCompatActivity() {
                 val exito = intercambioUtils.actualizarIntercambio(updatedIntercambio, docID)
                 withContext(Dispatchers.Main) {
                     if (exito) {
+                        cancelarAlarmaSorteo(this@EditarIntercambio, docID)
+                        configurarAlarmaSorteo(this@EditarIntercambio, fechaRegistro, docID)
                         usersUtils.obtenerUsuarioPorId(userId).addOnSuccessListener { organizadorUser ->
                             intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
                                 if (link != null) {
