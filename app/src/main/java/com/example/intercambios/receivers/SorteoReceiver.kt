@@ -11,6 +11,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.example.intercambios.R
+import com.example.intercambios.data.firebase.EmailSender
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.ui.intercambio.DetalleIntercambio
@@ -67,7 +68,18 @@ class SorteoReceiver : BroadcastReceiver() {
                         CoroutineScope(Dispatchers.IO).launch {
                             val result = intercambioUtils.actualizarIntercambio(intercambioActualizado, docId)
                             if (result) {
-                                mostrarNotificacion(context, context.getString(R.string.resultados_listos_titulo), context.getString(R.string.notif_message_success, intercambio.nombre), docId)
+                                intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
+                                    if (link != null) {
+                                        val emailSender = EmailSender()
+                                        intercambio.participantes.forEach{ participante ->
+                                            emailSender.notificarResultados(participante.email, intercambio.nombre, link, context)
+                                        }
+                                        Log.i("SortManager", "Resultados listos")
+                                    } else {
+                                        Log.e("SortManager", "Error al generar el enlace dinámico")
+                                    }
+                                    mostrarNotificacion(context, context.getString(R.string.resultados_listos_titulo), context.getString(R.string.notif_message_success, intercambio.nombre), docId)
+                                }
                             } else {
                                 mostrarNotificacion(context, context.getString(R.string.error_sorteo_notif), context.getString(R.string.notif_error_al_guardar, intercambio.nombre), docId)
                             }

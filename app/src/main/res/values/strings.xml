@@ -229,4 +229,9 @@
     <string name="error_sorteo_notif">ERROR CON EL SORTEO</string>
     <string name="no_participantes_validos_notif">No hay participantes válidos para el sorteo en el intercambio: %1$s.</string>
     <string name="alerta_ya_realizado">El sorteo para el intercambio: %1$s ya se había completado.</string>
+    <string name="asunto_smtp">Invitación a un intercambio</string>
+    <string name="asunto_notif_temas">Hubo una actualización en un intercambio</string>
+    <string name="modificar_intercambio_es">Hola! %1$s ha modificado el intercambio %2$s, es necesario que entres a actualizar tu tema. Si no te has unido, únete usando el código: %3$s o el siguiente enlace\n%4$s</string>
+    <string name="invitacion_intercambio_es">Hola! %1$s te ha invitado al intercambio %2$s. Únete usando el código: %3$s o el siguiente enlace\n%4$s</string>
+    <string name="resultados_listos_es">Hola! Los resultados del intercambio %1$s están listos. Puedes consultarlos desde la pantalla de detalles.\n%2$s</string>
 </resources>

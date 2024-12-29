@@ -696,11 +696,11 @@ class EditarIntercambio : AppCompatActivity() {
         // Llama a la función Firebase Functions para enviar el correo
         emailList.forEach { participante ->
             if(participante.email != organizadorMail)
-                emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link)
+                emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link, this)
         }
         selectedParticipantsCopia.forEach{ participante ->
             if(participante.temaRegalo.isBlank()){
-                emailSender.notificacionCambioTemas(participante.email, organizador, codigo, nombre, link) //se envia el nombre viejo
+                emailSender.notificacionCambioTemas(participante.email, organizador, codigo, nombre, link, this) //se envia el nombre viejo
             }
         }
     }

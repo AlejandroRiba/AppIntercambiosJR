@@ -15,6 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.airbnb.lottie.LottieAnimationView
 import com.example.intercambios.R
+import com.example.intercambios.data.firebase.EmailSender
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.utils.GeneralUtils
@@ -90,6 +91,17 @@ class SorteoActivity : AppCompatActivity() {
                         lifecycleScope.launch {
                             val result = intercambioUtils.actualizarIntercambio(intercambioActualizado, docId)
                             if (result) {
+                                intercambioUtils.generarEnlaceDinamico(intercambio.code) { link ->
+                                    if (link != null) {
+                                        val emailSender = EmailSender()
+                                        intercambio.participantes.forEach{ participante ->
+                                            emailSender.notificarResultados(participante.email, intercambio.nombre, link, this@SorteoActivity)
+                                        }
+                                        Log.i("CrearIntercambio", "Intercambio guardado correctamente en Firestore")
+                                    } else {
+                                        Log.e("CrearIntercambio", "Error al generar el enlace dinámico")
+                                    }
+                                }
                                 cancelarAlarmaSorteo(this@SorteoActivity, docId)
                                 Handler(Looper.getMainLooper()).postDelayed({
                                     animacion.setAnimation(R.raw.success) // Cambia el recurso de Lottie

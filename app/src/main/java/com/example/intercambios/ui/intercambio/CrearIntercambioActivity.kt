@@ -549,7 +549,7 @@ class CrearIntercambioActivity : AppCompatActivity() {
         // Llama a la función Firebase Functions para enviar el correo
         emailList.forEach { participante ->
             if(participante.email != organizadorMail)
-                emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link)
+                emailSender.enviarCorreoSMTP(participante.email, organizador, codigo, nombreIntercambio, link, this)
         }
     }
 
