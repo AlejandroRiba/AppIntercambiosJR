@@ -1,9 +1,17 @@
 # Gradle files
 .gradle/
-gradle
-gradle.properties
-.gradle
 build/
+.gradle
+/build
+/*/build
+/*/*/build
+/*/*/*/build
+/*/*/*/*/*/build
+/**/docs/src/samples/**/build
+/**/docs/src/snippets/**/build
+/*/internal-android-performance-testing/build-android-libs
+test-splits/
+/gradle/verification-keyring.gpg
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -21,9 +29,6 @@ output.json
 # IntelliJ
 *.iml
 .idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
 
 # Keystore files
 *.jks
@@ -34,3 +39,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+#Local properties
+/local.properties
