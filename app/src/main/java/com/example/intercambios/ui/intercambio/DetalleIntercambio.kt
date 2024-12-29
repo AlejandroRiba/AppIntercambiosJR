@@ -129,10 +129,14 @@ class DetalleIntercambio : AppCompatActivity() {
 
         btnBack.setOnClickListener { finish() }
         btnEdit.setOnClickListener {
-            val intentEdit = Intent(this, EditarIntercambio::class.java).apply {
-                putExtra("docId", docID)
+            if(!sorteoRealizado){
+                val intentEdit = Intent(this, EditarIntercambio::class.java).apply {
+                    putExtra("docId", docID)
+                }
+                startActivity(intentEdit)
+            }else{
+                genUtils.showAlert(getString(R.string.warning_imposible_editar))
             }
-            startActivity(intentEdit)
         }
 
         btnDelete.setOnClickListener {
@@ -169,37 +173,23 @@ class DetalleIntercambio : AppCompatActivity() {
 
                 val userActual = intercambio.participantes.find { it.uid == userId }
                 if (userActual != null && !userActual.asignadoA.isNullOrEmpty()) {
-                    val asignado = intercambio.participantes.find { it.uid == userActual.asignadoA }
-                    val asignadoEmail = asignado?.email ?: "No asignado"
-
-                    val dialog = AlertDialog.Builder(this)
-                        .setTitle("Intercambio asignado")
-                        .setMessage("Se te asignó a: $asignadoEmail")
-                        .setPositiveButton("Aceptar") { dialog, _ ->
-                            dialog.dismiss()
+                    usersUtils.obtenerUsuarioPorId(userActual.asignadoA).addOnSuccessListener { usuario ->
+                        val userAsignado = intercambio.participantes.find { it.uid == userActual.asignadoA }
+                        if(usuario != null && userAsignado != null){
+                            genUtils.showParticipant(usuario.nombre, usuario.alias, usuario.email, userAsignado.temaRegalo)
+                        }else{
+                            genUtils.showAlert(getString(R.string.algo_salio_mal_consulta))
                         }
-                        .create()
-                    dialog.show()
+                    }.addOnFailureListener{
+                        genUtils.showAlert(getString(R.string.algo_salio_mal_consulta))
+                    }
                 } else {
-                    val dialog = AlertDialog.Builder(this)
-                        .setTitle("Sin asignación")
-                        .setMessage("Aún no tienes asignado a nadie para el intercambio.")
-                        .setPositiveButton("Aceptar") { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .create()
-                    dialog.show()
+                    genUtils.showAlert(getString(R.string.algo_salio_mal_consulta))
                 }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Error al obtener los datos del intercambio.", Toast.LENGTH_SHORT).show()
+            }.addOnFailureListener{
+                genUtils.showAlert(getString(R.string.algo_salio_mal_consulta))
             }
         }
-
-
-
-
-
-
 
 
         btnAdelentar.setOnClickListener {
@@ -207,54 +197,7 @@ class DetalleIntercambio : AppCompatActivity() {
                 putExtra("docId", docID)
             }
             startActivity(sorteoIntent)
-
-            intercambioUtils.obtenerIntercambioPorId(docID).addOnSuccessListener { intercambio ->
-                val participantes = intercambio.participantes
-
-                if (participantes.isNotEmpty()) {
-                    // Realizar el sorteo
-                    val participantesDisponibles = participantes.toMutableList()
-                    val participantesAsignados = mutableListOf<Participante>()
-
-                    participantes.forEach { participante ->
-                        val disponiblesParaAsignar = participantesDisponibles.filter { it.uid != participante.uid }
-                        if (disponiblesParaAsignar.isNotEmpty()) {
-                            val asignado = disponiblesParaAsignar.random()
-                            participantesAsignados.add(participante.copy(asignadoA = asignado.uid))
-                            participantesDisponibles.remove(asignado) // Quitar asignado de la lista
-                        }
-                    }
-
-                    // Crear el objeto actualizado de intercambio
-                    val intercambioActualizado = intercambio.copy(
-                        participantes = participantesAsignados,
-                        sorteo = true // Activar el booleano "sorteo"
-                    )
-
-                    // Guardar el intercambio actualizado en Firebase
-                    lifecycleScope.launch {
-                        val result = intercambioUtils.actualizarIntercambio(intercambioActualizado, docID)
-                        if (result) {
-                            btnConsultaSort.visibility = View.VISIBLE // Mostrar el botón de consultar sorteo
-                            Toast.makeText(this@DetalleIntercambio, "Sorteo realizado y guardado con éxito", Toast.LENGTH_SHORT).show()
-                        } else {
-                            Toast.makeText(this@DetalleIntercambio, "Error al guardar el sorteo en Firebase", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
-                    Toast.makeText(
-                        this,
-                        "No hay participantes válidos para el sorteo.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }.addOnFailureListener {
-                Toast.makeText(this, "Error al obtener el intercambio", Toast.LENGTH_SHORT).show()
-            }
         }
-
-
-
 
 
 
@@ -445,15 +388,14 @@ class DetalleIntercambio : AppCompatActivity() {
                         }
                     }
                 }else{
-                    val userActual = intercambio.participantes.find { participante -> participante.uid == userId }
-                    if (intercambio.sorteo) {
+                    if(intercambio.sorteo) { //Ya se hizo el sorteo
+                        btnAdelentar.visibility = View.GONE //solo por precaución para el on resume
                         if (userActual != null && !userActual.asignadoA.isNullOrEmpty()) {
                             btnConsultaSort.visibility = View.VISIBLE
                         } else {
                             btnConsultaSort.visibility = View.GONE
                         }
                     }
-
 
                     if(!autorizaAdelantarSorteo){ //todos los usuarios listos
                         btnInvitacion.visibility = View.VISIBLE
@@ -466,7 +408,7 @@ class DetalleIntercambio : AppCompatActivity() {
                         actualIsOwner = true
                         btnEdit.visibility = View.VISIBLE
                         btnDelete.text = getString(R.string.eliminar_intercambio)
-                        if(autorizaAdelantarSorteo){
+                        if(autorizaAdelantarSorteo && !intercambio.sorteo){
                             btnAdelentar.visibility = View.VISIBLE
                         }
                     }

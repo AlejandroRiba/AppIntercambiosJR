@@ -7,15 +7,18 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import com.airbnb.lottie.LottieAnimationView
 import com.example.intercambios.R
 import com.example.intercambios.data.models.IntercambioRepository
 import com.example.intercambios.data.models.Participante
 import com.example.intercambios.utils.GeneralUtils
+import kotlinx.coroutines.launch
 
 class SorteoActivity : AppCompatActivity() {
 
@@ -62,13 +65,43 @@ class SorteoActivity : AppCompatActivity() {
                     genutils.showAlertandFinish(getString(R.string.sorteo_listo),getString(R.string.error_title))
                 }else{
                     listaParticipantes = intercambio.participantes
-                    Log.i("SorteoAct", listaParticipantes.toString())
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        animacion.setAnimation(R.raw.success) // Cambia el recurso de Lottie
-                        animacion.playAnimation()
-                        btnListo.visibility = View.VISIBLE // Muestra el botón
-                        titulo.text = getString(R.string.resultados_listos)
-                    }, 6000) // Tiempo en milisegundos (6 segundos)
+                    if (listaParticipantes.isNotEmpty()) {
+                        // Realizar el sorteo
+                        val participantesDisponibles = listaParticipantes.toMutableList()
+                        val participantesAsignados = mutableListOf<Participante>()
+
+                        listaParticipantes.forEach { participante ->
+                            val disponiblesParaAsignar = participantesDisponibles.filter { it.uid != participante.uid }
+                            if (disponiblesParaAsignar.isNotEmpty()) {
+                                val asignado = disponiblesParaAsignar.random()
+                                participantesAsignados.add(participante.copy(asignadoA = asignado.uid))
+                                participantesDisponibles.remove(asignado) // Quitar asignado de la lista
+                            }
+                        }
+
+                        // Crear el objeto actualizado de intercambio
+                        val intercambioActualizado = intercambio.copy(
+                            participantes = participantesAsignados,
+                            sorteo = true // Activar el booleano "sorteo"
+                        )
+
+                        // Guardar el intercambio actualizado en Firebase
+                        lifecycleScope.launch {
+                            val result = intercambioUtils.actualizarIntercambio(intercambioActualizado, docId)
+                            if (result) {
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    animacion.setAnimation(R.raw.success) // Cambia el recurso de Lottie
+                                    animacion.playAnimation()
+                                    btnListo.visibility = View.VISIBLE // Muestra el botón
+                                    titulo.text = getString(R.string.resultados_listos)
+                                }, 6000) // Tiempo en milisegundos (6 segundos)
+                            } else {
+                                genutils.showAlertandFinish(getString(R.string.error_al_guardar), getString(R.string.error_title))
+                            }
+                        }
+                    } else {
+                        genutils.showAlertandFinish(getString(R.string.no_participantes_validos), getString(R.string.error_title))
+                    }
                 }
             }.addOnFailureListener{
                 genutils.showAlertandFinish(getString(R.string.no_encontrado_email),getString(R.string.error_title))

@@ -24,7 +24,7 @@
     <string name="no_descripcion">No description</string>
     <string name="no_encontrado">No found.</string>
     <string name="no_registrado">Not registered</string>
-    <string name="usuario_info">Name: %1$s (Alias: %2$s)\nEmail: %3$s</string>
+    <string name="usuario_info">Name: %1$s\nAlias: %2$s\nEmail: %3$s</string>
     <string name="salir_intercambio">Leave the exchange</string>
     <string name="eliminar_intercambio">Delete exchange</string>
     <string name="adelantar_sorteo">Make a raffle</string>
@@ -183,5 +183,12 @@
     <string name="editar_perfil">Edit Profile</string>
     <string name="nombre">Name</string>
     <string name="descripcion">Description</string>
+    <string name="no_participantes_validos">There are no valid participants for the draw.</string>
+    <string name="error_al_guardar">Error saving the record to the database.</string>
+    <string name="resultados_listos_titulo">RESULT READY</string>
+    <string name="participante_asignado_titulo">Assigned Participant 👤</string>
+    <string name="tema_seleccionado_titulo">Selected Topic 🎁</string>
+    <string name="algo_salio_mal_consulta">Something went wrong with the query.</string>
+    <string name="warning_imposible_editar">The draw has already taken place; it is no longer possible to edit this exchange. We encourage you to create a new one if you are not satisfied with the current one.</string>
 
 </resources>

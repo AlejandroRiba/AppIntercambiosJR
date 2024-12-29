@@ -21,7 +21,7 @@
     <string name="no_descripcion">Sin descripción</string>
     <string name="no_encontrado">No encontrado.</string>
     <string name="no_registrado">No registrado</string>
-    <string name="usuario_info">Nombre: %1$s (Alias: %2$s)\nEmail: %3$s</string>
+    <string name="usuario_info">Nombre: %1$s\nAlias: %2$s\nEmail: %3$s</string>
     <string name="salir_intercambio">Salir del\nintercambio</string>
     <string name="eliminar_intercambio">Eliminar\nintercambio</string>
     <string name="adelantar_sorteo">Adelantar\nsorteo</string>
@@ -209,4 +209,11 @@
     <string name="editar_perfil">Editar Perfil</string>
     <string name="nombre">Nombre</string>
     <string name="descripcion">Descripción</string>
+    <string name="no_participantes_validos">No hay participantes válidos para el sorteo.</string>
+    <string name="error_al_guardar">Error al guardar el registro en la base.</string>
+    <string name="resultados_listos_titulo">RESULTADO LISTO</string>
+    <string name="participante_asignado_titulo">Participante asignado 👤</string>
+    <string name="tema_seleccionado_titulo">Tema que seleccionó 🎁</string>
+    <string name="algo_salio_mal_consulta">Algo salió mal con la consulta.</string>
+    <string name="warning_imposible_editar">El sorteo ya se realizó, actualmente ya no es posible editar este intercambio. Te invitamos a crear uno nuevo si no estás de acuerdo con el actual.</string>
 </resources>

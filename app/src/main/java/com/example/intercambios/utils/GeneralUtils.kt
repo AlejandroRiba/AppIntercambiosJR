@@ -39,6 +39,25 @@ class GeneralUtils(private val context: Context){
          alertDialog.show()
     }
 
+    fun showParticipant(nombre: String, alias: String, email: String, tema: String){
+        val inflater = LayoutInflater.from(context)
+        val dialogView = inflater.inflate(R.layout.asignado_dialog, null)
+        val datosUser = dialogView.findViewById<TextView>(R.id.tex1)
+        val datosTema = dialogView.findViewById<TextView>(R.id.tex2)
+        datosTema.text = tema
+        datosUser.text = context.getString(R.string.usuario_info, nombre, alias, email)
+
+        val alertDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
     fun showAlertandFinish(message: String, title: String?) {
         val inflater = LayoutInflater.from(context)
         val dialogView = inflater.inflate(R.layout.dialog_error_general, null)
