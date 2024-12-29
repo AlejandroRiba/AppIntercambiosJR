@@ -9,6 +9,7 @@ import android.provider.Settings
 import android.util.Log
 import com.example.intercambios.receivers.SorteoReceiver
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -24,7 +25,29 @@ object SortManager {
         // Convertir la fecha recibida en un tiempo en milisegundos
         val formato = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val fechaMillis = formato.parse(fecha)?.time ?: return
-        val triggerAtMillis = fechaMillis + AlarmManager.INTERVAL_DAY // Día siguiente a las 00:00 hrs
+
+
+        // Crear un Calendar para la fecha recibida
+        val fechaProgramada = Calendar.getInstance().apply {
+            timeInMillis = fechaMillis
+        }
+
+        // Crear un Calendar para la fecha actual
+        val ahora = Calendar.getInstance()
+
+        // Ajustar triggerAtMillis dependiendo de si la fecha ya pasó
+        val triggerAtMillis: Long = if (fechaProgramada.get(Calendar.YEAR) == ahora.get(Calendar.YEAR) &&
+            fechaProgramada.get(Calendar.DAY_OF_YEAR) == ahora.get(Calendar.DAY_OF_YEAR) &&
+            fechaMillis <= System.currentTimeMillis()
+        ) {
+            Log.d("SortManager", "Fecha ya pasó pero es hoy. Reprogramando a 2 minutos desde ahora.")
+            ahora.add(Calendar.MINUTE, 1)
+            ahora.timeInMillis
+        } else {
+            // Día siguiente a las 00:00 hrs
+            fechaMillis + AlarmManager.INTERVAL_DAY
+        }
+
         // Crear un objeto SimpleDateFormat para formatear la fecha
         val formatoFecha = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 

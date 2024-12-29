@@ -140,20 +140,16 @@
         <item>#80E3D4</item> <!-- Pastel Mint Green -->
         <item>#B3E0E5</item> <!-- Pastel Light Blue -->
         <item>#A7C6ED</item> <!-- Pastel Sky Blue -->
-        <item>#D5F2F2</item> <!-- Soft Aqua Pastel -->
         <item>#D9D9D9</item> <!-- Soft Gray -->
-        <item>#F9E6A7</item> <!-- Pastel Yellow -->
-        <item>#F6B6FF</item> <!-- Soft Lavender Pastel -->
-        <item>#F6C3D6</item> <!-- Pastel Rose -->
+        <item>#FDE288</item> <!-- Pastel Yellow -->
         <item>#A5D6A7</item> <!-- Pastel Light Green -->
         <item>#FFB3E6</item> <!-- Pastel Lilac -->
-        <item>#F5D0A9</item> <!-- Pastel Orange -->
+        <item>#FFC383</item> <!-- Pastel Orange -->
         <item>#FFFAE3</item> <!-- Light Lemon Yellow -->
         <item>#A5D8FF</item> <!-- Pastel Light Blue -->
         <item>#F3C1B0</item> <!-- Light Salmon Pastel -->
-        <item>#FFBF80</item> <!-- Light Apricot -->
         <item>#D1C6E3</item> <!-- Lavender Pastel -->
-        <item>#E0E0E0</item> <!-- Light Silver Pastel -->
+        <item>#CDDC39</item> <!-- Light Silver Pastel -->
     </string-array>
     <!-- temas para el intercambio  -->
     <string-array name="themes_array">
@@ -227,6 +223,10 @@
     <string name="tema_seleccionado_titulo">Tema que seleccionó 🎁</string>
     <string name="algo_salio_mal_consulta">Algo salió mal con la consulta.</string>
     <string name="warning_imposible_editar">El sorteo ya se realizó, actualmente ya no es posible editar este intercambio. Te invitamos a crear uno nuevo si no estás de acuerdo con el actual.</string>
-    <string name="notif_message_success">El sorteo se realizó con éxito.</string>
-    <string name="notif_message_error">No se pudo obtener el intercambio para el sorteo.</string>
+    <string name="notif_message_success">El sorteo del intercambio: %1$s se realizó con éxito.</string>
+    <string name="notif_message_error">No se pudo obtener el intercambio: %1$s para el sorteo.</string>
+    <string name="notif_error_al_guardar">Algo salió mal al intentar guardar el intercambio: %1$s.</string>
+    <string name="error_sorteo_notif">ERROR CON EL SORTEO</string>
+    <string name="no_participantes_validos_notif">No hay participantes válidos para el sorteo en el intercambio: %1$s.</string>
+    <string name="alerta_ya_realizado">El sorteo para el intercambio: %1$s ya se había completado.</string>
 </resources>

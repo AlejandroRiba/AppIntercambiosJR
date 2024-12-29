@@ -190,6 +190,10 @@
     <string name="tema_seleccionado_titulo">Selected Topic 🎁</string>
     <string name="algo_salio_mal_consulta">Something went wrong with the query.</string>
     <string name="warning_imposible_editar">The draw has already taken place; it is no longer possible to edit this exchange. We encourage you to create a new one if you are not satisfied with the current one.</string>
-    <string name="notif_message_success">The draw was completed successfully.</string>
-    <string name="notif_message_error">The exchange could not be retrieved for the draw.</string>
+    <string name="notif_message_success">The draw for the exchange: %1$s was successfully completed.</string>
+    <string name="notif_message_error">The exchange: %1$s could not be retrieved for the draw.</string>
+    <string name="notif_error_al_guardar">Something went wrong while trying to save the exchange: %1$s.</string>
+    <string name="error_sorteo_notif">ERROR WITH THE DRAW</string>
+    <string name="no_participantes_validos_notif">There are no valid participants for the draw in the exchange: %1$s.</string>
+    <string name="alerta_ya_realizado">The draw for the exchange: %1$s had already been completed.</string>
 </resources>
