@@ -376,8 +376,8 @@ class DetalleIntercambio : AppCompatActivity() {
                 }
                 temas.text = formatearTemas(intercambio.temas)
 
-                val todosActivos = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isBlank() }
-                if(todosActivos == null && intercambio.personasRegistradas == intercambio.numPersonas){ //si no encuentra ninguno inactivo puede adelantar el sorteo
+                val algunoInactivo = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isBlank() }
+                if(algunoInactivo == null && intercambio.personasRegistradas == intercambio.numPersonas){ //si no encuentra ninguno inactivo puede adelantar el sorteo
                     autorizaAdelantarSorteo = true
                 }
 

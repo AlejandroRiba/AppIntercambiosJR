@@ -36,8 +36,9 @@ class SorteoReceiver : BroadcastReceiver() {
                     mostrarNotificacion(context, context.getString(R.string.error_title), context.getString(R.string.alerta_ya_realizado, intercambio.nombre), docId)
                 } else {
                     // Lógica del sorteo basada en tu función
-                    val todosActivos = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isBlank() }
-                    if(todosActivos == null && intercambio.personasRegistradas == intercambio.numPersonas){ //si no encuentra ninguno inactivo puede adelantar el sorteo
+                    val algunoInactivo = intercambio.participantes.find { participante -> !participante.activo || participante.temaRegalo.isEmpty() }
+                    if(algunoInactivo != null || intercambio.personasRegistradas != intercambio.numPersonas){ //si no encuentra ninguno inactivo puede adelantar el sorteo
+                        Log.w("SortManager", "El sorteo no se pude realizar $algunoInactivo")
                         mostrarNotificacion(context, context.getString(R.string.error_sorteo_notif), context.getString(R.string.no_participantes_validos_notif, intercambio.nombre), docId)
                         return@addOnSuccessListener //Mostrar notificación de error y salir
                     }
@@ -105,6 +106,7 @@ class SorteoReceiver : BroadcastReceiver() {
             .setStyle(NotificationCompat.BigTextStyle().bigText(mensaje)) // Estilo para texto largo
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
 
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
             notificationManager.notify(System.currentTimeMillis().toInt(), builder.build())

@@ -29,7 +29,7 @@ object SortManager {
 
         // Crear un Calendar para la fecha recibida
         val fechaProgramada = Calendar.getInstance().apply {
-            timeInMillis = fechaMillis
+            timeInMillis = fechaMillis + AlarmManager.INTERVAL_DAY
         }
 
         // Crear un Calendar para la fecha actual
@@ -40,7 +40,7 @@ object SortManager {
             fechaProgramada.get(Calendar.DAY_OF_YEAR) == ahora.get(Calendar.DAY_OF_YEAR) &&
             fechaMillis <= System.currentTimeMillis()
         ) {
-            Log.d("SortManager", "Fecha ya pasó pero es hoy. Reprogramando a 2 minutos desde ahora.")
+            Log.d("SortManager", "Fecha ya pasó pero es hoy. Reprogramando a 1 minuto desde ahora.")
             ahora.add(Calendar.MINUTE, 1)
             ahora.timeInMillis
         } else {
@@ -53,9 +53,6 @@ object SortManager {
 
         // Convertir triggerAtMillis a una fecha
         val fechaFormateada = formatoFecha.format(Date(triggerAtMillis))
-
-        // Imprimir el log con la fecha y hora formateada
-        Log.d("SortManager", "Alarma programada para: $fechaFormateada")
 
         // Validar si la fecha ya ha pasado
         if (triggerAtMillis <= System.currentTimeMillis()) {
@@ -73,7 +70,7 @@ object SortManager {
         }
 
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerAtMillis, pendingIntent)
-        Log.d("SortManager", "Sorteo  $fecha - $docId creado")
+        Log.d("SortManager", "Sorteo  $fechaFormateada - $docId creado")
     }
 
     fun cancelarAlarmaSorteo(context: Context, docId: String) {
