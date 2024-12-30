@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/bg_gradient">
+
+    <TextView
+        android:id="@+id/tituloError"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="INGRESA LOS DATOS DEL INVITADO"
+        android:fontFamily="@font/alexandria"
+        android:textColor="@color/textoNegro"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textAlignment="center"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutNombreIntercambio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/nombre_del_invitado_dlg"
+        android:outlineSpotShadowColor="@color/dialog"
+        android:textColorHint="@color/dialog"
+        android:layout_marginTop="10dp"
+        app:boxStrokeColor="@color/dialog"
+        app:hintTextColor="@color/dialog">
+
+        <EditText
+            android:id="@+id/editTextNombreInv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="none"
+            android:inputType="text"
+            android:textColor="@color/dialog"
+            android:textStyle="bold" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/correo_electr_nico_del_invitado"
+        android:layout_marginTop="10dp"
+        android:outlineSpotShadowColor="@color/dialog"
+        android:textColorHint="@color/dialog"
+        app:boxStrokeColor="@color/dialog"
+        app:hintTextColor="@color/dialog">
+
+        <EditText
+            android:id="@+id/editTextCorreo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="none"
+            android:inputType="text"
+            android:textColor="@color/dialog"
+            android:textStyle="bold" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/nota_invitado_warning"
+        android:textColor="@color/strong_warning"
+        android:layout_marginTop="10dp"
+        android:justificationMode="inter_word"
+        android:textStyle="bold"/>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/botones_nuevointercambio"
+        android:text="@string/agregar_a_la_lista"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:textAllCaps="false"
+        style="@style/CustomButtonThemeAdelantar"/>
+
+</LinearLayout>

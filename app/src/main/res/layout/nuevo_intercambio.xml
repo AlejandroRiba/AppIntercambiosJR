@@ -298,6 +298,7 @@
         android:id="@+id/btnLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="108dp"
         android:orientation="horizontal"
         android:padding="16dp"
         android:gravity="center_horizontal"
@@ -321,7 +322,7 @@
         <Button
             android:id="@+id/createExchangeButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:text="@string/crear_intercambio"
             android:layout_weight="1"
             android:layout_marginHorizontal="8dp"

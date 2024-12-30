@@ -207,7 +207,7 @@ class EditarIntercambio : AppCompatActivity() {
         binding.btnAddParticipant.setOnClickListener {
             personas = personasEdtxt.text.trim().toString()
             if(personas.isNotBlank() && personas.toInt() > 1){
-                checkAndRequestContactPermission()
+                showInvitationDialog()
             }else{
                 genUtils.showAlert(getString(R.string.personasnecesarias))
             }
@@ -305,6 +305,44 @@ class EditarIntercambio : AppCompatActivity() {
         return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
+    private fun showInvitationDialog(){
+        val dialogView = layoutInflater.inflate(R.layout.dialog_invitacion_opciones, null)
+        // Crear y configurar el AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnInvitarContacto).setOnClickListener {
+            checkAndRequestContactPermission()
+            alertDialog.dismiss()
+        }
+
+        dialogView.findViewById<Button>(R.id.btnManual).setOnClickListener {
+            showManualDialog()
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
+    private fun showManualDialog(){
+        val dialogView = layoutInflater.inflate(R.layout.dialog_datos_invitado, null)
+        val nombreInvitado = dialogView.findViewById<EditText>(R.id.editTextNombreInv)
+        val correoInvitado = dialogView.findViewById<EditText>(R.id.editTextCorreo)
+        // Crear y configurar el AlertDialog
+        val alertDialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        dialogView.findViewById<Button>(R.id.btnConfirm).setOnClickListener {
+            if(nombreInvitado.text.isNotBlank() && correoInvitado.text.isNotBlank()){
+                addParticipant(nombreInvitado.text.toString(), correoInvitado.text.toString())
+                alertDialog.dismiss()
+            }
+        }
+
+        alertDialog.show()
+    }
 
     private fun checkAndRequestContactPermission() {
         when {

@@ -95,7 +95,7 @@
     <string name="resultados_listos">Las asignaciones están listas, ya puedes consultar la tuya desde los detalles.</string>
     <string name="crear_intercambio">Crear Intercambio</string>
     <string name="cancelar">Cancelar</string>
-    <string name="invitar_contacto">Invitar contacto +</string>
+    <string name="invitar_contacto">Invitar participante +</string>
     <string name="invitacion_rechazada">Saliste del intercambio, no se le notificará a nadie que declinaste la invitación.</string>
     <string name="error_rechazo">Algo salió mal al intentar salir del intercambio.</string>
     <string name="error_union">Algo salió mal al intentar unirte al intercambio.</string>
@@ -231,7 +231,14 @@
     <string name="alerta_ya_realizado">El sorteo para el intercambio: %1$s ya se había completado.</string>
     <string name="asunto_smtp">Invitación a un intercambio</string>
     <string name="asunto_notif_temas">Hubo una actualización en un intercambio</string>
-    <string name="modificar_intercambio_es">Hola! %1$s ha modificado el intercambio %2$s, es necesario que entres a actualizar tu tema. Si no te has unido, únete usando el código: %3$s o el siguiente enlace\n%4$s</string>
+    <string name="modificar_intercambio_es">Hola! %1$s ha modificado el intercambio %2$s, parece que se cambiaron los temas y es necesario que entres a actualizar tu tema o seleccionarlo si no lo haz hecho. Por si aún no lo haces, únete usando el código: %3$s o el siguiente enlace\n%4$s</string>
     <string name="invitacion_intercambio_es">Hola! %1$s te ha invitado al intercambio %2$s. Únete usando el código: %3$s o el siguiente enlace\n%4$s</string>
     <string name="resultados_listos_es">Hola! Los resultados del intercambio %1$s están listos. Puedes consultarlos desde la pantalla de detalles.\n%2$s</string>
+    <string name="nombre_del_invitado_dlg">Nombre del invitado</string>
+    <string name="nota_invitado_warning">Nota: El contacto será invitado por medio de su correo electrónico, el nombre puede cambiar si el usuario maneja otro en su cuenta personal.</string>
+    <string name="agregar_a_la_lista">Agregar a la lista</string>
+    <string name="correo_electr_nico_del_invitado">Correo electrónico del invitado</string>
+    <string name="ingresar_manualmente">Ingresar manualmente</string>
+    <string name="invitar_a_un_contacto">Invitar a un contacto 👥</string>
+    <string name="ya_agregado">El participante ya ha sido agregado.</string>
 </resources>

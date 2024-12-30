@@ -84,7 +84,7 @@
     <string name="resultados_listos">The assignments are ready, you can now check yours from the details.</string>
     <string name="crear_intercambio">Create Exchange</string>
     <string name="cancelar">Cancel</string>
-    <string name="invitar_contacto">Invite contact +</string>
+    <string name="invitar_contacto">Invite participant +</string>
     <string name="invitacion_rechazada">You leave the exchange, no one will be notified that you declined the invitation.</string>
     <string name="error_rechazo">Something went wrong while trying to exit the exchange.</string>
     <string name="error_union">Something went wrong while trying to join the exchange.</string>
@@ -196,4 +196,16 @@
     <string name="error_sorteo_notif">ERROR WITH THE DRAW</string>
     <string name="no_participantes_validos_notif">There are no valid participants for the draw in the exchange: %1$s.</string>
     <string name="alerta_ya_realizado">The draw for the exchange: %1$s had already been completed.</string>
+    <string name="asunto_smtp">Invitation to an exchange</string>
+    <string name="asunto_notif_temas">There was an update in an exchange</string>
+    <string name="modificar_intercambio_es">Hello! %1$s has modified the exchange %2$s, it seems that the themes have changed, and it is necessary for you to update your theme or select one if you haven\'t done so. If you haven\'t joined yet, use the code: %3$s or the following link\n%4$s</string>
+    <string name="nombre_del_invitado_dlg">Guest\'s name</string>
+    <string name="nota_invitado_warning">Note: The contact will be invited via their email, and the name may change if the user uses a different name on their personal account.</string>
+    <string name="agregar_a_la_lista">Add to the list</string>
+    <string name="correo_electr_nico_del_invitado">Guest\'s email address</string>
+    <string name="ingresar_manualmente">Enter manually</string>
+    <string name="invitar_a_un_contacto">Invite a contact 👥</string>
+    <string name="ya_agregado">The participant has already been added.</string>
+    <string name="invitacion_intercambio_es">Hello! %1$s has invited you to the exchange %2$s. Join using the code: %3$s or the following link\n%4$s</string>
+    <string name="resultados_listos_es">Hello! The results of the exchange %1$s are ready. You can check them on the details screen.\n%2$s</string>
 </resources>
